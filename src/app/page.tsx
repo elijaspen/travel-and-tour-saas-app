@@ -1,8 +1,9 @@
-import Image from "next/image"; // CHANGE: Added Next.js Image component
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import TrendingDestinations from "@/components/shared/TrendingDestinations";
 import FeaturedTours from "@/components/shared/FeaturedTours";
 import PromoSection from "@/components/shared/PromoSection";
+import { Card } from "@/components/ui/card";
 
 export default function Home() {
   return (
