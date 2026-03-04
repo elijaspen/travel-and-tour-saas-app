@@ -2,7 +2,7 @@ import {render, screen } from "@testing-library/react";
 import Navbar from "@/components/shared/Navbar";
 
 describe ("Navbar Component", () => {
-    it("renders the Travel and Tours Logo", () => {
+    it("renders the Travel and Tour Logo", () => {
         render(<Navbar />);
     expect(screen.getByText("Travel and Tour")).toBeInTheDocument();
     });

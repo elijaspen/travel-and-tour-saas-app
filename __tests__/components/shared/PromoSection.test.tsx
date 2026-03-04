@@ -19,6 +19,6 @@ describe("PromoSection Component", () => {
     it("it renders the Subscribe button", () => {
         render(<PromoSection/>)
 
-        expect(screen.getByRole("button", { name: /Subscribe/i} )).toBe;
+        expect(screen.getByRole("button", { name: /Subscribe/i} )).toBeInTheDocument();
     })
 });
