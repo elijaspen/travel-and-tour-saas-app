@@ -70,7 +70,7 @@ export default function DashboardPage() {
             />
           </div>
 
-          {/* Notification bell — size="icon" gives it a square aspect ratio */}
+          {/* Notification bell */}
           <Button variant="outline" size="icon" className="relative h-9 w-9 shrink-0">
             <Bell size={15} />
             <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-red-500" />
