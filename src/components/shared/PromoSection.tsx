@@ -35,7 +35,7 @@ export default function PromoSection() {
 
         {/* Promo / Newsletter Box */}
         <div className="bg-white border border-zinc-200 rounded-3xl overflow-hidden flex flex-col md:flex-row shadow-sm">
-
+          {/* Left Side Image (Make sure to add a 'promo-resort.jpg' to your public folder later!) */}
           <div className="md:w-1/2 h-64 md:h-auto bg-zinc-200 bg-cover bg-center" style={{ backgroundImage: "url('/promo-resort.jpg')" }} />
           
           {/* Right Side Content */}
@@ -45,14 +45,13 @@ export default function PromoSection() {
             </span>
             <h2 className="text-3xl md:text-4xl font-bold mb-4 leading-tight text-black">Get 20% off your first booking</h2>
             <p className="text-zinc-500 mb-8 text-sm md:text-base">
-              `Sign up today and receive an exclusive discount on your next adventure. Don`&apos`t miss out on exploring the world for less.`
+              Sign up today and receive an exclusive discount on your next adventure. Don't miss out on exploring the world for less.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
               <input 
                 type="email" 
-                placeholder="Enter your email"
-                aria-label="Enter your email"
+                placeholder="Enter your email" 
                 className="flex-1 px-4 py-3 border border-zinc-200 rounded-lg outline-none focus:border-black text-sm placeholder:text-zinc-400" 
               />
               <Button className="bg-black text-white px-8 py-6 rounded-lg hover:bg-black/90">
@@ -62,6 +61,7 @@ export default function PromoSection() {
             <p className="text-[11px] text-zinc-400 mt-4">By subscribing you agree to our Terms & Privacy Policy.</p>
           </div>
         </div>
+
       </div>
     </section>
   );

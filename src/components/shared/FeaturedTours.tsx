@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "next/image"; // CHANGE: Added Next.js Image component
 import { Button } from "@/components/ui/button";
 import { Clock, Star } from "lucide-react";
 
@@ -30,6 +30,7 @@ export default function FeaturedTours() {
                 alt={tour.title}
                 fill
                 className="object-cover"
+                priority
                 sizes="(max-width: 768px) 100vw, 33vw"
               />
             </div>
