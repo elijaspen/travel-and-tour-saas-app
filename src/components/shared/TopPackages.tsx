@@ -1,4 +1,5 @@
 import { TrendingUp, TrendingDown } from "lucide-react"
+import Image from "next/image"
 import {
   Card,
   CardContent,
@@ -39,9 +40,11 @@ export function TopPackages({ packages }: TopPackagesProps) {
               <div key={pkg.id} className="flex items-center gap-3 px-6 py-3.5">
                 {/* Thumbnail */}
                 <div className="h-10 w-14 shrink-0 overflow-hidden rounded-md bg-muted">
-                  <img
+                  <Image
                     src={pkg.imageUrl}
                     alt={pkg.name}
+                    width={56}
+                    height={40}
                     className="h-full w-full object-cover"
                   />
                 </div>

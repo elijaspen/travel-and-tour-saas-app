@@ -45,7 +45,7 @@ export default function PromoSection() {
             </span>
             <h2 className="text-3xl md:text-4xl font-bold mb-4 leading-tight text-black">Get 20% off your first booking</h2>
             <p className="text-zinc-500 mb-8 text-sm md:text-base">
-              Sign up today and receive an exclusive discount on your next adventure. Don't miss out on exploring the world for less.
+              Sign up today and receive an exclusive discount on your next adventure. Don&apos;t miss out on exploring the world for less.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
