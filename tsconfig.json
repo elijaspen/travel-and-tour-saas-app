@@ -26,8 +26,8 @@
       "@/*": [
         "./src/*"
       ],
-      "@supabase/utils/*": [
-        "./supabase/utils/*"
+      "@supabase/*": [
+        "./supabase/*"
       ]
     }
   },
