@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const metadata: Metadata = {
@@ -11,21 +9,6 @@ export const metadata: Metadata = {
 export default function DashboardPage() {
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-14 items-center">
-          <div className="mr-4 flex">
-            <Link href="/dashboard" className="mr-6 flex items-center space-x-2">
-              <span className="font-bold">Travel & Tour</span>
-            </Link>
-          </div>
-          <div className="flex flex-1 items-center justify-end space-x-2">
-            <Button variant="ghost" size="sm">
-              Logout
-            </Button>
-          </div>
-        </div>
-      </header>
-
       <main className="flex-1 container py-6">
         <div className="flex flex-col gap-4">
           <h1 className="text-3xl font-bold">Dashboard</h1>
