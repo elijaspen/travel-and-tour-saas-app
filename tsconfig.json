@@ -25,9 +25,11 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@supabase/*": [
+        "./supabase/*"
       ]
-    }
-  },
+    },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
