@@ -36,7 +36,8 @@ export function ActivePromotions({ promos: initialPromos }: ActivePromotionsProp
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-semibold">Active Promotions</CardTitle>
-        {/* Ghost icon button " */}
+        
+        {/* Ghost icon button */}
         <Button variant="ghost" size="icon" className="h-7 w-7">
           <MoreHorizontal size={15} />
           <span className="sr-only">More options</span>

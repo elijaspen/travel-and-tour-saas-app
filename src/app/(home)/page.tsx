@@ -8,14 +8,14 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center">
       {/* Hero Section */}
-      <section className="relative w-full h-150 flex flex-col items-center justify-center">
+      <section className="relative w-full h-[37.5rem] flex flex-col items-center justify-center">
         <div className="absolute inset-0 z-0">
           <img src="https://placehold.co/600x400" alt="placeholder" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-black/30 z-10" /> {/* Dark overlay */}
         </div>
 
         {/* Hero Text */}
-        <div className="relative z-20 text-center text-white px-4 mt-12.5">
+        <div className="relative z-20 text-center text-white px-4 mt-[50px]">
           <h1 className="text-5xl md:text-6xl font-bold mb-4 tracking-tight">
             Discover Your Next<br />Adventure
           </h1>

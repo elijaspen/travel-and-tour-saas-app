@@ -32,9 +32,9 @@ const BAR_GAP = 48
 export function RevenueChart({ data }: RevenueChartProps) {
   const [activeBar, setActiveBar] = useState<number | null>(null)
 
-  const maxAmount = Math.max(...data.map((d) => d.amount))
+  const maxAmount = data.length > 0 ? Math.max(...data.map((d) => d.amount)) : 1
   const barHeight = (amount: number) => (amount / maxAmount) * CHART_HEIGHT
-  const totalWidth = data.length * (BAR_WIDTH + BAR_GAP) - BAR_GAP
+  const totalWidth = Math.max(0, data.length * (BAR_WIDTH + BAR_GAP) - BAR_GAP)
 
   return (
     <Card>

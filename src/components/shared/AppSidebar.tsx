@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import type { ElementType } from "react"
 import {
   LayoutDashboard, Package, CalendarCheck,
   Tag, Users, BarChart2, Settings, LogOut,
@@ -12,7 +13,7 @@ import { Separator } from "@/components/ui/separator"
 interface NavItem {
   label: string
   href: string
-  icon: React.ElementType
+  icon: ElementType
 }
 
 const NAV_ITEMS: NavItem[] = [
