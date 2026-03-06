@@ -39,7 +39,7 @@ export function AppSidebar() {
       {/* Agent profile */}
       <div className="mb-6 flex flex-col items-center gap-2 px-2">
         <div className="h-12 w-12 overflow-hidden rounded-full bg-muted ring-2 ring-border">
-          <Image src="/bali.jpg" alt="Agent" width={48} height={48} className="h-full w-full object-cover"/>
+          <Image src="/bali.jpg" alt="Agent Profile" width={48} height={48} className="h-full w-full object-cover"/>
         </div>
         <div className="text-center">
           <p className="text-sm font-semibold">Eli Jaspen</p>
