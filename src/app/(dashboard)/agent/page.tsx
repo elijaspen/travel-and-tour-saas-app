@@ -36,10 +36,10 @@ const MOCK_PROMOS: Promo[] = [
 ]
 
 const MOCK_PACKAGES: TourPackage[] = [
-  { id: "t1", name: "Ubud Cultural Trek", imageUrl: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=120&q=80", salesCount: 42, salesChange: 12  },
-  { id: "t2", name: "Kyoto Tea Ceremony", imageUrl: "https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=120&q=80", salesCount: 28, salesChange: 5   },
-  { id: "t3", name: "Northern Lights",    imageUrl: "https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=120&q=80", salesCount: 15, salesChange: -2  },
-  { id: "t4", name: "Safari Adventure",   imageUrl: "https://images.unsplash.com/photo-1516426122078-c23e76319801?w=120&q=80", salesCount: 12, salesChange: 8   },
+  { id: "t1", name: "Ubud Cultural Trek", imageUrl: "https://placehold.co/600x400", salesCount: 42, salesChange: 12  },
+  { id: "t2", name: "Kyoto Tea Ceremony", imageUrl: "https://placehold.co/600x400", salesCount: 28, salesChange: 5   },
+  { id: "t3", name: "Northern Lights",    imageUrl: "https://placehold.co/600x400", salesCount: 15, salesChange: -2  },
+  { id: "t4", name: "Safari Adventure",   imageUrl: "https://placehold.co/600x400", salesCount: 12, salesChange: 8   },
 ]
 
 export default function DashboardPage() {
