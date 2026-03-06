@@ -1,8 +1,9 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname } from "next/navigation"
-import type { ElementType } from "react"
+
 import {
   LayoutDashboard, Package, CalendarCheck,
   Tag, Users, BarChart2, Settings, LogOut,
@@ -13,7 +14,7 @@ import { Separator } from "@/components/ui/separator"
 interface NavItem {
   label: string
   href: string
-  icon: ElementType
+  icon: React.ElementType
 }
 
 const NAV_ITEMS: NavItem[] = [
@@ -39,7 +40,7 @@ export function AppSidebar() {
       {/* Agent profile */}
       <div className="mb-6 flex flex-col items-center gap-2 px-2">
         <div className="h-12 w-12 overflow-hidden rounded-full bg-muted ring-2 ring-border">
-          <img src="https://placehold.co/100x100" alt="placeholder" className="w-full h-full object-cover" />
+          <Image src="/bali.jpg" alt="Agent" width={48} height={48} className="h-full w-full object-cover"/>
         </div>
         <div className="text-center">
           <p className="text-sm font-semibold">Eli Jaspen</p>
