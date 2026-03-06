@@ -1,12 +1,11 @@
-import Image from "next/image"; // CHANGE: Added Next.js Image component
 import { Button } from "@/components/ui/button";
 import { Clock, Star } from "lucide-react";
 
 export default function FeaturedTours() {
   const tours = [
-    { id: 1, title: "Kyoto Traditional Tea Ceremony", days: 5, rating: 4.9, reviews: 120, price: 1299, image: "/kyoto.jpg" },
-    { id: 2, title: "Safari Adventure in Serengeti", days: 7, rating: 4.8, reviews: 85, price: 2450, image: "/safari.jpg" },
-    { id: 3, title: "Northern Lights in Iceland", days: 6, rating: 5.0, reviews: 200, price: 1899, image: "/iceland.jpg" },
+    { id: 1, title: "Kyoto Traditional Tea Ceremony", days: 5, rating: 4.9, reviews: 120, price: 1299, image: "https://placehold.co/600x400" },
+    { id: 2, title: "Safari Adventure in Serengeti", days: 7, rating: 4.8, reviews: 85, price: 2450, image: "https://placehold.co/600x400g" },
+    { id: 3, title: "Northern Lights in Iceland", days: 6, rating: 5.0, reviews: 200, price: 1899, image: "https://placehold.co/600x400" },
   ];
 
   return (
@@ -25,14 +24,7 @@ export default function FeaturedTours() {
         {tours.map((tour) => (
           <div key={tour.id} className="border border-zinc-200 rounded-2xl overflow-hidden bg-white hover:shadow-lg transition-shadow">
             <div className="relative h-56 w-full bg-zinc-200">
-              <Image 
-                src={tour.image} 
-                alt={tour.title}
-                fill
-                className="object-cover"
-                priority
-                sizes="(max-width: 768px) 100vw, 33vw"
-              />
+              <img src="https://placehold.co/600x400" alt="placeholder" className="w-full h-full object-cover" />
             </div>
             
             <div className="p-6">

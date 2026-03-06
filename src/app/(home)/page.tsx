@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import TrendingDestinations from "@/components/shared/TrendingDestinations";
 import FeaturedTours from "@/components/shared/FeaturedTours";
@@ -11,14 +10,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative w-full h-150 flex flex-col items-center justify-center">
         <div className="absolute inset-0 z-0">
-          <Image
-            src="/hero-bg.jpg"
-            alt="Hero Background"
-            fill
-            priority
-            className="object-cover"
-            quality={75}
-          />
+          <img src="https://placehold.co/600x400" alt="placeholder" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-black/30 z-10" /> {/* Dark overlay */}
         </div>
 

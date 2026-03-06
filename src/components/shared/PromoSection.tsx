@@ -35,8 +35,7 @@ export default function PromoSection() {
 
         {/* Promo / Newsletter Box */}
         <div className="bg-white border border-zinc-200 rounded-3xl overflow-hidden flex flex-col md:flex-row shadow-sm">
-          {/* Left Side Image (Make sure to add a 'promo-resort.jpg' to your public folder later!) */}
-          <div className="md:w-1/2 h-64 md:h-auto bg-zinc-200 bg-cover bg-center" style={{ backgroundImage: "url('/promo-resort.jpg')" }} />
+          <div className="md:w-1/2 h-64 md:h-auto bg-zinc-200 bg-cover bg-center" style={{ backgroundImage: "url('https://placehold.co/600x400')" }} />
           
           {/* Right Side Content */}
           <div className="md:w-1/2 p-10 md:p-16 flex flex-col justify-center items-start">
