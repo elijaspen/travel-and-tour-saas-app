@@ -8,11 +8,12 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
+import type { ElementType } from "react"
 
 interface NavItem {
   label: string
   href: string
-  icon: React.ElementType
+  icon: ElementType
 }
 
 const NAV_ITEMS: NavItem[] = [
