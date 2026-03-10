@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ROUTE_PATHS } from "@/config/routes";
+import { ProfileRoles } from "@/features/profile/profile.service";
 import { SignupForm } from "./components/signup-form";
 
 export const metadata: Metadata = {
@@ -15,7 +16,14 @@ export const metadata: Metadata = {
   description: "Create a WorkWanders account — for travelers and travel agencies.",
 };
 
-export default function SignupPage() {
+export default async function SignupPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ type?: string }>;
+}) {
+  const { type } = await searchParams;
+  const defaultTab = type ?? ProfileRoles.CUSTOMER;
+
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
       <Card className="w-full max-w-xl border-0 shadow-xl">
@@ -26,7 +34,7 @@ export default function SignupPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-4">
-          <SignupForm />
+          <SignupForm defaultTab={defaultTab} />
           <p className="mt-6 text-center text-sm text-slate-500">
             Already have an account?{" "}
             <Link href={ROUTE_PATHS.PUBLIC.AUTH.LOGIN} className="font-semibold text-brand hover:underline">
