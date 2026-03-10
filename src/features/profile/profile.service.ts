@@ -1,26 +1,11 @@
-import { Tables } from "@supabase/types/database"
 import { createClient as createServerClient } from "@supabase/utils/server"
 import { createAdminClient } from "@supabase/utils/admin"
 import {
   supabaseService,
   ServiceResult,
-  TableInsert,
-  TableRow,
-  TableUpdate,
 } from "@/features/shared/supabase-service"
 import { User } from "@supabase/supabase-js"
-
-export type Profile = TableRow<"profiles">
-export type ProfileInsert = TableInsert<"profiles">
-export type ProfileUpdate = TableUpdate<"profiles">
-export type ProfileRole = Tables<"profiles">['role']
-
-export const ProfileRoles = {
-  CUSTOMER: "customer",
-  BUSINESS_OWNER: "business_owner",
-  AGENT: "agent",
-  ADMIN: "admin",
-} as const satisfies Record<string, ProfileRole>
+import type { Profile, ProfileInsert } from "./profile.types"
 
 type SignUpInput = {
   email: string

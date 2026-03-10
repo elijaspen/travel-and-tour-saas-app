@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { ProfileRoles } from "@/features/profile/profile.service"
+import { ProfileRoles } from "@/features/profile/profile.types"
 
 
 export const profileLoginSchema = z.object({
