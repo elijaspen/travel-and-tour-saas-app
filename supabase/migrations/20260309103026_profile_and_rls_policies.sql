@@ -93,3 +93,5 @@ with check ((id = auth.uid()));
 
 
 CREATE TRIGGER handle_profiles_updated_at BEFORE UPDATE ON public.profiles FOR EACH ROW EXECUTE FUNCTION extensions.moddatetime('updated_at');
+
+
