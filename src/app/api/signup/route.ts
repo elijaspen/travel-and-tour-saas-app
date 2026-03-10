@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 
-import { ProfileRoles, profileService } from "@/features/profile/profile.service"
+import { profileService } from "@/features/profile/profile.service"
 import type { ActionResult } from "@/features/shared/types"
-import type { Profile } from "@/features/profile/profile.service"
+import { Profile, ProfileRoles } from "@/features/profile/profile.types"
 import { SignupPayload, signupPayloadSchema } from "@/features/profile/profile.validation"
 
 export async function POST(req: NextRequest) {
