@@ -24,7 +24,7 @@ export function supabaseService<T extends TableName>(table: T) {
     return createServerClient()
   }
 
-  // Note: ignoring any because supabase types are not compatible with our generic wrapper
+  // Note: ignoring any because supabase types are not compatible our service factory
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const from = () => (getClient() as Promise<any>).then((s) => s.from(table))
 

@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ROUTE_PATHS } from "@/config/routes";
 
+// TODO: Replace with actual travel package types when added to db
 type TravelPackage = {
   id: string | number;
   image: string;
