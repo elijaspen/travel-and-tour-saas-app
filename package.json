@@ -16,10 +16,11 @@
     "migrate": "supabase db push --local --include-all && pnpm run types",
     "migrate:production": "supabase db push --include-all",
     "create": "supabase db diff -f",
-    "types": "supabase gen types typescript > src/types/database.ts",
+    "types": "supabase gen types typescript --local > supabase/types/database.ts",
     "seed": "tsx src/supabase/seeders/index.ts"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.97.0",
     "class-variance-authority": "^0.7.1",
@@ -32,8 +33,10 @@
     "radix-ui": "^1.4.3",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-hook-form": "^7.71.2",
     "sonner": "^2.0.7",
-    "tailwind-merge": "^3.5.0"
+    "tailwind-merge": "^3.5.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.2",
