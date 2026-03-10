@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ROUTE_PATHS } from "@/config/routes";
-import { ProfileRoles } from "@/features/profile/profile.service";
+import { ProfileRoles } from "@/features/profile/profile.types";
 import { SignupForm } from "./components/signup-form";
 
 export const metadata: Metadata = {
