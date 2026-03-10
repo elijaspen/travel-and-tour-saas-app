@@ -1,6 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ROLE_LABELS } from "@/config/labels";
-import { ProfileRoles } from "@/features/profile/profile.service";
+import { ProfileRoles } from "@/features/profile/profile.types";
 
 import { CustomerSignupForm } from "./customer-form";
 import { AgencySignupForm } from "./agency-form";

@@ -1,6 +1,8 @@
 "use client";
 
-import { useActionState } from "react";
+import { useState, useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, MailCheck, Globe, Apple } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
@@ -8,24 +10,54 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import { SIGNUP_CTAS } from "@/config/labels";
-import type { Profile } from "@/features/profile/profile.service";
-import { signUpCustomerAction } from "@/features/profile/actions";
+import type { Profile } from "@/features/profile/profile.types";
 import type { ActionResult } from "@/features/shared/types";
-
-const initialState: ActionResult<Profile> = { success: false };
+import {
+  customerSignupFormSchema,
+  type CustomerSignupFormValues,
+} from "@/features/profile/profile.validation";
+import { signUpCustomerAction } from "@/features/profile/profile.actions";
 
 export function CustomerSignupForm() {
-  const [state, action, isPending] = useActionState(signUpCustomerAction, initialState);
+  const [serverResult, setServerResult] = useState<ActionResult<Profile>>({ success: false });
+  const [isPending, startTransition] = useTransition();
+
+  const form = useForm<CustomerSignupFormValues>({
+    resolver: zodResolver(customerSignupFormSchema),
+    defaultValues: {
+      fullName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
+
+  const {
+    register,
+    formState: { errors },
+  } = form;
+
+  const onSubmit = form.handleSubmit((values) => {
+    startTransition(async () => {
+      const result = await signUpCustomerAction(values);
+      setServerResult(result);
+      if (result.fieldErrors) {
+        Object.entries(result.fieldErrors).forEach(([field, messages]) => {
+          form.setError(field as keyof CustomerSignupFormValues, { message: messages[0] });
+        });
+      }
+    });
+  });
 
   return (
-    <form action={action} className="space-y-4">
-      {state.message && !state.success && (
+    <form onSubmit={onSubmit} className="space-y-4">
+      {serverResult.message && !serverResult.success && (
         <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
-          {state.message}
+          {serverResult.message}
         </p>
       )}
 
-      {state.success && (
+      {serverResult.success && (
         <div className="flex items-start gap-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
           <MailCheck className="mt-0.5 h-4 w-4 text-emerald-600" />
           <p>
@@ -39,62 +71,57 @@ export function CustomerSignupForm() {
         <Label htmlFor="fullName">Full Name</Label>
         <Input
           id="fullName"
-          name="fullName"
           placeholder="Juan dela Cruz"
-          required
+          {...register("fullName")}
         />
-        {state.fieldErrors?.fullName && (
-          <p className="text-sm text-destructive">{state.fieldErrors.fullName[0]}</p>
-        )}
+        <p className="text-sm text-destructive">
+          {errors.fullName?.message}
+        </p>
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="email">Email Address</Label>
         <Input
           id="email"
-          name="email"
           type="email"
           placeholder="juan@example.com"
-          required
+          {...register("email")}
         />
-        {state.fieldErrors?.email && (
-          <p className="text-sm text-destructive">{state.fieldErrors.email[0]}</p>
-        )}
+        <p className="text-sm text-destructive">
+          {errors.email?.message}
+        </p>
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="password">Password</Label>
         <Input
           id="password"
-          name="password"
           type="password"
           placeholder="Min. 6 characters"
-          required
-          minLength={6}
+          {...register("password")}
         />
-        {state.fieldErrors?.password && (
-          <p className="text-sm text-destructive">{state.fieldErrors.password[0]}</p>
-        )}
+        <p className="text-sm text-destructive">
+          {errors.password?.message}
+        </p>
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="confirmPassword">Confirm Password</Label>
         <Input
           id="confirmPassword"
-          name="confirmPassword"
           type="password"
           placeholder="Re-enter your password"
-          required
+          {...register("confirmPassword")}
         />
-        {state.fieldErrors?.confirmPassword && (
-          <p className="text-sm text-destructive">{state.fieldErrors.confirmPassword[0]}</p>
-        )}
+        <p className="text-sm text-destructive">
+          {errors.confirmPassword?.message}
+        </p>
       </div>
 
       <Button
         type="submit"
         className="w-full bg-brand text-brand-foreground hover:bg-brand/90"
-        disabled={isPending || state.success}
+        disabled={isPending || serverResult.success}
       >
         {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         {SIGNUP_CTAS.customer}

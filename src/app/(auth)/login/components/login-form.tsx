@@ -1,6 +1,8 @@
 "use client";
 
-import { useActionState } from "react";
+import { useState, useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Globe, Apple } from "lucide-react";
 import Link from "next/link";
 
@@ -10,19 +12,44 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import { ROUTE_PATHS } from "@/config/routes";
-import { loginAction } from "@/features/profile/actions";
+import { loginAction } from "@/features/profile/profile.actions";
+import { profileLoginSchema, type LoginPayload } from "@/features/profile/profile.validation";
 import type { ActionResult } from "@/features/shared/types";
 
-const initialState: ActionResult = { success: false };
-
 export function LoginForm() {
-  const [state, action, isPending] = useActionState(loginAction, initialState);
+  const [serverResult, setServerResult] = useState<ActionResult>({ success: false });
+  const [isPending, startTransition] = useTransition();
+
+  const form = useForm<LoginPayload>({
+    resolver: zodResolver(profileLoginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const {
+    register,
+    formState: { errors },
+  } = form;
+
+  const onSubmit = form.handleSubmit((values) => {
+    startTransition(async () => {
+      const result = await loginAction(values);
+      setServerResult(result);
+      if (result.fieldErrors) {
+        Object.entries(result.fieldErrors).forEach(([field, messages]) => {
+          form.setError(field as keyof LoginPayload, { message: messages[0] });
+        });
+      }
+    });
+  });
 
   return (
-    <form action={action} className="space-y-4">
-      {state.message && (
+    <form onSubmit={onSubmit} className="space-y-4">
+      {serverResult.message && (
         <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
-          {state.message}
+          {serverResult.message}
         </p>
       )}
 
@@ -30,14 +57,13 @@ export function LoginForm() {
         <Label htmlFor="email">Email Address</Label>
         <Input
           id="email"
-          name="email"
           type="email"
           placeholder="juan@example.com"
-          required
+          {...register("email")}
         />
-        {state.fieldErrors?.email && (
-          <p className="text-sm text-destructive">{state.fieldErrors.email[0]}</p>
-        )}
+        <p className="text-sm text-destructive">
+          {errors.email?.message}
+        </p>
       </div>
 
       <div className="space-y-2">
@@ -52,15 +78,13 @@ export function LoginForm() {
         </div>
         <Input
           id="password"
-          name="password"
           type="password"
           placeholder="Enter your password"
-          required
-          minLength={6}
+          {...register("password")}
         />
-        {state.fieldErrors?.password && (
-          <p className="text-sm text-destructive">{state.fieldErrors.password[0]}</p>
-        )}
+        <p className="text-sm text-destructive">
+          {errors.password?.message}
+        </p>
       </div>
 
       <div className="flex items-center gap-2">
