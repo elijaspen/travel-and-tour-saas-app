@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -8,49 +7,32 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { ROUTE_PATHS } from "@/config/routes";
+import { LoginForm } from "./components/login-form";
 
 export const metadata: Metadata = {
-  title: "Login",
-  description: "Login to your account",
+  title: "Log In",
+  description: "Log in to your WorkWanders account.",
 };
 
 export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
-      <Card className="w-full max-w-sm">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">Login</CardTitle>
-          <CardDescription>
-            Enter your email and password to login to your account
+      <Card className="w-full max-w-md border-0 shadow-xl">
+        <CardHeader className="pb-2 text-center">
+          <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
+          <CardDescription className="text-slate-500">
+            Log in to continue your adventure
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <form className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" required />
-            </div>
-            <Button type="submit" className="w-full">
-              Login
-            </Button>
-          </form>
-          <div className="mt-4 text-center text-sm">
+        <CardContent className="pt-4">
+          <LoginForm />
+          <p className="mt-6 text-center text-sm text-slate-500">
             Don&apos;t have an account?{" "}
-            <Link href="/signup" className="underline">
+            <Link href={ROUTE_PATHS.PUBLIC.AUTH.SIGNUP} className="font-semibold text-brand hover:underline">
               Sign up
             </Link>
-          </div>
+          </p>
         </CardContent>
       </Card>
     </div>
