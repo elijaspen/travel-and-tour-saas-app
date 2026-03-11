@@ -63,9 +63,8 @@ export async function POST(req: NextRequest) {
       email: payload.email,
       password: payload.password,
       profile: {
-        full_name: payload.contactPerson,
+        full_name: payload.fullName,
         role: ProfileRoles.BUSINESS_OWNER,
-        phone: payload.phone ?? null,
       },
     })
 
