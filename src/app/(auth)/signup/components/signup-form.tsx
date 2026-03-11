@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import { ROLE_LABELS } from "@/config/labels";
 import { ProfileRoles } from "@/features/profile/profile.types";
-import type { Profile } from "@/features/profile/profile.types";
+import type { Profile, ProfileRole } from "@/features/profile/profile.types";
 import type { ActionResult } from "@/features/shared/types";
 import { signupFormSchema, type SignupFormValues } from "@/features/profile/profile.validation";
 import { signUpAction } from "@/features/profile/profile.actions";
@@ -17,14 +17,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Loader2, MailCheck, Globe, Apple } from "lucide-react";
 
-type SignupRole = (typeof ProfileRoles)["CUSTOMER" | "BUSINESS_OWNER"];
-
 interface SignupFormProps {
-  defaultTab: SignupRole;
+  defaultTab: ProfileRole;
 }
 
 interface BaseSignupFormProps {
-  role: SignupRole;
+  role: ProfileRole;
 }
 
 function BaseSignupForm({ role }: BaseSignupFormProps) {

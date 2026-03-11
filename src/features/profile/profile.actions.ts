@@ -6,7 +6,7 @@ import { profileLoginSchema, signupFormSchema, type SignupFormValues, LoginPaylo
 import type { ActionResult } from "@/features/shared/types"
 import { ROUTE_PATHS } from "@/config/routes"
 import { profileService } from "./profile.service"
-import { Profile, ProfileRoles } from "./profile.types"
+import { Profile, ProfileRole } from "./profile.types"
 
 export async function loginAction(values: LoginPayload): Promise<ActionResult> {
   const parsed = profileLoginSchema.safeParse(values)
@@ -23,11 +23,10 @@ export async function loginAction(values: LoginPayload): Promise<ActionResult> {
   redirect(ROUTE_PATHS.AUTHED.SHARED.DASHBOARD)
 }
 
-type SignupRole = (typeof ProfileRoles)["CUSTOMER" | "BUSINESS_OWNER"]
 
 export async function signUpAction(
   values: SignupFormValues,
-  role: SignupRole,
+  role: ProfileRole,
 ): Promise<ActionResult<Profile>> {
   const parsed = signupFormSchema.safeParse(values)
   if (!parsed.success) {
