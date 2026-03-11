@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useTransition } from "react";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -5,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
-import { ROLE_LABELS, SIGNUP_CTAS } from "@/config/labels";
+import { ROLE_LABELS } from "@/config/labels";
 import { ProfileRoles } from "@/features/profile/profile.types";
 import type { Profile } from "@/features/profile/profile.types";
 import type { ActionResult } from "@/features/shared/types";
@@ -55,8 +57,6 @@ function BaseSignupForm({ role }: BaseSignupFormProps) {
       }
     });
   });
-
-  const cta = role === ProfileRoles.CUSTOMER ? SIGNUP_CTAS.customer : SIGNUP_CTAS.business_owner;
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">
@@ -133,7 +133,7 @@ function BaseSignupForm({ role }: BaseSignupFormProps) {
         disabled={isPending || serverResult.success}
       >
         {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        {cta}
+        Create Account
       </Button>
 
       <div className="relative my-2">
