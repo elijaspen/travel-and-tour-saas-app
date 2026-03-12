@@ -2,7 +2,6 @@ import { type NextRequest, NextResponse } from "next/server";
 import { isProtectedRoute, isPublicRoute, ROUTE_PATHS } from "@/config/routes";
 import { createServerClient } from "@supabase/ssr";
 import { Database } from "@supabase/types";
-import { getSupabaseEnv } from "@supabase/utils/config";
 import type { User } from "@supabase/supabase-js";
 
 async function updateSessionAndGetUser(
@@ -12,9 +11,10 @@ async function updateSessionAndGetUser(
     request,
   });
 
-  const { url, anonKey } = getSupabaseEnv();
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  const supabase = createServerClient<Database>(url, anonKey, {
+  const supabase = createServerClient<Database>(url!, anonKey!, {
     cookies: {
       getAll() {
         return request.cookies.getAll();
