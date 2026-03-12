@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ROUTE_PATHS } from "@/config/routes";
-import { ProfileRoles } from "@/features/profile/profile.types";
+import { ProfileRole } from "@/features/profile/profile.types";
 import { SignupForm } from "./components/signup-form";
 
 export const metadata: Metadata = {
@@ -22,7 +22,7 @@ export default async function SignupPage({
   searchParams: Promise<{ type?: string }>;
 }) {
   const { type } = await searchParams;
-  const defaultTab = type ?? ProfileRoles.CUSTOMER;
+  const defaultTab: ProfileRole = type as ProfileRole;
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
