@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation"
 import { ROUTE_PATHS } from "@/config/routes"
+import { getNavConfig } from "@/config/navigation"
 import { profileService } from "./profile.service"
 import type { Profile, ProfileRole } from "./profile.types"
 
@@ -15,9 +16,8 @@ export async function requireRole(allowedRoles: ProfileRole[]): Promise<RoleGuar
   }
 
   if (!allowedRoles.includes(profile.role)) {
-    redirect(ROUTE_PATHS.AUTHED.SHARED.DASHBOARD)
+    redirect(getNavConfig(profile.role).home)
   }
 
   return { profile }
 }
-
