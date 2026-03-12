@@ -43,6 +43,9 @@ export const profileService = {
     const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
       email: input.email,
       password: input.password,
+      options: {
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/verify-email`,
+      },
     })
 
     if (signUpError || !signUpData?.user?.id) {
