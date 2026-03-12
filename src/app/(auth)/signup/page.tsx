@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ROUTE_PATHS } from "@/config/routes";
-import { ProfileRole } from "@/features/profile/profile.types";
+import { ProfileRole, ProfileRoles } from "@/features/profile/profile.types";
 import { SignupForm } from "./components/signup-form";
 
 export const metadata: Metadata = {
@@ -22,7 +22,8 @@ export default async function SignupPage({
   searchParams: Promise<{ type?: string }>;
 }) {
   const { type } = await searchParams;
-  const defaultTab: ProfileRole = type as ProfileRole;
+  const defaultTab: ProfileRole =
+    type === ProfileRoles.BUSINESS_OWNER ? ProfileRoles.BUSINESS_OWNER : ProfileRoles.CUSTOMER;
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
