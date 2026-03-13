@@ -14,6 +14,7 @@ export const ROUTE_PATHS = {
       SIGNUP: "/signup",
       VERIFY_EMAIL: "/verify-email",
       FORGOT_PASSWORD: "/forgot-password",
+      RESET_PASSWORD: "/reset-password",
     },
   },
 

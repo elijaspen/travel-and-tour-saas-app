@@ -5,7 +5,7 @@ import {
   ServiceResult,
 } from "@/features/shared/supabase-service"
 import { User } from "@supabase/supabase-js"
-import type { Profile, ProfileInsert } from "./profile.types"
+import type { Profile, ProfileInsert, ProfileUpdate } from "./profile.types"
 
 type SignUpInput = {
   email: string
@@ -43,6 +43,9 @@ export const profileService = {
     const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
       email: input.email,
       password: input.password,
+      options: {
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/verify-email`,
+      },
     })
 
     if (signUpError || !signUpData?.user?.id) {
@@ -71,5 +74,48 @@ export const profileService = {
       data: profile,
       error: null,
     }
+  },
+
+  async getCurrentProfile(): Promise<ServiceResult<Profile>> {
+    const supabase = await createServerClient()
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser()
+
+    if (userError || !user) {
+      return { data: null, error: userError ?? new Error("Not authenticated") }
+    }
+
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", user.id)
+      .single()
+
+    return { data: (data ?? null) as Profile | null, error }
+  },
+
+  async updateCurrentProfile(
+    patch: Pick<ProfileUpdate, "full_name" | "phone" | "emergency_contact">,
+  ): Promise<ServiceResult<Profile>> {
+    const supabase = await createServerClient()
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser()
+
+    if (userError || !user) {
+      return { data: null, error: userError ?? new Error("Not authenticated") }
+    }
+
+    const { data, error } = await supabase
+      .from("profiles")
+      .update(patch as ProfileUpdate)
+      .eq("id", user.id)
+      .select("*")
+      .single()
+
+    return { data: (data ?? null) as Profile | null, error }
   },
 }
