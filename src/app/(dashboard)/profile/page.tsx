@@ -3,12 +3,13 @@ import type { Metadata } from "next";
 import { ProfileForm } from "./components/profile-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/shared/page-header";
+import { siteConfig } from "@/config/site";
 import { requireRole } from "@/features/profile/profile.guard";
 import { ProfileRoles } from "@/features/profile/profile.types";
 
 export const metadata: Metadata = {
   title: "Profile",
-  description: "Manage your WorkWanders profile details.",
+  description: `Manage your ${siteConfig.name} profile details.`,
 };
 
 export default async function ProfilePage() {

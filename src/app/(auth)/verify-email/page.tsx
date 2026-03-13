@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ROUTE_PATHS } from "@/config/routes";
+import { siteConfig } from "@/config/site";
 import { createClient } from "@supabase/utils/server";
 import { DelayedRedirect } from "@/components/shared/delayed-redirect";
 
@@ -27,7 +28,7 @@ type VerifyEmailResult = {
 
 export const metadata: Metadata = {
   title: "Verify Email",
-  description: "Confirm your email address to start using WorkWanders.",
+  description: `Confirm your email address to start using ${siteConfig.name}.`,
 };
 
 export default async function VerifyEmailPage({

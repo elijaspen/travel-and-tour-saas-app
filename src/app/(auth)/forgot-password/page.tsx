@@ -9,11 +9,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ROUTE_PATHS } from "@/config/routes";
+import { siteConfig } from "@/config/site";
 import { ForgotPasswordForm } from "./components/forgot-password-form";
 
 export const metadata: Metadata = {
   title: "Forgot Password",
-  description: "Reset access to your WorkWanders account.",
+  description: `Reset access to your ${siteConfig.name} account.`,
 };
 
 export default function ForgotPasswordPage() {

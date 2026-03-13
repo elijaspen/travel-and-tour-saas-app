@@ -1,6 +1,6 @@
-import Link from "next/link";
-import { LogOut, MapPin } from "lucide-react";
+import { LogOut } from "lucide-react";
 
+import { AppLogo } from "@/components/shared/app-logo";
 import { Button } from "@/components/ui/button";
 import { SidebarNavLink } from "@/components/shared/sidebar-nav-link";
 import { logoutAction } from "@/features/profile/profile.actions";
@@ -18,15 +18,7 @@ export function DashboardSidebar({ profile, navConfig }: DashboardSidebarProps) 
   return (
     <aside className="fixed inset-y-0 left-0 z-40 flex w-56 flex-col border-r bg-background">
       <div className="flex h-14 items-center px-5 border-b">
-        <Link
-          href={navConfig.home}
-          className="flex items-center gap-2 text-lg font-bold tracking-tight"
-        >
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand">
-            <MapPin className="h-4 w-4 text-brand-foreground" />
-          </div>
-          <span>WorkWanders</span>
-        </Link>
+        <AppLogo href={navConfig.home} size="md" />
       </div>
 
       <div className="flex flex-col items-center gap-2 px-5 py-5 border-b">

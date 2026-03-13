@@ -8,11 +8,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ROUTE_PATHS } from "@/config/routes";
+import { siteConfig } from "@/config/site";
 import { LoginForm } from "./components/login-form";
 
 export const metadata: Metadata = {
   title: "Log In",
-  description: "Log in to your WorkWanders account.",
+  description: `Log in to your ${siteConfig.name} account.`,
 };
 
 export default function LoginPage() {

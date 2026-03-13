@@ -8,12 +8,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ROUTE_PATHS } from "@/config/routes";
+import { siteConfig } from "@/config/site";
 import { ProfileRole, ProfileRoles } from "@/features/profile/profile.types";
 import { SignupForm } from "./components/signup-form";
 
 export const metadata: Metadata = {
   title: "Sign Up",
-  description: "Create a WorkWanders account — for travelers and travel agencies.",
+  description: `Create a ${siteConfig.name} account — for travelers and travel agencies.`,
 };
 
 export default async function SignupPage({
@@ -31,7 +32,7 @@ export default async function SignupPage({
         <CardHeader className="pb-2 text-center">
           <CardTitle className="text-2xl font-bold">Create your account</CardTitle>
           <CardDescription className="text-slate-500">
-            Join thousands of travelers and agencies on WorkWanders
+            Join thousands of travelers and agencies on {siteConfig.name}
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-4">
