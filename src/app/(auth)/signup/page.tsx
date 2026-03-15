@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -8,57 +7,42 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { ROUTE_PATHS } from "@/config/routes";
+import { siteConfig } from "@/config/site";
+import { ProfileRole, ProfileRoles } from "@/features/profile/profile.types";
+import { SignupForm } from "./components/signup-form";
 
 export const metadata: Metadata = {
   title: "Sign Up",
-  description: "Create an account",
+  description: `Create a ${siteConfig.name} account — for travelers and travel agencies.`,
 };
 
-export default function SignUpPage() {
+export default async function SignupPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ type?: string }>;
+}) {
+  const { type } = await searchParams;
+  const defaultTab: ProfileRole =
+    type === ProfileRoles.BUSINESS_OWNER ? ProfileRoles.BUSINESS_OWNER : ProfileRoles.CUSTOMER;
+
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
-      <Card className="w-full max-w-sm">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">Create an account</CardTitle>
-          <CardDescription>
-            Enter your details to create your account
+      <Card className="w-full max-w-xl border-0 shadow-xl">
+        <CardHeader className="pb-2 text-center">
+          <CardTitle className="text-2xl font-bold">Create your account</CardTitle>
+          <CardDescription className="text-slate-500">
+            Join thousands of travelers and agencies on {siteConfig.name}
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <form className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
-              <Input id="name" type="text" placeholder="John Doe" required />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" required />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <Input id="confirmPassword" type="password" required />
-            </div>
-            <Button type="submit" className="w-full">
-              Sign Up
-            </Button>
-          </form>
-          <div className="mt-4 text-center text-sm">
+        <CardContent className="pt-4">
+          <SignupForm defaultTab={defaultTab} />
+          <p className="mt-6 text-center text-sm text-slate-500">
             Already have an account?{" "}
-            <Link href="/login" className="underline">
-              Login
+            <Link href={ROUTE_PATHS.PUBLIC.AUTH.LOGIN} className="font-semibold text-brand hover:underline">
+              Log in
             </Link>
-          </div>
+          </p>
         </CardContent>
       </Card>
     </div>
