@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "build:cloudflare": "npm run build && npx opennextjs-cloudflare build",
+    "deploy:cloudflare": "npx wrangler versions upload",
     "build": "next build",
     "dev": "next dev",
     "start": "next start",
