@@ -1,3 +1,6 @@
+// I converted proxy.ts back to middleware.ts because OpenNext Cloudflare doesn't support Node.js proxy files
+// This Edge middleware handles the same authentication redirects but runs on Cloudflare's Edge runtime
+
 import { type NextRequest, NextResponse } from "next/server";
 import { isProtectedRoute, isPublicRoute, ROUTE_PATHS } from "@/config/routes";
 import { createServerClient } from "@supabase/ssr";
@@ -47,7 +50,7 @@ function copyCookies(source: NextResponse, target: NextResponse) {
   });
 }
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { response, user } = await updateSessionAndGetUser(request);
   const { pathname } = request.nextUrl;
 
@@ -79,3 +82,6 @@ export const config = {
     "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
+
+// Edge runtime configuration for OpenNext Cloudflare compatibility
+export const runtime = "experimental-edge";

@@ -1,10 +1,14 @@
 import type { NextConfig } from "next"
+import { join } from "path"
 
 const nextConfig: NextConfig = {
-  distDir: "dist",
+  output: "standalone",
+  outputFileTracingRoot: join(__dirname),
   images: {
     remotePatterns: [{ hostname: "tjgiskidryllvyjannsq.supabase.co" }],
   },
 }
 
 export default nextConfig
+
+import('@opennextjs/cloudflare').then(m => m.initOpenNextCloudflareForDev());
