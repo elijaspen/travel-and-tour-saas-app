@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ROUTE_PATHS } from "@/config/routes";
-import { ProfileRoles } from "@/features/profile/profile.types";
+import { ProfileRole, ProfileRoles } from "@/features/profile/profile.types";
 import { SignupForm } from "./components/signup-form";
 
 export const metadata: Metadata = {
@@ -15,7 +15,8 @@ export default async function SignupPage({
   searchParams: Promise<{ type?: string }>;
 }) {
   const { type } = await searchParams;
-  const defaultTab = type ?? ProfileRoles.CUSTOMER;
+  const defaultTab: ProfileRole =
+    type === ProfileRoles.BUSINESS_OWNER ? ProfileRoles.BUSINESS_OWNER : ProfileRoles.CUSTOMER;
 
   return (
     <div className="mx-auto flex w-full flex-col justify-center space-y-4 sm:space-y-6 w-full sm:w-[400px] md:w-[450px]">

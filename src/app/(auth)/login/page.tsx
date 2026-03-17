@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ROUTE_PATHS } from "@/config/routes";
+import { siteConfig } from "@/config/site";
 import { LoginForm } from "./components/login-form";
 
 export const metadata: Metadata = {

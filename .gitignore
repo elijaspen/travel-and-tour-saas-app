@@ -48,3 +48,10 @@ dist/
 # supabase
 supabase/.branches/
 supabase/.temp/
+
+# OpenNext
+.open-next
+public/_headers
+public/_redirects
+
+.dev.vars

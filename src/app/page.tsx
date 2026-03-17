@@ -1,10 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
-import { MapPin, BadgeCheck, ArrowRight, Facebook, Instagram, Twitter } from "lucide-react";
+import { BadgeCheck, ArrowRight, Facebook, Instagram, Twitter } from "lucide-react";
+import { AppLogo } from "@/components/shared/app-logo";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ROUTE_PATHS } from "@/config/routes";
+import { siteConfig } from "@/config/site";
 import { TravelPackagesGrid } from "@/components/common/travel-package-card";
 import { PackageSearchBar } from "@/components/common/package-search-bar";
 
@@ -49,12 +51,12 @@ export default function Home() {
       {/* Navbar */}
       <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-white/80 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <Link href={ROUTE_PATHS.PUBLIC.MARKETING.HOME} className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand">
-              <MapPin className="h-4 w-4 text-brand-foreground" />
-            </div>
-            <span className="text-xl font-bold tracking-tight text-slate-900">WorkWanders</span>
-          </Link>
+          <AppLogo
+            href={ROUTE_PATHS.PUBLIC.MARKETING.HOME}
+            size="md"
+            className="text-xl"
+            textClassName="text-slate-900"
+          />
 
           <nav className="hidden items-center gap-8 md:flex">
             <Link href={ROUTE_PATHS.PUBLIC.MARKETING.TOURS} className="text-sm font-medium text-slate-600 transition-colors hover:text-brand">
@@ -166,7 +168,7 @@ export default function Home() {
               Are you a travel agency?
             </h2>
             <p className="mx-auto mb-8 max-w-2xl text-lg text-slate-300">
-              Join hundreds of agencies already growing their business on WorkWanders. Reach thousands of travelers, manage bookings effortlessly, and scale your revenue.
+              Join hundreds of agencies already growing their business on {siteConfig.name}. Reach thousands of travelers, manage bookings effortlessly, and scale your revenue.
             </p>
             <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
               <Button size="lg" className="gap-2 bg-white px-8 font-semibold text-brand hover:bg-slate-100" asChild>
@@ -196,12 +198,11 @@ export default function Home() {
           <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
             {/* Brand */}
             <div className="lg:col-span-1">
-              <Link href={ROUTE_PATHS.PUBLIC.MARKETING.HOME} className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand">
-                  <MapPin className="h-4 w-4 text-white" />
-                </div>
-                <span className="text-lg font-bold text-white">WorkWanders</span>
-              </Link>
+              <AppLogo
+                href={ROUTE_PATHS.PUBLIC.MARKETING.HOME}
+                size="md"
+                textClassName="text-white"
+              />
               <p className="mt-4 max-w-xs text-sm leading-relaxed">
                 The premier marketplace connecting travelers with top-rated local travel agencies.
               </p>
@@ -277,7 +278,7 @@ export default function Home() {
 
           <Separator className="my-10 bg-white/10" />
           <div className="flex flex-col items-center justify-between gap-4 text-sm sm:flex-row">
-            <p>© {new Date().getFullYear()} WorkWanders. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} {siteConfig.name}. All rights reserved.</p>
             <p className="flex items-center gap-1">
               Built with
               <span className="mx-1 text-brand">♥</span>
