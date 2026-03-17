@@ -104,7 +104,7 @@ export default async function VerifyEmailPage({
           <CardTitle className="text-2xl font-bold">
             {isSuccess ? "Email confirmed" : "Trouble confirming your email"}
           </CardTitle>
-          <CardDescription className="text-slate-500">
+          <CardDescription>
             {isSuccess
               ? "You’re all set. We’ll redirect you in a moment."
               : "We couldn’t verify this confirmation link."}
@@ -114,7 +114,7 @@ export default async function VerifyEmailPage({
           <p
             className={`rounded-md px-3 py-2 text-sm ${
               isSuccess
-                ? "bg-emerald-50 text-emerald-800"
+                ? "bg-brand/10 text-brand"
                 : "bg-destructive/10 text-destructive"
             }`}
           >
@@ -123,7 +123,7 @@ export default async function VerifyEmailPage({
 
           {isSuccess ? (
             <>
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-muted-foreground">
                 If you&apos;re not redirected automatically, you can continue to your
                 dashboard.
               </p>
@@ -141,7 +141,7 @@ export default async function VerifyEmailPage({
               />
             </>
           ) : (
-            <div className="space-y-2 text-sm text-slate-500">
+            <div className="space-y-2 text-sm text-muted-foreground">
               <p className="text-center">
                 You can try logging in again or request a new confirmation email.
               </p>

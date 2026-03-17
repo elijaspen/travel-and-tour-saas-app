@@ -89,7 +89,7 @@ export function LoginForm() {
 
       <div className="flex items-center gap-2">
         <Checkbox id="remember" name="remember" />
-        <label htmlFor="remember" className="cursor-pointer select-none text-sm text-slate-600">
+        <label htmlFor="remember" className="cursor-pointer select-none text-sm text-muted-foreground">
           Remember me for 30 days
         </label>
       </div>
