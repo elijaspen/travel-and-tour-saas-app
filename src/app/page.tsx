@@ -1,14 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
-import { BadgeCheck, ArrowRight, Facebook, Instagram, Twitter } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { AppLogo } from "@/components/shared/app-logo";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { ROUTE_PATHS } from "@/config/routes";
-import { siteConfig } from "@/config/site";
 import { TravelPackagesGrid } from "@/components/shared/travel-package-card";
 import { PackageSearchBar } from "@/components/shared/package-search-bar";
+import { DestinationCardGrid } from "@/components/shared/destination-card-grid";
+import { TrustBadgesSection } from "@/components/shared/trust-badges-grid";
+import { OfferPromoSection } from "@/components/shared/offer-banner";
+import Footer from "@/components/footer/footer";
 
 
 // TODO: Replace with actual data from the database.
@@ -45,6 +46,41 @@ const FEATURED_PACKAGES = [
   },
 ];
 
+const CURATED_DESTINATIONS = [
+  {
+    id: 1,
+    image: "https://tjgiskidryllvyjannsq.supabase.co/storage/v1/object/public/public%20files/Gemini%20Generated%20Image%20(11).jpeg",
+    tours: 130,
+    city: "Palawan",
+    country: "Philippines"
+  },
+  {
+    id: 2,
+    image: "https://tjgiskidryllvyjannsq.supabase.co/storage/v1/object/public/public%20files/Gemini%20Generated%20Image%20(7).jpeg",
+    tours: 50,
+    city: "Atoll",
+    country: "Maldives"
+  },
+  {
+    id: 3,
+    image: "https://tjgiskidryllvyjannsq.supabase.co/storage/v1/object/public/public%20files/Gemini%20Generated%20Image%20(9).jpeg",
+    tours: 33,
+    city: "Misiones",
+    country: "Brazil",
+  },
+];
+
+const BANNER_OFFERS = {
+  id: 1,
+  image:"https://images.unsplash.com/photo-1610641818989-c2051b5e2cfd?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  badge: "Limited Time Offer",
+  title: "Get 20% off your first booking",
+  description:
+    "Sign up today and receive an exclusive discount on your next adventure. Don't miss out on exploring the world for less.",
+  buttonText: "Subscribe",
+  disclaimer: "By subscribing you agree to our Terms & Privacy Policy.",
+};
+
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col">
@@ -60,20 +96,23 @@ export default function Home() {
 
           <nav className="hidden items-center gap-8 md:flex">
             <Link href={ROUTE_PATHS.PUBLIC.MARKETING.TOURS} className="text-sm font-medium text-slate-600 transition-colors hover:text-brand">
-              Browse Packages
+              Destinations
             </Link>
             <Link href="#agencies" className="text-sm font-medium text-slate-600 transition-colors hover:text-brand">
-              Top Agencies
+              Tours
             </Link>
             <Link href={ROUTE_PATHS.PUBLIC.MARKETING.ABOUT} className="text-sm font-medium text-slate-600 transition-colors hover:text-brand">
-              About
+              Flights
+            </Link>
+            <Link href={ROUTE_PATHS.PUBLIC.MARKETING.ABOUT} className="text-sm font-medium text-slate-600 transition-colors hover:text-brand">
+              Deals
+            </Link>
+            <Link href={ROUTE_PATHS.PUBLIC.MARKETING.ABOUT} className="text-sm font-medium text-slate-600 transition-colors hover:text-brand">
+              Support
             </Link>
           </nav>
 
           <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm" className="hidden border-brand text-brand hover:bg-brand hover:text-brand-foreground sm:flex" asChild>
-              <Link href={`${ROUTE_PATHS.PUBLIC.AUTH.SIGNUP}?type=business_owner`}>List Your Agency</Link>
-            </Button>
             <Button variant="ghost" size="sm" className="text-slate-600 hover:text-brand" asChild>
               <Link href={ROUTE_PATHS.PUBLIC.AUTH.LOGIN}>Login</Link>
             </Button>
@@ -86,7 +125,7 @@ export default function Home() {
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative flex min-h-[92vh] items-center justify-center overflow-hidden">
+        <section className="relative flex min-h-[72vh] items-center justify-center">
           <Image
             src="https://tjgiskidryllvyjannsq.supabase.co/storage/v1/object/public/public%20files/Gemini%20Generated%20Image%20(10).jpeg"
             alt="Travel destination hero"
@@ -97,196 +136,59 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-b from-slate-900/70 via-slate-900/50 to-slate-900/80" />
 
           <div className="relative z-10 mx-auto w-full max-w-5xl px-4 text-center sm:px-6 lg:px-8">
-            <Badge className="mb-6 bg-brand/20 text-brand-foreground border-brand/30 px-4 py-1 text-sm">
-              100+ Verified Travel Agencies
-            </Badge>
             <h1 className="mb-4 text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
               Discover Your Next
-              <span className="block text-brand"> Adventure.</span>
+              <span className="block"> Adventure.</span>
             </h1>
             <p className="mx-auto mb-10 max-w-2xl text-lg text-slate-200 sm:text-xl">
-              Book exclusive travel packages from top-rated local agencies. Trusted by thousands of travelers.
+              Explore thousands of tours and unique experiences worldwide.
             </p>
+          </div>
 
-            {/* Search Bar */}
-            <PackageSearchBar />
-
-            <p className="mt-4 text-sm text-slate-300">
-              Popular: <span className="font-medium text-white">Palawan · Bali · Boracay · Cebu · Siargao</span>
-            </p>
+          <div className="absolute inset-x-0 bottom-0 z-20 translate-y-1/2 px-4 sm:px-6 lg:px-8">
+          <PackageSearchBar />
           </div>
         </section>
 
-        {/* Featured Packages */}
+        {/* Curated Destinations */}
+        <section className="bg-slate-50 py-32">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="mb-12 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
+              <div>
+                <h2 className="text-3xl font-bold text-slate-900 sm:text-4xl">Trending Destinations</h2>
+                <p className="mt-2 text-slate-500">Curated just for you</p>
+              </div>
+            </div>
+            <DestinationCardGrid destinations={CURATED_DESTINATIONS} />
+          </div>
+        </section>
+
         <section className="bg-slate-50 py-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="mb-12 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
               <div>
-                <p className="mb-1 text-sm font-semibold uppercase tracking-widest text-brand">Hand-picked for you</p>
-                <h2 className="text-3xl font-bold text-slate-900 sm:text-4xl">Featured Travel Packages</h2>
-                <p className="mt-2 text-slate-500">Curated packages from our highest-rated partner agencies.</p>
+                <h2 className="text-3xl font-bold text-slate-900 sm:text-4xl">Featured Tours</h2>
+                <p className="mt-2 text-slate-500">Unforgettable experiences hand-picked for you</p>
               </div>
               <Button variant="outline" className="shrink-0 gap-2 border-brand text-brand hover:bg-brand hover:text-brand-foreground" asChild>
                 <Link href={ROUTE_PATHS.PUBLIC.MARKETING.TOURS}>
-                  View All Packages <ArrowRight className="h-4 w-4" />
+                  View All Tours <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
             </div>
-
             <TravelPackagesGrid packages={FEATURED_PACKAGES} />
           </div>
         </section>
 
-        {/* Stats Bar */}
-        <section className="border-y border-slate-200 bg-white py-10">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-2 gap-8 text-center md:grid-cols-4">
-              {[
-                { value: "12,000+", label: "Happy Travelers" },
-                { value: "200+", label: "Travel Packages" },
-                { value: "100+", label: "Partner Agencies" },
-                { value: "4.9★", label: "Average Rating" },
-              ].map((stat) => (
-                <div key={stat.label}>
-                  <p className="text-3xl font-extrabold text-brand">{stat.value}</p>
-                  <p className="mt-1 text-sm text-slate-500">{stat.label}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+        {/* Trust Badges Section */}
+        <TrustBadgesSection />
 
-        {/* Agency CTA Banner */}
-        <section id="agencies" className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-brand/80 to-slate-900 py-24">
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute -left-20 -top-20 h-96 w-96 rounded-full bg-brand blur-3xl" />
-            <div className="absolute -bottom-20 -right-20 h-96 w-96 rounded-full bg-brand blur-3xl" />
-          </div>
-          <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-            <Badge className="mb-6 bg-brand/20 text-white border-white/20 px-4 py-1">For Travel Agencies</Badge>
-            <h2 className="mb-4 text-3xl font-extrabold text-white sm:text-4xl lg:text-5xl">
-              Are you a travel agency?
-            </h2>
-            <p className="mx-auto mb-8 max-w-2xl text-lg text-slate-300">
-              Join hundreds of agencies already growing their business on {siteConfig.name}. Reach thousands of travelers, manage bookings effortlessly, and scale your revenue.
-            </p>
-            <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-              <Button size="lg" className="gap-2 bg-white px-8 font-semibold text-brand hover:bg-slate-100" asChild>
-                <Link href={`${ROUTE_PATHS.PUBLIC.AUTH.SIGNUP}?type=business_owner`}>
-                  Become a Partner <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-              <Button variant="outline" size="lg" className="border-white/40 text-white hover:bg-white/10 hover:text-white" asChild>
-                <Link href={ROUTE_PATHS.PUBLIC.MARKETING.ABOUT}>Learn More</Link>
-              </Button>
-            </div>
-            <div className="mt-10 flex flex-wrap items-center justify-center gap-6 text-sm text-slate-300">
-              {["Free to list", "No hidden fees", "Real-time analytics", "Dedicated support"].map((f) => (
-                <span key={f} className="flex items-center gap-1.5">
-                  <BadgeCheck className="h-4 w-4 text-brand" />
-                  {f}
-                </span>
-              ))}
-            </div>
-          </div>
-        </section>
+        {/* Banner Offers */}
+        <OfferPromoSection offer={BANNER_OFFERS} />
+
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-200 bg-slate-900 text-slate-400">
-        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-            {/* Brand */}
-            <div className="lg:col-span-1">
-              <AppLogo
-                href={ROUTE_PATHS.PUBLIC.MARKETING.HOME}
-                size="md"
-                textClassName="text-white"
-              />
-              <p className="mt-4 max-w-xs text-sm leading-relaxed">
-                The premier marketplace connecting travelers with top-rated local travel agencies.
-              </p>
-              <div className="mt-6 flex items-center gap-4">
-                {[Facebook, Instagram, Twitter].map((Icon, i) => (
-                  <a key={i} href="#" className="rounded-lg p-2 text-slate-400 transition hover:bg-white/10 hover:text-white">
-                    <Icon className="h-4 w-4" />
-                  </a>
-                ))}
-              </div>
-            </div>
-
-            {/* For Travelers */}
-            <div>
-              <h4 className="mb-4 text-sm font-semibold uppercase tracking-widest text-white">For Travelers</h4>
-              <ul className="space-y-3 text-sm">
-                {[
-                  { label: "Browse Packages", href: ROUTE_PATHS.PUBLIC.MARKETING.TOURS },
-                  { label: "Top Destinations", href: ROUTE_PATHS.PUBLIC.MARKETING.TOURS },
-                  { label: "Travel Guides", href: "#" },
-                  { label: "My Bookings", href: ROUTE_PATHS.AUTHED.TRAVELER.TRIPS },
-                  { label: "Reviews", href: "#" },
-                ].map((link) => (
-                  <li key={link.label}>
-                    <Link href={link.href} className="transition-colors hover:text-white">
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* For Agencies */}
-            <div>
-              <h4 className="mb-4 text-sm font-semibold uppercase tracking-widest text-white">For Agencies</h4>
-              <ul className="space-y-3 text-sm">
-                {[
-                  { label: "Become a Partner", href: `${ROUTE_PATHS.PUBLIC.AUTH.SIGNUP}?type=business_owner` },
-                  { label: "Agency Dashboard", href: ROUTE_PATHS.AUTHED.AGENCY.ROOT },
-                  { label: "Manage Packages", href: ROUTE_PATHS.AUTHED.AGENCY.TOURS },
-                  { label: "Analytics", href: ROUTE_PATHS.AUTHED.AGENCY.ANALYTICS },
-                  { label: "Subscription Plans", href: ROUTE_PATHS.AUTHED.AGENCY.BILLING },
-                ].map((link) => (
-                  <li key={link.label}>
-                    <Link href={link.href} className="transition-colors hover:text-white">
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Company */}
-            <div>
-              <h4 className="mb-4 text-sm font-semibold uppercase tracking-widest text-white">Company</h4>
-              <ul className="space-y-3 text-sm">
-                {[
-                  { label: "About Us", href: ROUTE_PATHS.PUBLIC.MARKETING.ABOUT },
-                  { label: "FAQ", href: ROUTE_PATHS.PUBLIC.MARKETING.FAQ },
-                  { label: "Privacy Policy", href: "#" },
-                  { label: "Terms of Service", href: "#" },
-                  { label: "Contact Us", href: "#" },
-                ].map((link) => (
-                  <li key={link.label}>
-                    <Link href={link.href} className="transition-colors hover:text-white">
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          <Separator className="my-10 bg-white/10" />
-          <div className="flex flex-col items-center justify-between gap-4 text-sm sm:flex-row">
-            <p>© {new Date().getFullYear()} {siteConfig.name}. All rights reserved.</p>
-            <p className="flex items-center gap-1">
-              Built with
-              <span className="mx-1 text-brand">♥</span>
-              for adventurers everywhere.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer/>
     </div>
   );
 }
