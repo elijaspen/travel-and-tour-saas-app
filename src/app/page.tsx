@@ -7,8 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ROUTE_PATHS } from "@/config/routes";
 import { siteConfig } from "@/config/site";
-import { TravelPackagesGrid } from "@/components/common/travel-package-card";
-import { PackageSearchBar } from "@/components/common/package-search-bar";
+import { TravelPackagesGrid } from "@/components/shared/travel-package-card";
+import { PackageSearchBar } from "@/components/shared/package-search-bar";
 
 
 // TODO: Replace with actual data from the database.
