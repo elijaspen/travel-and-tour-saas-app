@@ -253,7 +253,7 @@ export function BusinessOnboardingModal() {
                   />
                 </div>
                 {permitError && <p className="text-xs text-destructive">{permitError}</p>}
-                <p className="text-xs text-muted-foreground">Upload PDF, PNG, or JPG up to 10MB.</p>
+                <p className="text-xs text-muted-foreground">Upload PDF, PNG, or JPG up to 2MB.</p>
               </div>
             </div>
 
