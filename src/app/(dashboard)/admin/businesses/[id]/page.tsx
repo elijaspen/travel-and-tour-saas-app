@@ -1,7 +1,7 @@
-import type { Metadata } from "next"
-import type { ReactNode } from "react"
-import Link from "next/link"
-import { notFound } from "next/navigation"
+import type { Metadata } from "next";
+import type { ReactNode } from "react";
+import Link from "next/link";
+import { notFound } from "next/navigation";
 import {
   ArrowLeft,
   Building2,
@@ -15,45 +15,40 @@ import {
   CheckCircle,
   XCircle,
   PauseCircle,
-} from "lucide-react"
+} from "lucide-react";
 
-import { cn } from "@/lib/utils"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { Badge } from "@/components/ui/badge"
-import { CompanyStatusBadge } from "@/components/shared/data-display/company-status-badge"
-import { requireRole } from "@/modules/profile/profile.guard"
-import { ProfileRoles } from "@/modules/profile/profile.types"
-import { companyService } from "@/modules/company/company.service"
-import { updateCompanyStatusAction } from "@/modules/company/company.actions"
-import { CompanyStatuses } from "@/modules/company/company.types"
-import { ROUTE_PATHS } from "@/config/routes"
+import { cn } from "@/lib/utils";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { CompanyStatusBadge } from "@/components/shared/data-display/company-status-badge";
+import { requireRole } from "@/modules/profile/profile.guard";
+import { ProfileRoles } from "@/modules/profile/profile.types";
+import { companyService } from "@/modules/company/company.service";
+import { updateCompanyStatusAction } from "@/modules/company/company.actions";
+import { CompanyStatuses } from "@/modules/company/company.types";
+import { ROUTE_PATHS } from "@/config/routes";
 
 export const metadata: Metadata = {
   title: "Business Details",
-}
+};
 
 type DetailRowProps = {
-  icon: ReactNode
-  label: string
-  value: string | null | undefined
-  href?: string
-}
+  icon: React.ReactNode;
+  label: string;
+  value: string | null | undefined;
+  href?: string;
+};
 
 function DetailRow({ icon, label, value, href }: DetailRowProps) {
-  const displayValue = value ?? "—"
+  const displayValue = value ?? "—";
   return (
     <div className="flex items-start gap-3">
       <span className="mt-0.5 text-muted-foreground">{icon}</span>
       <div className="flex flex-col gap-0.5">
         <span className="text-xs text-muted-foreground">{label}</span>
-        <span
-          className={cn(
-            "text-sm font-medium",
-            !value && "text-muted-foreground"
-          )}
-        >
+        <span className={cn("text-sm font-medium", !value && "text-muted-foreground")}>
           {href && value ? (
             <a
               href={href}
@@ -69,34 +64,30 @@ function DetailRow({ icon, label, value, href }: DetailRowProps) {
         </span>
       </div>
     </div>
-  )
+  );
 }
 
-export default async function BusinessDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>
-}) {
-  await requireRole([ProfileRoles.ADMIN])
-  const { id } = await params
+export default async function BusinessDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  await requireRole([ProfileRoles.ADMIN]);
+  const { id } = await params;
 
-  const { data: company, error } = await companyService.getWithOwner(id)
-  if (error || !company) notFound()
+  const { data: company, error } = await companyService.getWithOwner(id);
+  if (error || !company) notFound();
 
-  const companyId = company.id
+  const companyId = company.id;
 
   const { data: ownerEmail } = company.owner?.id
     ? await companyService.getOwnerEmail(company.owner.id)
-    : { data: null }
+    : { data: null };
   const { data: permitSignedUrl } = company.permit_url
     ? await companyService.getPermitSignedUrl(company.permit_url)
-    : { data: null }
+    : { data: null };
 
-  const approveAction = updateCompanyStatusAction.bind(null, companyId, CompanyStatuses.APPROVED)
-  const declineAction = updateCompanyStatusAction.bind(null, companyId, CompanyStatuses.DECLINED)
-  const suspendAction = updateCompanyStatusAction.bind(null, companyId, CompanyStatuses.SUSPENDED)
+  const approveAction = updateCompanyStatusAction.bind(null, companyId, CompanyStatuses.APPROVED);
+  const declineAction = updateCompanyStatusAction.bind(null, companyId, CompanyStatuses.DECLINED);
+  const suspendAction = updateCompanyStatusAction.bind(null, companyId, CompanyStatuses.SUSPENDED);
 
-  const { status } = company
+  const { status } = company;
 
   return (
     <div className="flex flex-col gap-6">
@@ -177,12 +168,7 @@ export default async function BusinessDetailPage({
             )}
             {status === CompanyStatuses.APPROVED && (
               <form action={suspendAction}>
-                <Button
-                  type="submit"
-                  variant="outline"
-                  size="sm"
-                  className="gap-2"
-                >
+                <Button type="submit" variant="outline" size="sm" className="gap-2">
                   <PauseCircle className="h-4 w-4" />
                   Suspend business
                 </Button>
@@ -222,120 +208,120 @@ export default async function BusinessDetailPage({
           Business information
         </h2>
         <div className="grid gap-6 lg:grid-cols-2">
-        {/* Company Details */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Building2 className="h-4 w-4" />
-              Company Details
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-4">
-            {company.description && (
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                {company.description}
-              </p>
-            )}
-            {company.description && <Separator />}
-            <div className="flex flex-col gap-3">
-              <DetailRow
-                icon={<MapPin className="h-4 w-4" />}
-                label="Location"
-                value={company.location}
-              />
-              <DetailRow
-                icon={<Mail className="h-4 w-4" />}
-                label="Email"
-                value={company.contact_email}
-              />
-              <DetailRow
-                icon={<Phone className="h-4 w-4" />}
-                label="Phone"
-                value={company.contact_phone}
-              />
-              <DetailRow
-                icon={<Globe className="h-4 w-4" />}
-                label="Website"
-                value={company.website_url}
-              />
-              <DetailRow
-                icon={<Calendar className="h-4 w-4" />}
-                label="Registered"
-                value={new Date(company.created_at).toLocaleDateString("en-US", {
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
-                })}
-              />
-              <DetailRow
-                icon={<FileText className="h-4 w-4" />}
-                label="Business Permit"
-                value={company.permit_url ? "Open permit file" : "Not submitted"}
-                href={permitSignedUrl ?? undefined}
-              />
-            </div>
-          </CardContent>
-        </Card>
+          {/* Company Details */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Building2 className="h-4 w-4" />
+                Company Details
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-4">
+              {company.description && (
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {company.description}
+                </p>
+              )}
+              {company.description && <Separator />}
+              <div className="flex flex-col gap-3">
+                <DetailRow
+                  icon={<MapPin className="h-4 w-4" />}
+                  label="Location"
+                  value={company.location}
+                />
+                <DetailRow
+                  icon={<Mail className="h-4 w-4" />}
+                  label="Email"
+                  value={company.contact_email}
+                />
+                <DetailRow
+                  icon={<Phone className="h-4 w-4" />}
+                  label="Phone"
+                  value={company.contact_phone}
+                />
+                <DetailRow
+                  icon={<Globe className="h-4 w-4" />}
+                  label="Website"
+                  value={company.website_url}
+                />
+                <DetailRow
+                  icon={<Calendar className="h-4 w-4" />}
+                  label="Registered"
+                  value={new Date(company.created_at).toLocaleDateString("en-US", {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                />
+                <DetailRow
+                  icon={<FileText className="h-4 w-4" />}
+                  label="Business Permit"
+                  value={company.permit_url ? "Open permit file" : "Not submitted"}
+                  href={permitSignedUrl ?? undefined}
+                />
+              </div>
+            </CardContent>
+          </Card>
 
-        {/* Owner Profile */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-base">
-              <User className="h-4 w-4" />
-              Owner Profile
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-4">
-            {company.owner ? (
-              <>
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-sm font-semibold uppercase text-muted-foreground">
-                    {company.owner.full_name.slice(0, 2)}
+          {/* Owner Profile */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <User className="h-4 w-4" />
+                Owner Profile
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-4">
+              {company.owner ? (
+                <>
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-sm font-semibold uppercase text-muted-foreground">
+                      {company.owner.full_name.slice(0, 2)}
+                    </div>
+                    <div>
+                      <p className="font-medium">{company.owner.full_name}</p>
+                      <Badge
+                        variant="outline"
+                        className={
+                          company.owner.status === "active"
+                            ? "border-emerald-300 bg-emerald-50 text-emerald-700 text-xs"
+                            : "border-red-300 bg-red-50 text-red-700 text-xs"
+                        }
+                      >
+                        {company.owner.status === "active" ? "Active account" : "Suspended account"}
+                      </Badge>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-medium">{company.owner.full_name}</p>
-                    <Badge
-                      variant="outline"
-                      className={
-                        company.owner.status === "active"
-                          ? "border-emerald-300 bg-emerald-50 text-emerald-700 text-xs"
-                          : "border-red-300 bg-red-50 text-red-700 text-xs"
-                      }
-                    >
-                      {company.owner.status === "active" ? "Active account" : "Suspended account"}
-                    </Badge>
+                  <Separator />
+                  <div className="flex flex-col gap-3">
+                    <DetailRow
+                      icon={<Mail className="h-4 w-4" />}
+                      label="Email"
+                      value={ownerEmail}
+                    />
+                    <DetailRow
+                      icon={<Phone className="h-4 w-4" />}
+                      label="Phone"
+                      value={company.owner.phone}
+                    />
+                    <DetailRow
+                      icon={<Calendar className="h-4 w-4" />}
+                      label="Member Since"
+                      value={new Date(company.owner.created_at).toLocaleDateString("en-US", {
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    />
                   </div>
-                </div>
-                <Separator />
-                <div className="flex flex-col gap-3">
-                  <DetailRow
-                    icon={<Mail className="h-4 w-4" />}
-                    label="Email"
-                    value={ownerEmail}
-                  />
-                  <DetailRow
-                    icon={<Phone className="h-4 w-4" />}
-                    label="Phone"
-                    value={company.owner.phone}
-                  />
-                  <DetailRow
-                    icon={<Calendar className="h-4 w-4" />}
-                    label="Member Since"
-                    value={new Date(company.owner.created_at).toLocaleDateString("en-US", {
-                      month: "long",
-                      day: "numeric",
-                      year: "numeric",
-                    })}
-                  />
-                </div>
-              </>
-            ) : (
-              <p className="text-sm text-muted-foreground">Owner profile unavailable.</p>
-            )}
-          </CardContent>
-        </Card>
+                </>
+              ) : (
+                <p className="text-sm text-muted-foreground">Owner profile unavailable.</p>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </section>
     </div>
-  )
+  );
 }
