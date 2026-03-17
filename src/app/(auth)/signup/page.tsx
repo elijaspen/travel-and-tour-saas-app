@@ -18,13 +18,13 @@ export default async function SignupPage({
   const defaultTab = type ?? ProfileRoles.CUSTOMER;
 
   return (
-    <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[450px]">
+    <div className="mx-auto flex w-full flex-col justify-center space-y-4 sm:space-y-6 w-full sm:w-[400px] md:w-[450px]">
       <div className="flex flex-col space-y-2 text-center lg:text-left">
         {/* Mobile Branding Escape Hatch */}
-        <Link href="/" className="text-2xl font-bold tracking-tight lg:hidden mb-4 hover:opacity-80">
+        <Link href="/" className="text-xl sm:text-2xl font-bold tracking-tight lg:hidden mb-3 sm:mb-4 hover:opacity-80">
           WorkWanders
         </Link>
-        <h2 className="text-3xl font-semibold tracking-tight">Create your account</h2>
+        <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight">Create your account</h2>
         <p className="text-sm text-muted-foreground">
           Join thousands of travelers and agencies on WorkWanders
         </p>
@@ -32,7 +32,7 @@ export default async function SignupPage({
 
       <SignupForm defaultTab={defaultTab} />
       
-      <p className="px-8 text-center text-sm text-muted-foreground mt-4">
+      <p className="px-4 sm:px-8 text-center text-sm text-muted-foreground mt-4">
         Already have an account?{" "}
         <Link 
           href={ROUTE_PATHS.PUBLIC.AUTH.LOGIN} 
