@@ -12,6 +12,14 @@ export interface FormInputProps extends React.InputHTMLAttributes<HTMLInputEleme
 
 export const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
   ({ id, label, error, rightElement, className, ...props }, ref) => {
+    const errorId = error ? `${id}-error` : undefined
+    const ariaDescribedBy = [
+      errorId,
+      props["aria-describedby" as keyof typeof props] as string | undefined,
+    ]
+      .filter(Boolean)
+      .join(" ") || undefined
+
     return (
       <div className="space-y-2">
         <div className="flex items-center justify-between">
@@ -22,12 +30,14 @@ export const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
         <Input 
           id={id} 
           ref={ref} 
+          aria-invalid={!!error}
+          aria-describedby={ariaDescribedBy}
           className={cn(error && "border-destructive focus-visible:ring-destructive", className)} 
           {...props} 
         />
         
         {error && (
-          <p className="text-sm text-destructive">{error}</p>
+          <p id={errorId} className="text-sm text-destructive">{error}</p>
         )}
       </div>
     )

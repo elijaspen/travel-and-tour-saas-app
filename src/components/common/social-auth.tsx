@@ -14,11 +14,11 @@ export function SocialAuth() {
 
       <div className="grid grid-cols-2 gap-3">
         {/* TODO: Implement Supabase OAuth for Google and Apple providers */}
-        <Button type="button" variant="outline" className="gap-2 text-sm hover:bg-zinc-100">
+        <Button type="button" variant="outline" className="gap-2 text-sm">
           <Globe className="h-4 w-4" />
           Google
         </Button>
-        <Button type="button" variant="outline" className="gap-2 text-sm hover:bg-zinc-100">
+        <Button type="button" variant="outline" className="gap-2 text-sm">
           <Apple className="h-4 w-4" />
           Apple
         </Button>

@@ -19,7 +19,7 @@ export default async function SignupPage({
     type === ProfileRoles.BUSINESS_OWNER ? ProfileRoles.BUSINESS_OWNER : ProfileRoles.CUSTOMER;
 
   return (
-    <div className="mx-auto flex w-full flex-col justify-center space-y-4 sm:space-y-6 w-full sm:w-[400px] md:w-[450px]">
+    <div className="mx-auto flex w-full flex-col justify-center space-y-4 sm:space-y-6 sm:w-[400px] md:w-[450px]">
       <div className="flex flex-col space-y-2 text-center lg:text-left">
         {/* Mobile Branding Escape Hatch */}
         <Link href="/" className="text-xl sm:text-2xl font-bold tracking-tight lg:hidden mb-3 sm:mb-4 hover:opacity-80">
