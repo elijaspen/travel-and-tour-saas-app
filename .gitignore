@@ -44,3 +44,10 @@ yarn-error.log*
 next-env.d.ts
 
 dist/
+
+# OpenNext
+.open-next
+public/_headers
+public/_redirects
+
+.dev.vars
