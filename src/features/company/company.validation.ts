@@ -10,6 +10,7 @@ export const companyOnboardingSchema = z.object({
     .optional()
     .or(z.literal("")),
   location: z.string().min(2, "Location must be at least 2 characters").optional().or(z.literal("")),
+  permit_url: z.string().min(1, "Permit upload is required"),
 })
 
 export type CompanyOnboardingPayload = z.infer<typeof companyOnboardingSchema>

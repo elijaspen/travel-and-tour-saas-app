@@ -95,6 +95,7 @@ export type Database = {
           location: string | null
           name: string
           owner_profile_id: string
+          permit_url: string | null
           status: Database["public"]["Enums"]["company_status"]
           updated_at: string
           website_url: string | null
@@ -108,6 +109,7 @@ export type Database = {
           location?: string | null
           name: string
           owner_profile_id: string
+          permit_url?: string | null
           status?: Database["public"]["Enums"]["company_status"]
           updated_at?: string
           website_url?: string | null
@@ -121,6 +123,7 @@ export type Database = {
           location?: string | null
           name?: string
           owner_profile_id?: string
+          permit_url?: string | null
           status?: Database["public"]["Enums"]["company_status"]
           updated_at?: string
           website_url?: string | null
