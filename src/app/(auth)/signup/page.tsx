@@ -19,29 +19,27 @@ export default async function SignupPage({
     type === ProfileRoles.BUSINESS_OWNER ? ProfileRoles.BUSINESS_OWNER : ProfileRoles.CUSTOMER;
 
   return (
-    <div className="mx-auto flex w-full flex-col justify-center space-y-4 sm:space-y-6 sm:w-[400px] md:w-[450px]">
-      <div className="flex flex-col space-y-2 text-center lg:text-left">
-        {/* Mobile Branding Escape Hatch */}
-        <Link href="/" className="text-xl sm:text-2xl font-bold tracking-tight lg:hidden mb-3 sm:mb-4 hover:opacity-80">
-          WorkWanders
-        </Link>
-        <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight">Create your account</h2>
-        <p className="text-sm text-muted-foreground">
-          Join thousands of travelers and agencies on WorkWanders
-        </p>
-      </div>
-
-      <SignupForm defaultTab={defaultTab} />
-      
-      <p className="px-4 sm:px-8 text-center text-sm text-muted-foreground mt-4">
-        Already have an account?{" "}
-        <Link 
-          href={ROUTE_PATHS.PUBLIC.AUTH.LOGIN} 
-          className="font-semibold text-zinc-900 hover:underline underline-offset-4"
-        >
-          Log in
-        </Link>
-      </p>
+    <div className="flex min-h-screen items-center justify-center px-4">
+      <Card className="w-full max-w-xl border-0 shadow-xl">
+        <CardHeader className="pb-2 text-center">
+          <CardTitle className="text-2xl font-bold">Create your account</CardTitle>
+          <CardDescription>
+            Join thousands of travelers and agencies on {siteConfig.name}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="pt-4">
+          <SignupForm defaultTab={defaultTab} />
+          <p className="mt-6 text-center text-sm text-muted-foreground">
+            Already have an account?{" "}
+            <Link
+              href={ROUTE_PATHS.PUBLIC.AUTH.LOGIN}
+              className="font-semibold text-brand hover:underline"
+            >
+              Log in
+            </Link>
+          </p>
+        </CardContent>
+      </Card>
     </div>
   );
 }
