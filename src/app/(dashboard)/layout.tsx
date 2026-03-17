@@ -1,4 +1,3 @@
-import { getNavConfig } from "@/config/navigation";
 import { requireRole } from "@/features/profile/profile.guard";
 import { ProfileRoles } from "@/features/profile/profile.types";
 import { DashboardSidebar } from "@/components/shared/dashboard-sidebar";
@@ -17,8 +16,6 @@ export default async function DashboardLayout({
     ProfileRoles.ADMIN,
   ]);
 
-  const navConfig = getNavConfig(profile.role);
-
   let requiresOnboarding = false;
   if (profile.role === ProfileRoles.BUSINESS_OWNER) {
     const { data: company } = await companyService.getCompanyByOwner(profile.id);
@@ -27,7 +24,7 @@ export default async function DashboardLayout({
 
   return (
     <div className="flex min-h-screen">
-      <DashboardSidebar profile={profile} navConfig={navConfig} />
+      <DashboardSidebar profile={profile} />
       <main className="ml-56 flex-1 p-8">
         {children}
       </main>
