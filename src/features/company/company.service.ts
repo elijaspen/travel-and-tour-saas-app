@@ -104,7 +104,7 @@ export const companyService = {
       return { ok: false, error: "Permit must be a PDF, PNG, or JPG file." }
     }
     if (file.size > COMPANY_PERMIT_MAX_SIZE_BYTES) {
-      return { ok: false, error: "Permit file must be 10MB or smaller." }
+      return { ok: false, error: "Permit file must be 2MB or smaller." }
     }
     return { ok: true }
   },
