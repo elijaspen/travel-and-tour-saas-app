@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import {
   BarChart2,
+  Building2,
   Calendar,
   LayoutDashboard,
   Map,
@@ -88,6 +89,11 @@ const NAV_CONFIG: Record<ProfileRole, RoleNavConfig> = {
         label: "Admin",
         href: ROUTE_PATHS.AUTHED.ADMIN.ROOT,
         icon: Shield,
+      },
+      {
+        label: "Businesses",
+        href: ROUTE_PATHS.AUTHED.ADMIN.BUSINESSES,
+        icon: Building2,
       },
       {
         label: "Profile",
