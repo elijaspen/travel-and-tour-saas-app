@@ -287,7 +287,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_company_status_counts: {
+        Args: never
+        Returns: {
+          count: number
+          status: string
+        }[]
+      }
+      is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
       booking_status:

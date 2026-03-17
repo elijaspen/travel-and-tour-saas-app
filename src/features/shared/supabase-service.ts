@@ -12,8 +12,9 @@ export type ServiceResult<T = unknown> = {
   data: T | null
   error: unknown
 }
-type OffsetResult<Row> = { data: Row[]; total: number | null; error: unknown }
+export type OffsetResult<Row> = { data: Row[]; total: number | null; error: unknown }
 type CursorResult<Row> = { data: Row[]; nextCursor?: string; error: unknown }
+type SelectParams = { select?: string }
 
 export function supabaseService<T extends TableName>(table: T) {
   type Row = TableRow<T>
@@ -35,9 +36,13 @@ export function supabaseService<T extends TableName>(table: T) {
       return { data: (data ?? null) as Row | null, error }
     },
 
-    async getById(id: Row["id"]): Promise<ServiceResult<Row>> {
+    async getById(
+      id: Row["id"],
+      params?: SelectParams,
+    ): Promise<ServiceResult<Row>> {
       const q = await from()
-      const { data, error } = await q.select("*").eq("id", id as string).single()
+      const select = params?.select ?? "*"
+      const { data, error } = await q.select(select).eq("id", id as string).single()
       return { data: (data ?? null) as Row | null, error }
     },
 
@@ -64,6 +69,8 @@ export function supabaseService<T extends TableName>(table: T) {
       pageSize?: number
       orderBy?: keyof Row
       ascending?: boolean
+      select?: string
+      eq?: Partial<Record<keyof Row, unknown>>
     }): Promise<OffsetResult<Row>> {
       const q = await from()
       const page = params?.page ?? 1
@@ -72,9 +79,13 @@ export function supabaseService<T extends TableName>(table: T) {
       const rangeTo = rangeFrom + pageSize - 1
       const orderBy = (params?.orderBy as string) ?? "created_at"
       const ascending = params?.ascending ?? false
+      const select = params?.select ?? "*"
 
-      const { data, error, count } = await q
-        .select("*", { count: "exact" })
+      let query = q.select(select, { count: "exact" })
+      for (const [col, val] of Object.entries(params?.eq ?? {})) {
+        if (val !== undefined) query = query.eq(col, val)
+      }
+      const { data, error, count } = await query
         .order(orderBy, { ascending })
         .range(rangeFrom, rangeTo)
 
@@ -86,13 +97,20 @@ export function supabaseService<T extends TableName>(table: T) {
       cursor?: string
       orderBy?: keyof Row
       ascending?: boolean
+      select?: string
+      eq?: Partial<Record<keyof Row, unknown>>
     }): Promise<CursorResult<Row>> {
       const q = await from()
       const limit = params?.limit ?? 20
       const orderBy = (params?.orderBy as string) ?? "id"
       const ascending = params?.ascending ?? false
+      const select = params?.select ?? "*"
 
-      let query = q.select("*").order(orderBy, { ascending }).limit(limit + 1)
+      let query = q.select(select)
+      for (const [col, val] of Object.entries(params?.eq ?? {})) {
+        if (val !== undefined) query = query.eq(col, val)
+      }
+      query = query.order(orderBy, { ascending }).limit(limit + 1)
 
       if (params?.cursor) {
         query = ascending

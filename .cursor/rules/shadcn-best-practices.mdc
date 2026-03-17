@@ -1,0 +1,95 @@
+---
+alwaysApply: true
+---
+shadcn/ui is **not a black‑box library** – once installed, the code lives in this repo and is expected to be edited. These rules keep the UI layer consistent and maintainable across all WorkWanders apps.
+
+## 1. Own the components early
+
+- **Treat `@/components/ui` as source, not vendor code.**
+  - It is safe – and expected – to edit files in `@/components/ui` to match our design system.
+- **Modify instead of wrapping (until you truly need a new API).**
+  - Prefer updating the base `Button`, `Input`, `Dialog`, etc. directly rather than creating shallow “wrapper” components.
+  - Create new components only when the behavior or API meaningfully differs from the base one.
+- **Branding goes into the base components.**
+  - Change border radius, spacing, typography, and transitions directly in the shadcn components so the entire app stays in sync.
+
+## 2. Use `cn()` for conditional classes
+
+- **Always use the shared `cn` helper (from `@/lib/utils` or equivalent) when composing Tailwind classes.**
+  - It merges classes safely and avoids conflicts between conditionally‑applied utilities.
+- **Pattern to follow (JSX):**
+
+```tsx
+<div
+  className={cn(
+    "base-styles",
+    isActive && "active-styles",
+    className
+  )}
+/>
+```
+
+- **Do not manually concatenate Tailwind classes with string interpolation** when conditions are involved; prefer `cn` for clarity and consistency.
+
+## 3. Use theme tokens, not raw colors
+
+- **Use semantic Tailwind classes that map to CSS variables.**
+  - Prefer `bg-primary`, `text-secondary`, `border-input`, `bg-background`, `text-foreground`, etc.
+- **Avoid hard‑coded hex values or RGB in components.**
+  - If a new color is needed, introduce it in the theme (CSS variables) first, then reference it via Tailwind.
+- **Dark mode comes “for free” when you stick to tokens.**
+  - Do not special‑case dark mode colors in components unless the design explicitly requires it.
+
+## 4. Organize by domain, not by primitive
+
+- **Keep raw primitives in `@/components/ui`.**
+  - These mirror shadcn’s base components and should stay generic and reusable.
+- **Create app‑specific building blocks in `@/components/shared`.**
+  - Examples: `UserAvatar`, `AppSidebar`, `PageHeader`, `EmptyState`, etc.
+  - These can compose multiple `ui` components (e.g., `Avatar` + `Badge`).
+- **Place feature‑specific components under `@/components/features/<feature>`.**
+  - Examples: `auth/LoginForm`, `agency/AgencyCard`, `bookings/BookingFilters`.
+  - These are allowed to know about business logic, routing, and data models for that feature.
+
+## 5. Forms: separate schema, state, and UI
+
+- **Keep validation schemas (zod) out of the UI files where possible.**
+  - Define schemas close to the domain (`src/features/.../schema.ts`) and import them into form components.
+- **Use the shadcn + `react-hook-form` patterns.**
+  - Prefer the provided `Form`, `FormField`, `FormItem`, `FormLabel`, `FormControl`, and `FormMessage` building blocks.
+- **Avoid duplicating form field structures.**
+  - When a group of fields is reused (e.g., “address” fields), extract a sub‑form component rather than copy‑pasting.
+
+## 6. Prefer composition over configuration
+
+- **Use the sub‑component pattern instead of giant “god” components with many props.**
+
+```tsx
+<Dialog>
+  <DialogTrigger>Open</DialogTrigger>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>Are you sure?</DialogTitle>
+      {/* Optional: <DialogDescription>…</DialogDescription> */}
+    </DialogHeader>
+    {/* Dialog body content here */}
+  </DialogContent>
+</Dialog>
+```
+
+- **Compose from small pieces instead of adding more booleans.**
+  - If a component has many flags like `compact`, `dense`, `withIcon`, consider extracting a composed variant instead.
+
+## 7. Accessibility and behavior first
+
+- **Do not remove accessibility props or behaviors provided by Radix/shadcn.**
+  - Keep focus rings, keyboard navigation, ARIA attributes, and roles unless there is a strong reason to change them.
+- **When changing structure, verify keyboard and screen‑reader behavior.**
+  - Especially for dialogs, menus, dropdowns, and other interactive components.
+
+## 8. DRY, but not over‑abstract
+
+- **If a pattern appears 3+ times, consider extracting it.**
+  - For example, repeated “card with title, description, CTA button” layouts or repeated form field groups.
+- **Keep abstractions small and focused.**
+  - New shared components should describe intent (`PricingPlanCard`, `SectionHeader`), not implementation details.

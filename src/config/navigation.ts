@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import {
   BarChart2,
+  Building2,
   Calendar,
   LayoutDashboard,
   Map,
@@ -22,11 +23,19 @@ export type NavItem = {
   href: string;
   icon: LucideIcon;
   comingSoon?: boolean;
+  /** When true, only highlight on exact path match; prevents parent from highlighting when on child route */
+  exact?: boolean;
+};
+
+export type NavGroup = {
+  label: string;
+  icon: LucideIcon;
+  children: NavItem[];
 };
 
 export type RoleNavConfig = {
   home: string;
-  navItems: NavItem[];
+  navItems: (NavItem | NavGroup)[];
   bottomNavItems: NavItem[];
 };
 
@@ -86,8 +95,20 @@ const NAV_CONFIG: Record<ProfileRole, RoleNavConfig> = {
     navItems: [
       {
         label: "Admin",
-        href: ROUTE_PATHS.AUTHED.ADMIN.ROOT,
         icon: Shield,
+        children: [
+          {
+            label: "Overview",
+            href: ROUTE_PATHS.AUTHED.ADMIN.ROOT,
+            icon: LayoutDashboard,
+            exact: true,
+          },
+          {
+            label: "Businesses",
+            href: ROUTE_PATHS.AUTHED.ADMIN.BUSINESSES,
+            icon: Building2,
+          },
+        ],
       },
       {
         label: "Profile",
@@ -101,4 +122,8 @@ const NAV_CONFIG: Record<ProfileRole, RoleNavConfig> = {
 
 export function getNavConfig(role: ProfileRole): RoleNavConfig {
   return NAV_CONFIG[role];
+}
+
+export function isNavGroup(item: NavItem | NavGroup): item is NavGroup {
+  return "children" in item && Array.isArray(item.children);
 }
