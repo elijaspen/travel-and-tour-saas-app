@@ -10,6 +10,7 @@ import {
   Globe,
   Calendar,
   User,
+  FileText,
   CheckCircle,
   XCircle,
   PauseCircle,
@@ -32,9 +33,14 @@ export const metadata: Metadata = {
   title: "Business Details",
 }
 
-type DetailRowProps = { icon: React.ReactNode; label: string; value: string | null | undefined }
+type DetailRowProps = {
+  icon: React.ReactNode
+  label: string
+  value: string | null | undefined
+  href?: string
+}
 
-function DetailRow({ icon, label, value }: DetailRowProps) {
+function DetailRow({ icon, label, value, href }: DetailRowProps) {
   const displayValue = value ?? "—"
   return (
     <div className="flex items-start gap-3">
@@ -47,7 +53,18 @@ function DetailRow({ icon, label, value }: DetailRowProps) {
             !value && "text-muted-foreground"
           )}
         >
-          {displayValue}
+          {href && value ? (
+            <a
+              href={href}
+              target="_blank"
+              rel="noreferrer"
+              className="text-primary underline underline-offset-4 hover:text-primary/80"
+            >
+              {displayValue}
+            </a>
+          ) : (
+            displayValue
+          )}
         </span>
       </div>
     </div>
@@ -69,6 +86,9 @@ export default async function BusinessDetailPage({
 
   const { data: ownerEmail } = company.owner?.id
     ? await companyService.getOwnerEmail(company.owner.id)
+    : { data: null }
+  const { data: permitSignedUrl } = company.permit_url
+    ? await companyService.getPermitSignedUrl(company.permit_url)
     : { data: null }
 
   const approveAction = updateCompanyStatusAction.bind(null, companyId, CompanyStatuses.APPROVED)
@@ -245,6 +265,12 @@ export default async function BusinessDetailPage({
                   day: "numeric",
                   year: "numeric",
                 })}
+              />
+              <DetailRow
+                icon={<FileText className="h-4 w-4" />}
+                label="Business Permit"
+                value={company.permit_url ? "Open permit file" : "Not submitted"}
+                href={permitSignedUrl ?? undefined}
               />
             </div>
           </CardContent>

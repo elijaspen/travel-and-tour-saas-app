@@ -12,8 +12,8 @@ import {
   MapPin,
   Loader2,
   CheckCircle2,
+  FileText,
 } from "lucide-react"
-
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
@@ -32,6 +32,7 @@ import {
   companyOnboardingSchema,
   type CompanyOnboardingPayload,
 } from "@/features/company/company.validation"
+import { COMPANY_PERMIT_ALLOWED_MIME_TYPES } from "@/features/company/company.constants"
 import type { ActionResult } from "@/features/shared/types"
 import type { Company } from "@/features/company/company.types"
 
@@ -40,6 +41,8 @@ export function BusinessOnboardingModal() {
   const [isPending, startTransition] = useTransition()
   const [serverResult, setServerResult] = useState<ActionResult<Company> | null>(null)
   const [done, setDone] = useState(false)
+  const [permitFile, setPermitFile] = useState<File | null>(null)
+  const [permitError, setPermitError] = useState<string | null>(null)
 
   const form = useForm<CompanyOnboardingPayload>({
     resolver: zodResolver(companyOnboardingSchema),
@@ -55,12 +58,31 @@ export function BusinessOnboardingModal() {
   const { register, formState: { errors } } = form
 
   const onSubmit = form.handleSubmit((values) => {
+    if (!permitFile) {
+      setPermitError("Business permit is required.")
+      return
+    }
+
     startTransition(async () => {
-      const result = await createCompanyAction(values)
+      setPermitError(null)
+
+      const formData = new FormData()
+      formData.append("name", values.name)
+      formData.append("description", values.description ?? "")
+      formData.append("contact_email", values.contact_email ?? "")
+      formData.append("contact_phone", values.contact_phone ?? "")
+      formData.append("location", values.location ?? "")
+      formData.append("permit_file", permitFile)
+
+      const result = await createCompanyAction(formData)
       setServerResult(result)
 
       if (result.fieldErrors) {
         Object.entries(result.fieldErrors).forEach(([field, messages]) => {
+          if (field === "permit_url") {
+            setPermitError(messages[0] || "Permit upload is required.")
+            return
+          }
           form.setError(field as keyof CompanyOnboardingPayload, { message: messages[0] })
         })
         return
@@ -209,6 +231,30 @@ export function BusinessOnboardingModal() {
                     <p className="text-xs text-destructive">{errors.location.message}</p>
                   )}
                 </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="permit_file">
+                  Business Permit <span className="text-destructive">*</span>
+                </Label>
+                <div className="relative">
+                  <FileText className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    id="permit_file"
+                    type="file"
+                    className="pl-9"
+                    accept={COMPANY_PERMIT_ALLOWED_MIME_TYPES.join(",")}
+                    onChange={(event) => {
+                      const file = event.target.files?.[0] ?? null
+                      setPermitFile(file)
+                      setPermitError(null)
+                    }}
+                  />
+                </div>
+                {permitError && <p className="text-xs text-destructive">{permitError}</p>}
+                <p className="text-xs text-muted-foreground">
+                  Upload PDF, PNG, or JPG up to 10MB.
+                </p>
               </div>
             </div>
 
