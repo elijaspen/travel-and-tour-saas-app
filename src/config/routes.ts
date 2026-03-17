@@ -42,6 +42,8 @@ export const ROUTE_PATHS = {
 
     ADMIN: {
       ROOT: "/admin",
+      BUSINESSES: "/admin/businesses",
+      BUSINESS_DETAIL: (id: string) => `/admin/businesses/${id}`,
     },
   },
 } as const;

@@ -28,3 +28,14 @@ CREATE TRIGGER trigger_companies_set_updated_at
   FOR EACH ROW
   EXECUTE FUNCTION public.trigger_set_updated_at();
 
+CREATE OR REPLACE FUNCTION public.get_company_status_counts()
+RETURNS TABLE(status text, count bigint)
+LANGUAGE sql
+STABLE
+SECURITY INVOKER
+AS $$
+  SELECT c.status::text, count(*)
+  FROM public.companies c
+  GROUP BY c.status;
+$$;
+

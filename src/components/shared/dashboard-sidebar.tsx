@@ -1,18 +1,22 @@
+"use client";
+
 import { LogOut } from "lucide-react";
 
 import { AppLogo } from "@/components/shared/app-logo";
 import { Button } from "@/components/ui/button";
+import { SidebarNavGroup } from "@/components/shared/sidebar-nav-group";
 import { SidebarNavLink } from "@/components/shared/sidebar-nav-link";
+import { getNavConfig, isNavGroup } from "@/config/navigation";
 import { logoutAction } from "@/features/profile/profile.actions";
 import { getRoleLabel, getUserInitials } from "@/features/profile/profile.utils";
-import type { RoleNavConfig } from "@/config/navigation";
 import type { Profile } from "@/features/profile/profile.types";
 
 type DashboardSidebarProps = {
   profile: Profile;
-  navConfig: RoleNavConfig;
 };
-export function DashboardSidebar({ profile, navConfig }: DashboardSidebarProps) {
+
+export function DashboardSidebar({ profile }: DashboardSidebarProps) {
+  const navConfig = getNavConfig(profile.role);
   const initials = getUserInitials(profile.full_name);
 
   return (
@@ -39,12 +43,17 @@ export function DashboardSidebar({ profile, navConfig }: DashboardSidebarProps) 
         <ul className="flex flex-col gap-0.5">
           {navConfig.navItems.map((item) => (
             <li key={item.label}>
-              <SidebarNavLink
-                href={item.href}
-                label={item.label}
-                icon={<item.icon className="h-4 w-4 shrink-0" />}
-                comingSoon={item.comingSoon}
-              />
+              {isNavGroup(item) ? (
+                <SidebarNavGroup group={item} />
+              ) : (
+                <SidebarNavLink
+                  href={item.href}
+                  label={item.label}
+                  icon={<item.icon className="h-4 w-4 shrink-0" />}
+                  comingSoon={item.comingSoon}
+                  exact={item.exact}
+                />
+              )}
             </li>
           ))}
         </ul>
@@ -58,6 +67,7 @@ export function DashboardSidebar({ profile, navConfig }: DashboardSidebarProps) 
             label={item.label}
             icon={<item.icon className="h-4 w-4 shrink-0" />}
             comingSoon={item.comingSoon}
+            exact={item.exact}
           />
         ))}
         <form action={logoutAction} className="mt-1">
