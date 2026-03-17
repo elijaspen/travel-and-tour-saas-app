@@ -5,9 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, MailCheck } from "lucide-react";
 
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { SIGNUP_CTAS } from "@/config/labels";
 import type { Profile } from "@/features/profile/profile.types";
 import type { ActionResult } from "@/features/shared/types";
@@ -16,6 +14,7 @@ import {
   type AgencySignupFormValues,
 } from "@/features/profile/profile.validation";
 import { signUpAgencyAction } from "@/features/profile/profile.actions";
+import { FormInput } from "@/components/common/form-input";
 
 export function AgencySignupForm() {
   const [serverResult, setServerResult] = useState<ActionResult<Profile>>({ success: false });
@@ -33,10 +32,7 @@ export function AgencySignupForm() {
     },
   });
 
-  const {
-    register,
-    formState: { errors },
-  } = form;
+  const { register, formState: { errors } } = form;
 
   const onSubmit = form.handleSubmit((values) => {
     startTransition(async () => {
@@ -69,86 +65,62 @@ export function AgencySignupForm() {
       )}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div className="space-y-2">
-          <Label htmlFor="agencyName">Agency Name</Label>
-          <Input
-            id="agencyName"
-            placeholder="Island Escapes Co."
-            {...register("agencyName")}
-          />
-          <p className="text-sm text-destructive">
-            {errors.agencyName?.message}
-          </p>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="contactPerson">Contact Person</Label>
-          <Input
-            id="contactPerson"
-            placeholder="Maria Santos"
-            {...register("contactPerson")}
-          />
-          <p className="text-sm text-destructive">
-            {errors.contactPerson?.message}
-          </p>
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="email">Business Email</Label>
-        <Input
-          id="email"
-          type="email"
-          placeholder="hello@youragency.com"
-          {...register("email")}
+        <FormInput
+          id="agencyName"
+          label="Agency Name"
+          placeholder="Island Escapes Co."
+          error={errors.agencyName?.message}
+          {...register("agencyName")}
         />
-        <p className="text-sm text-destructive">
-          {errors.email?.message}
-        </p>
+
+        <FormInput
+          id="contactPerson"
+          label="Contact Person"
+          placeholder="Maria Santos"
+          error={errors.contactPerson?.message}
+          {...register("contactPerson")}
+        />
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="phone">Phone Number</Label>
-        <Input
-          id="phone"
-          type="tel"
-          placeholder="+63 917 000 0000"
-          {...register("phone")}
-        />
-        <p className="text-sm text-destructive">
-          {errors.phone?.message}
-        </p>
-      </div>
+      <FormInput
+        id="email"
+        label="Business Email"
+        type="email"
+        placeholder="hello@youragency.com"
+        error={errors.email?.message}
+        {...register("email")}
+      />
 
-      <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
-        <Input
-          id="password"
-          type="password"
-          placeholder="Min. 6 characters"
-          {...register("password")}
-        />
-        <p className="text-sm text-destructive">
-          {errors.password?.message}
-        </p>
-      </div>
+      <FormInput
+        id="phone"
+        label="Phone Number"
+        type="tel"
+        placeholder="+63 917 000 0000"
+        error={errors.phone?.message}
+        {...register("phone")}
+      />
 
-      <div className="space-y-2">
-        <Label htmlFor="confirmPassword">Confirm Password</Label>
-        <Input
-          id="confirmPassword"
-          type="password"
-          placeholder="Re-enter your password"
-          {...register("confirmPassword")}
-        />
-        <p className="text-sm text-destructive">
-          {errors.confirmPassword?.message}
-        </p>
-      </div>
+      <FormInput
+        id="password"
+        label="Password"
+        type="password"
+        placeholder="Min. 6 characters"
+        error={errors.password?.message}
+        {...register("password")}
+      />
+
+      <FormInput
+        id="confirmPassword"
+        label="Confirm Password"
+        type="password"
+        placeholder="Re-enter your password"
+        error={errors.confirmPassword?.message}
+        {...register("confirmPassword")}
+      />
 
       <Button
         type="submit"
-        className="w-full bg-brand text-brand-foreground hover:bg-brand/90"
+        className="w-full bg-zinc-900 text-white hover:bg-zinc-800"
         disabled={isPending || serverResult.success}
       >
         {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

@@ -1,19 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { ROUTE_PATHS } from "@/config/routes";
 import { ProfileRoles } from "@/features/profile/profile.types";
 import { SignupForm } from "./components/signup-form";
 
 export const metadata: Metadata = {
-  title: "Sign Up",
-  description: "Create a WorkWanders account — for travelers and travel agencies.",
+  title: "Sign Up | WorkWanders",
+  description: "Create a WorkWanders account.",
 };
 
 export default async function SignupPage({
@@ -25,24 +18,29 @@ export default async function SignupPage({
   const defaultTab = type ?? ProfileRoles.CUSTOMER;
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
-      <Card className="w-full max-w-xl border-0 shadow-xl">
-        <CardHeader className="pb-2 text-center">
-          <CardTitle className="text-2xl font-bold">Create your account</CardTitle>
-          <CardDescription className="text-slate-500">
-            Join thousands of travelers and agencies on WorkWanders
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="pt-4">
-          <SignupForm defaultTab={defaultTab} />
-          <p className="mt-6 text-center text-sm text-slate-500">
-            Already have an account?{" "}
-            <Link href={ROUTE_PATHS.PUBLIC.AUTH.LOGIN} className="font-semibold text-brand hover:underline">
-              Log in
-            </Link>
-          </p>
-        </CardContent>
-      </Card>
+    <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[450px]">
+      <div className="flex flex-col space-y-2 text-center lg:text-left">
+        {/* Mobile Branding Escape Hatch */}
+        <Link href="/" className="text-2xl font-bold tracking-tight lg:hidden mb-4 hover:opacity-80">
+          WorkWanders
+        </Link>
+        <h2 className="text-3xl font-semibold tracking-tight">Create your account</h2>
+        <p className="text-sm text-muted-foreground">
+          Join thousands of travelers and agencies on WorkWanders
+        </p>
+      </div>
+
+      <SignupForm defaultTab={defaultTab} />
+      
+      <p className="px-8 text-center text-sm text-muted-foreground mt-4">
+        Already have an account?{" "}
+        <Link 
+          href={ROUTE_PATHS.PUBLIC.AUTH.LOGIN} 
+          className="font-semibold text-zinc-900 hover:underline underline-offset-4"
+        >
+          Log in
+        </Link>
+      </p>
     </div>
   );
 }

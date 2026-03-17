@@ -1,40 +1,38 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { ROUTE_PATHS } from "@/config/routes";
 import { LoginForm } from "./components/login-form";
 
 export const metadata: Metadata = {
-  title: "Log In",
+  title: "Log In | WorkWanders",
   description: "Log in to your WorkWanders account.",
 };
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
-      <Card className="w-full max-w-md border-0 shadow-xl">
-        <CardHeader className="pb-2 text-center">
-          <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
-          <CardDescription className="text-slate-500">
-            Log in to continue your adventure
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="pt-4">
-          <LoginForm />
-          <p className="mt-6 text-center text-sm text-slate-500">
-            Don&apos;t have an account?{" "}
-            <Link href={ROUTE_PATHS.PUBLIC.AUTH.SIGNUP} className="font-semibold text-brand hover:underline">
-              Sign up
-            </Link>
-          </p>
-        </CardContent>
-      </Card>
+    <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[450px]">
+      <div className="flex flex-col space-y-2 text-center lg:text-left">
+        {/* Branding Escape Hatch */}
+        <Link href="/" className="text-2xl font-bold tracking-tight lg:hidden mb-4 hover:opacity-80">
+          WorkWanders
+        </Link>
+        <h2 className="text-3xl font-semibold tracking-tight">Welcome back</h2>
+        <p className="text-sm text-muted-foreground">
+          Log in to continue your adventure
+        </p>
+      </div>
+
+      <LoginForm />
+      
+      <p className="px-8 text-center text-sm text-muted-foreground mt-4">
+        Don&apos;t have an account?{" "}
+        <Link 
+          href={ROUTE_PATHS.PUBLIC.AUTH.SIGNUP} 
+          className="font-semibold text-zinc-900 hover:underline underline-offset-4"
+        >
+          Sign up
+        </Link>
+      </p>
     </div>
   );
 }

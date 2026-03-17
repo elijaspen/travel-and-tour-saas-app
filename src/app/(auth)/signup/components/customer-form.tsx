@@ -3,12 +3,9 @@
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, MailCheck, Globe, Apple } from "lucide-react";
+import { Loader2, MailCheck } from "lucide-react";
 
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Label } from "@/components/ui/label";
 import { SIGNUP_CTAS } from "@/config/labels";
 import type { Profile } from "@/features/profile/profile.types";
 import type { ActionResult } from "@/features/shared/types";
@@ -17,6 +14,8 @@ import {
   type CustomerSignupFormValues,
 } from "@/features/profile/profile.validation";
 import { signUpCustomerAction } from "@/features/profile/profile.actions";
+import { SocialAuth } from "@/components/common/social-auth";
+import { FormInput } from "@/components/common/form-input";
 
 export function CustomerSignupForm() {
   const [serverResult, setServerResult] = useState<ActionResult<Profile>>({ success: false });
@@ -32,10 +31,7 @@ export function CustomerSignupForm() {
     },
   });
 
-  const {
-    register,
-    formState: { errors },
-  } = form;
+  const { register, formState: { errors } } = form;
 
   const onSubmit = form.handleSubmit((values) => {
     startTransition(async () => {
@@ -67,83 +63,51 @@ export function CustomerSignupForm() {
         </div>
       )}
 
-      <div className="space-y-2">
-        <Label htmlFor="fullName">Full Name</Label>
-        <Input
-          id="fullName"
-          placeholder="Juan dela Cruz"
-          {...register("fullName")}
-        />
-        <p className="text-sm text-destructive">
-          {errors.fullName?.message}
-        </p>
-      </div>
+      <FormInput
+        id="fullName"
+        label="Full Name"
+        placeholder="Juan dela Cruz"
+        error={errors.fullName?.message}
+        {...register("fullName")}
+      />
 
-      <div className="space-y-2">
-        <Label htmlFor="email">Email Address</Label>
-        <Input
-          id="email"
-          type="email"
-          placeholder="juan@example.com"
-          {...register("email")}
-        />
-        <p className="text-sm text-destructive">
-          {errors.email?.message}
-        </p>
-      </div>
+      <FormInput
+        id="email"
+        label="Email Address"
+        type="email"
+        placeholder="juan@example.com"
+        error={errors.email?.message}
+        {...register("email")}
+      />
 
-      <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
-        <Input
-          id="password"
-          type="password"
-          placeholder="Min. 6 characters"
-          {...register("password")}
-        />
-        <p className="text-sm text-destructive">
-          {errors.password?.message}
-        </p>
-      </div>
+      <FormInput
+        id="password"
+        label="Password"
+        type="password"
+        placeholder="Min. 6 characters"
+        error={errors.password?.message}
+        {...register("password")}
+      />
 
-      <div className="space-y-2">
-        <Label htmlFor="confirmPassword">Confirm Password</Label>
-        <Input
-          id="confirmPassword"
-          type="password"
-          placeholder="Re-enter your password"
-          {...register("confirmPassword")}
-        />
-        <p className="text-sm text-destructive">
-          {errors.confirmPassword?.message}
-        </p>
-      </div>
+      <FormInput
+        id="confirmPassword"
+        label="Confirm Password"
+        type="password"
+        placeholder="Re-enter your password"
+        error={errors.confirmPassword?.message}
+        {...register("confirmPassword")}
+      />
 
       <Button
         type="submit"
-        className="w-full bg-brand text-brand-foreground hover:bg-brand/90"
+        className="w-full bg-zinc-900 text-white hover:bg-zinc-800"
         disabled={isPending || serverResult.success}
       >
         {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         {SIGNUP_CTAS.customer}
       </Button>
 
-      <div className="relative my-2">
-        <Separator />
-        <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-xs text-muted-foreground">
-          or continue with
-        </span>
-      </div>
-
-      <div className="grid grid-cols-2 gap-3">
-        <Button type="button" variant="outline" className="gap-2 text-sm">
-          <Globe className="h-4 w-4" />
-          Google
-        </Button>
-        <Button type="button" variant="outline" className="gap-2 text-sm">
-          <Apple className="h-4 w-4" />
-          Apple
-        </Button>
-      </div>
+      <SocialAuth />
     </form>
   );
 }
