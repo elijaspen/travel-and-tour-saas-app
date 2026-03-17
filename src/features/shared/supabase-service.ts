@@ -12,7 +12,7 @@ export type ServiceResult<T = unknown> = {
   data: T | null
   error: unknown
 }
-type OffsetResult<Row> = { data: Row[]; total: number | null; error: unknown }
+export type OffsetResult<Row> = { data: Row[]; total: number | null; error: unknown }
 type CursorResult<Row> = { data: Row[]; nextCursor?: string; error: unknown }
 type SelectParams = { select?: string }
 
@@ -70,6 +70,7 @@ export function supabaseService<T extends TableName>(table: T) {
       orderBy?: keyof Row
       ascending?: boolean
       select?: string
+      eq?: Partial<Record<keyof Row, unknown>>
     }): Promise<OffsetResult<Row>> {
       const q = await from()
       const page = params?.page ?? 1
@@ -80,8 +81,11 @@ export function supabaseService<T extends TableName>(table: T) {
       const ascending = params?.ascending ?? false
       const select = params?.select ?? "*"
 
-      const { data, error, count } = await q
-        .select(select, { count: "exact" })
+      let query = q.select(select, { count: "exact" })
+      for (const [col, val] of Object.entries(params?.eq ?? {})) {
+        if (val !== undefined) query = query.eq(col, val)
+      }
+      const { data, error, count } = await query
         .order(orderBy, { ascending })
         .range(rangeFrom, rangeTo)
 
@@ -94,6 +98,7 @@ export function supabaseService<T extends TableName>(table: T) {
       orderBy?: keyof Row
       ascending?: boolean
       select?: string
+      eq?: Partial<Record<keyof Row, unknown>>
     }): Promise<CursorResult<Row>> {
       const q = await from()
       const limit = params?.limit ?? 20
@@ -101,7 +106,11 @@ export function supabaseService<T extends TableName>(table: T) {
       const ascending = params?.ascending ?? false
       const select = params?.select ?? "*"
 
-      let query = q.select(select).order(orderBy, { ascending }).limit(limit + 1)
+      let query = q.select(select)
+      for (const [col, val] of Object.entries(params?.eq ?? {})) {
+        if (val !== undefined) query = query.eq(col, val)
+      }
+      query = query.order(orderBy, { ascending }).limit(limit + 1)
 
       if (params?.cursor) {
         query = ascending

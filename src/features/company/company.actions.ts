@@ -1,11 +1,13 @@
 "use server"
 
 import { z } from "zod"
+import { redirect } from "next/navigation"
 import { createClient as createServerClient } from "@supabase/utils/server"
 import { companyOnboardingSchema, type CompanyOnboardingPayload } from "./company.validation"
 import { companyService } from "./company.service"
 import type { ActionResult } from "@/features/shared/types"
-import type { Company, CompanyUpdate } from "./company.types"
+import type { Company, CompanyUpdate, CompanyStatus } from "./company.types"
+import { ROUTE_PATHS } from "@/config/routes"
 
 export async function createCompanyAction(
   values: CompanyOnboardingPayload,
@@ -57,4 +59,16 @@ export async function updateCompanyAction(
   }
 
   return { success: true, data }
+}
+
+/**
+ * Admin-only action: updates a company's status and redirects to the businesses list.
+ * Use with form action: updateCompanyStatusAction.bind(null, companyId, newStatus)
+ */
+export async function updateCompanyStatusAction(
+  companyId: string,
+  newStatus: CompanyStatus,
+) {
+  await updateCompanyAction(companyId, { status: newStatus })
+  redirect(ROUTE_PATHS.AUTHED.ADMIN.BUSINESSES)
 }
