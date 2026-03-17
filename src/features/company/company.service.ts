@@ -1,19 +1,13 @@
 import { createClient as createServerClient } from "@supabase/utils/server"
 import { supabaseService, ServiceResult } from "@/features/shared/supabase-service"
 import type { Company, CompanyStatus } from "./company.types"
-import type { Database } from "@supabase/types/database"
+import type { Profile } from "@/features/profile/profile.types"
 
 const base = supabaseService("companies")
 
-type OwnerSnapshot = {
-  id: string
-  full_name: string
-  phone: string | null
-  status: Database["public"]["Enums"]["profile_status"]
-  created_at: string
-}
-
-export type CompanyWithOwner = Company & { owner: OwnerSnapshot | null }
+export type CompanyWithOwner = Company & { owner: Profile | null }
+const COMPANY_WITH_OWNER_SELECT =
+  "*, owner:owner_profile_id(id, full_name, phone, status, created_at)"
 
 export const companyService = {
   ...base,
@@ -35,7 +29,7 @@ export const companyService = {
     const supabase = await createServerClient()
     let query = supabase
       .from("companies")
-      .select("*, owner:owner_profile_id(id, full_name, phone, status, created_at)")
+      .select(COMPANY_WITH_OWNER_SELECT)
       .order("created_at", { ascending: false })
 
     if (status) {
@@ -47,13 +41,9 @@ export const companyService = {
   },
 
   async getWithOwner(id: string): Promise<ServiceResult<CompanyWithOwner>> {
-    const supabase = await createServerClient()
-    const { data, error } = await supabase
-      .from("companies")
-      .select("*, owner:owner_profile_id(id, full_name, phone, status, created_at)")
-      .eq("id", id)
-      .single()
-
+    const { data, error } = await base.getById(id, {
+      select: COMPANY_WITH_OWNER_SELECT,
+    })
     return { data: (data ?? null) as CompanyWithOwner | null, error }
   },
 }

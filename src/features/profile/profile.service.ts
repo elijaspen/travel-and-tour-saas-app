@@ -87,12 +87,7 @@ export const profileService = {
       return { data: null, error: userError ?? new Error("Not authenticated") }
     }
 
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", user.id)
-      .single()
-
+    const { data, error } = await base.getById(user.id)
     return { data: (data ?? null) as Profile | null, error }
   },
 
@@ -109,13 +104,7 @@ export const profileService = {
       return { data: null, error: userError ?? new Error("Not authenticated") }
     }
 
-    const { data, error } = await supabase
-      .from("profiles")
-      .update(patch as ProfileUpdate)
-      .eq("id", user.id)
-      .select("*")
-      .single()
-
+    const { data, error } = await base.patch(user.id, patch)
     return { data: (data ?? null) as Profile | null, error }
   },
 }
