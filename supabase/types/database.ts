@@ -294,6 +294,7 @@ export type Database = {
           status: string
         }[]
       }
+      is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
       booking_status:

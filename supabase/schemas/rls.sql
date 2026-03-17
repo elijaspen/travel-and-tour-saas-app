@@ -9,6 +9,11 @@ CREATE POLICY "Users can read own profile"
   FOR SELECT
   USING (id = auth.uid());
 
+CREATE POLICY "Admins can read all profiles"
+  ON public.profiles
+  FOR SELECT
+  USING (public.is_admin());
+
 CREATE POLICY "Users can create own profile"
   ON public.profiles
   FOR INSERT

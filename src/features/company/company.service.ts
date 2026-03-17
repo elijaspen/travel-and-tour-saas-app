@@ -6,9 +6,10 @@ import type { Profile } from "@/features/profile/profile.types"
 
 const base = supabaseService("companies")
 
-export type CompanyWithOwner = Company & { owner: Profile | null }
+type CompanyOwner = Pick<Profile, "id" | "full_name" | "phone" | "status" | "created_at">
+export type CompanyWithOwner = Company & { owner: CompanyOwner | null }
 const COMPANY_WITH_OWNER_SELECT =
-  "*, owner:owner_profile_id(id, full_name, phone, status, created_at)"
+  "*, owner:profiles!companies_owner_profile_id_fkey(id, full_name, phone, status, created_at)"
 
 export type StatusCounts = {
   pending: number
