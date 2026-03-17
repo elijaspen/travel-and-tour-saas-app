@@ -11,6 +11,7 @@ import { render, screen } from "@testing-library/react";
 import { Table } from "lucide-react";
 
 describe("Table components", () => {
+  // TABLE CONTAINER
   it("renders table container correctly", () => {
     render(<Table data-testid="test-table">Sample Text</Table>);
     const tableContainer = screen.getByTestId("test-table");
@@ -39,6 +40,7 @@ describe("Table components", () => {
     expect(tableContainer).toBeInTheDocument();
   });
 
+  // TABLE HEADER
   it("renders table header correctly", () => {
     render(<TableHeader data-testid="test-table-header">Sample Text</TableHeader>);
     const tableHeader = screen.getByTestId("test-table-header");
@@ -68,6 +70,7 @@ describe("Table components", () => {
     expect(tableHeader).toBeInTheDocument();
   });
 
+  // TABLE BODY
   it("renders table body correctly", () => {
     render(<TableBody data-testid="test-table-body">Sample Text</TableBody>);
     const tableBody = screen.getByTestId("test-table-body");
@@ -96,6 +99,7 @@ describe("Table components", () => {
     expect(tableBody).toHaveClass("my-class");
   });
 
+  // TABLE FOOTER
   it("renders table footer correctly", () => {
     render(<TableFooter data-testid="test-table-footer">Sample Text</TableFooter>);
     const tableFooter = screen.getByTestId("test-table-footer");
@@ -125,6 +129,7 @@ describe("Table components", () => {
     expect(tableFooter).toBeInTheDocument();
   });
 
+  // TABLE ROW
   it("renders table row correctly", () => {
     render(<TableRow data-testid="test-table-row">Sample Text</TableRow>);
     const tableRow = screen.getByTestId("test-table-row");
@@ -153,6 +158,7 @@ describe("Table components", () => {
     expect(tableRow).toBeInTheDocument();
   });
 
+  // TABLE HEAD
   it("renders table head correctly", () => {
     render(<TableHead data-testid="test-table-head">Sample Text</TableHead>);
     const tableHead = screen.getByTestId("test-table-head");
@@ -181,6 +187,7 @@ describe("Table components", () => {
     expect(tableHead).toBeInTheDocument();
   });
 
+  // TABLE CELL
   it("renders table cell correctly", () => {
     render(<TableCell data-testid="test-table-cell">Sample Text</TableCell>);
     const tableCell = screen.getByTestId("test-table-cell");
@@ -210,6 +217,7 @@ describe("Table components", () => {
     expect(tableCell).toBeInTheDocument();
   });
 
+  // TABLE CAPTION
   it("renders table caption correctly", () => {
     render(<TableCaption data-testid="test-table-caption">Sample Text</TableCaption>);
     const tableCaption = screen.getByTestId("test-table-caption");
