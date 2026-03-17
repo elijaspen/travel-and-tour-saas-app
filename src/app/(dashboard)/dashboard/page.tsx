@@ -1,94 +1,177 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { PageHeader } from "@/components/shared/page-header";
+import { EmptyState } from "@/components/shared/empty-state";
+import { StatCard } from "@/components/shared/stat-card";
+import { ROUTE_PATHS } from "@/config/routes";
+import { requireRole } from "@/features/profile/profile.guard";
+import { ProfileRoles } from "@/features/profile/profile.types";
+import {
+  MapPin,
+  Calendar,
+  Bookmark,
+  Star,
+  Compass,
+  ClipboardList,
+  PenLine,
+} from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Dashboard",
-  description: "Your dashboard",
+  description: "Your trips, bookings, and reviews.",
 };
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const { profile } = await requireRole([ProfileRoles.CUSTOMER]);
+
+  // TODO: fetch real data after schema applied to supabase
+  const upcomingTripsCount = 0;
+  const totalBookingsCount = 0;
+
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-14 items-center">
-          <div className="mr-4 flex">
-            <Link href="/dashboard" className="mr-6 flex items-center space-x-2">
-              <span className="font-bold">Travel & Tour</span>
+    <div className="flex flex-col gap-6">
+      <PageHeader
+        title={`Welcome back, ${profile.full_name}`}
+        description="Here's what's happening with your trips."
+      />
+
+      <section>
+        <h2 className="mb-3 text-sm font-medium text-muted-foreground uppercase tracking-widest">
+          Quick actions
+        </h2>
+        <div className="flex flex-wrap gap-3">
+          <Button asChild>
+            <Link href={ROUTE_PATHS.PUBLIC.MARKETING.TOURS}>
+              <Compass className="mr-2 h-4 w-4" />
+              Explore Tours
             </Link>
-          </div>
-          <div className="flex flex-1 items-center justify-end space-x-2">
-            <Button variant="ghost" size="sm">
-              Logout
-            </Button>
-          </div>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href={ROUTE_PATHS.AUTHED.TRAVELER.TRIPS}>
+              <ClipboardList className="mr-2 h-4 w-4" />
+              My Bookings
+            </Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href={ROUTE_PATHS.AUTHED.SHARED.SAVED}>
+              <Bookmark className="mr-2 h-4 w-4" />
+              Saved Tours
+            </Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href={ROUTE_PATHS.AUTHED.TRAVELER.REVIEWS}>
+              <PenLine className="mr-2 h-4 w-4" />
+              Write a Review
+            </Link>
+          </Button>
         </div>
-      </header>
+      </section>
 
-      <main className="flex-1 container py-6">
-        <div className="flex flex-col gap-4">
-          <h1 className="text-3xl font-bold">Dashboard</h1>
-          <p className="text-muted-foreground">
-            Welcome to your dashboard. This is a placeholder page.
-          </p>
+      <Separator />
 
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Total Bookings
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">0</div>
-                <p className="text-xs text-muted-foreground">
-                  No bookings yet
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Active Tours
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">0</div>
-                <p className="text-xs text-muted-foreground">
-                  No active tours
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Total Revenue
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">$0</div>
-                <p className="text-xs text-muted-foreground">
-                  No revenue yet
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Customers
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">0</div>
-                <p className="text-xs text-muted-foreground">
-                  No customers yet
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </main>
+      <div className="grid gap-4 md:grid-cols-2">
+        <StatCard
+          title="Upcoming Trips"
+          value={upcomingTripsCount}
+          description="Trips scheduled in the future"
+          icon={<MapPin className="h-4 w-4" />}
+        />
+        <StatCard
+          title="Total Bookings"
+          value={totalBookingsCount}
+          description="All bookings across your account"
+          icon={<Calendar className="h-4 w-4" />}
+        />
+      </div>
+
+      <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-base">Upcoming trips</CardTitle>
+            <Badge variant="secondary">{upcomingTripsCount}</Badge>
+          </CardHeader>
+          <CardContent>
+            <EmptyState
+              icon={<MapPin className="h-10 w-10" />}
+              title="No upcoming trips"
+              description="Discover tours and book your next adventure."
+              action={
+                <Button asChild size="sm">
+                  <Link href={ROUTE_PATHS.PUBLIC.MARKETING.TOURS}>
+                    Explore tours
+                  </Link>
+                </Button>
+              }
+            />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-base">Recent bookings</CardTitle>
+            <Badge variant="secondary">{totalBookingsCount}</Badge>
+          </CardHeader>
+          <CardContent>
+            <EmptyState
+              icon={<Calendar className="h-10 w-10" />}
+              title="No bookings yet"
+              description="Your booking history will appear here."
+              action={
+                <Button asChild size="sm">
+                  <Link href={ROUTE_PATHS.AUTHED.TRAVELER.TRIPS}>
+                    View bookings
+                  </Link>
+                </Button>
+              }
+            />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">Saved tours</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <EmptyState
+              icon={<Bookmark className="h-10 w-10" />}
+              title="No saved tours"
+              description="Save tours you like to find them later."
+              action={
+                <Button asChild size="sm" variant="outline">
+                  <Link href={ROUTE_PATHS.AUTHED.SHARED.SAVED}>
+                    View saved
+                  </Link>
+                </Button>
+              }
+            />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">Recent reviews</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <EmptyState
+              icon={<Star className="h-10 w-10" />}
+              title="No reviews yet"
+              description="Reviews you write will show up here."
+              action={
+                <Button asChild size="sm" variant="outline">
+                  <Link href={ROUTE_PATHS.AUTHED.TRAVELER.REVIEWS}>
+                    View all reviews
+                  </Link>
+                </Button>
+              }
+            />
+          </CardContent>
+        </Card>
+      </section>
     </div>
   );
 }

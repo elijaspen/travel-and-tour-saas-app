@@ -1,8 +1,12 @@
+/**
+ * I converted `proxy.ts` back to `middleware.ts` coz OpenNext Cloudflare doesn't support Node.js proxy file
+ * 
+ */
+
 import { type NextRequest, NextResponse } from "next/server";
 import { isProtectedRoute, isPublicRoute, ROUTE_PATHS } from "@/config/routes";
 import { createServerClient } from "@supabase/ssr";
 import { Database } from "@supabase/types";
-import { getSupabaseEnv } from "@supabase/utils/config";
 import type { User } from "@supabase/supabase-js";
 
 async function updateSessionAndGetUser(
@@ -12,9 +16,10 @@ async function updateSessionAndGetUser(
     request,
   });
 
-  const { url, anonKey } = getSupabaseEnv();
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  const supabase = createServerClient<Database>(url, anonKey, {
+  const supabase = createServerClient<Database>(url!, anonKey!, {
     cookies: {
       getAll() {
         return request.cookies.getAll();
@@ -47,7 +52,7 @@ function copyCookies(source: NextResponse, target: NextResponse) {
   });
 }
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { response, user } = await updateSessionAndGetUser(request);
   const { pathname } = request.nextUrl;
 
@@ -79,3 +84,6 @@ export const config = {
     "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
+
+// Edge runtime configuration for OpenNext Cloudflare compatibility
+export const runtime = "experimental-edge";

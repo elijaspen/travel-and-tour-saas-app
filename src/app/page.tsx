@@ -1,14 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
-import { BadgeCheck, ArrowRight, } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { AppLogo } from "@/components/shared/app-logo";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { ROUTE_PATHS } from "@/config/routes";
-import { TravelPackagesGrid } from "@/components/common/travel-package-card";
-import { PackageSearchBar } from "@/components/common/package-search-bar";
-import { DestinationCardGrid } from "@/components/common/destination-card-grid";
-import { TrustBadgesSection } from "@/components/common/trust-badges-grid";
-import { OfferPromoSection } from "@/components/common/offer-banner";
+import { TravelPackagesGrid } from "@/components/shared/travel-package-card";
+import { PackageSearchBar } from "@/components/shared/package-search-bar";
+import { DestinationCardGrid } from "@/components/shared/destination-card-grid";
+import { TrustBadgesSection } from "@/components/shared/trust-badges-grid";
+import { OfferPromoSection } from "@/components/shared/offer-banner";
 import Footer from "@/components/footer/footer";
 
 
@@ -87,9 +87,12 @@ export default function Home() {
       {/* Navbar */}
       <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-white/80 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <Link href={ROUTE_PATHS.PUBLIC.MARKETING.HOME} className="flex items-center gap-2">
-            <span className="text-xl font-bold tracking-tight text-slate-900">Work Wanders</span>
-          </Link>
+          <AppLogo
+            href={ROUTE_PATHS.PUBLIC.MARKETING.HOME}
+            size="md"
+            className="text-xl"
+            textClassName="text-slate-900"
+          />
 
           <nav className="hidden items-center gap-8 md:flex">
             <Link href={ROUTE_PATHS.PUBLIC.MARKETING.TOURS} className="text-sm font-medium text-slate-600 transition-colors hover:text-brand">

@@ -14,6 +14,7 @@ export const ROUTE_PATHS = {
       SIGNUP: "/signup",
       VERIFY_EMAIL: "/verify-email",
       FORGOT_PASSWORD: "/forgot-password",
+      RESET_PASSWORD: "/reset-password",
     },
   },
 
@@ -41,6 +42,8 @@ export const ROUTE_PATHS = {
 
     ADMIN: {
       ROOT: "/admin",
+      BUSINESSES: "/admin/businesses",
+      BUSINESS_DETAIL: (id: string) => `/admin/businesses/${id}`,
     },
   },
 } as const;
