@@ -90,7 +90,7 @@ export default async function DashboardPage() {
       </div>
 
       <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+        <Card className="h-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-base">Upcoming trips</CardTitle>
             <Badge variant="secondary">{upcomingTripsCount}</Badge>
@@ -111,7 +111,7 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="h-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-base">Recent bookings</CardTitle>
             <Badge variant="secondary">{totalBookingsCount}</Badge>
@@ -132,7 +132,7 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="h-full">
           <CardHeader className="pb-2">
             <CardTitle className="text-base">Saved tours</CardTitle>
           </CardHeader>
@@ -152,7 +152,7 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="h-full">
           <CardHeader className="pb-2">
             <CardTitle className="text-base">Recent reviews</CardTitle>
           </CardHeader>

@@ -5,7 +5,10 @@ const nextConfig: NextConfig = {
   output: "standalone",
   outputFileTracingRoot: join(__dirname),
   images: {
-    remotePatterns: [{ hostname: "tjgiskidryllvyjannsq.supabase.co" }],
+    remotePatterns: [
+      { hostname: "tjgiskidryllvyjannsq.supabase.co" },
+      { hostname: "images.unsplash.com" }
+    ],
   },
 }
 

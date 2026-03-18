@@ -28,3 +28,18 @@ CREATE TRIGGER handle_profiles_updated_at
   FOR EACH ROW
   EXECUTE FUNCTION extensions.moddatetime(updated_at);
 
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS boolean
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM public.profiles
+    WHERE id = auth.uid()
+      AND role = 'admin'
+  );
+$$;
+

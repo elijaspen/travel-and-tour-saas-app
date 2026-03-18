@@ -23,6 +23,7 @@ import { StatCard } from "@/components/shared/stat-card";
 import { ROUTE_PATHS } from "@/config/routes";
 import { requireRole } from "@/features/profile/profile.guard";
 import { ProfileRoles } from "@/features/profile/profile.types";
+import { cn } from "@/lib/utils";
 import {
   BarChart2,
   Calendar,
@@ -216,7 +217,7 @@ export default async function BusinessDashboardPage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
-        <Card>
+        <Card className="h-full">
           <CardHeader className="flex flex-row items-start justify-between pb-4">
             <div>
               <CardTitle className="text-base">Revenue Overview</CardTitle>
@@ -248,7 +249,7 @@ export default async function BusinessDashboardPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="h-full">
           <CardHeader className="flex flex-row items-center justify-between pb-4">
             <CardTitle className="text-base">Active Promotions</CardTitle>
             <Button variant="ghost" size="icon" className="h-7 w-7">
@@ -300,7 +301,7 @@ export default async function BusinessDashboardPage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
-        <Card>
+        <Card className="h-full">
           <CardHeader className="flex flex-row items-center justify-between pb-4">
             <div>
               <CardTitle className="text-base">Recent Bookings</CardTitle>
@@ -360,7 +361,7 @@ export default async function BusinessDashboardPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="h-full">
           <CardHeader className="pb-4">
             <CardTitle className="text-base">Top Packages</CardTitle>
             <p className="text-sm text-muted-foreground">
@@ -370,18 +371,16 @@ export default async function BusinessDashboardPage() {
           <CardContent className="flex flex-col gap-4">
             {TOP_PACKAGES.map((pkg) => (
               <div key={pkg.id} className="flex items-center gap-3">
-                <div
-                  className={`h-12 w-16 shrink-0 rounded-md ${pkg.color}`}
-                  aria-hidden
-                />
+                <div className={cn("h-12 w-16 shrink-0 rounded-md", pkg.color)} aria-hidden />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium">{pkg.name}</p>
                   <p className="flex items-center gap-1 text-xs text-muted-foreground">
                     {pkg.sales} sales
                     <span
-                      className={`inline-flex items-center gap-0.5 font-medium ${
+                      className={cn(
+                        "inline-flex items-center gap-0.5 font-medium",
                         pkg.positive ? "text-emerald-600" : "text-destructive"
-                      }`}
+                      )}
                     >
                       {pkg.positive ? (
                         <TrendingUp className="h-3 w-3" />
