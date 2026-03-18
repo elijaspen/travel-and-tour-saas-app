@@ -3,6 +3,11 @@ import { createAdminClient } from "@supabase/utils/admin"
 import { supabaseService, ServiceResult } from "@/features/shared/supabase-service"
 import type { Company, CompanyStatus } from "./company.types"
 import type { Profile } from "@/features/profile/profile.types"
+import {
+  COMPANY_PERMIT_BUCKET,
+  COMPANY_PERMIT_ALLOWED_MIME_TYPES,
+  COMPANY_PERMIT_MAX_SIZE_BYTES,
+} from "./company.constants"
 
 const base = supabaseService("companies")
 
@@ -83,5 +88,46 @@ export const companyService = {
     const admin = createAdminClient()
     const { data, error } = await admin.auth.admin.getUserById(userId)
     return { data: data?.user?.email ?? null, error }
+  },
+
+  async getPermitSignedUrl(path: string, expiresIn = 60 * 10): Promise<ServiceResult<string>> {
+    const supabase = await createServerClient()
+    const { data, error } = await supabase.storage
+      .from(COMPANY_PERMIT_BUCKET)
+      .createSignedUrl(path, expiresIn)
+
+    return { data: data?.signedUrl ?? null, error }
+  },
+
+  validatePermitFile(file: File): { ok: true } | { ok: false; error: string } {
+    if (!COMPANY_PERMIT_ALLOWED_MIME_TYPES.includes(file.type as (typeof COMPANY_PERMIT_ALLOWED_MIME_TYPES)[number])) {
+      return { ok: false, error: "Permit must be a PDF, PNG, or JPG file." }
+    }
+    if (file.size > COMPANY_PERMIT_MAX_SIZE_BYTES) {
+      return { ok: false, error: "Permit file must be 2MB or smaller." }
+    }
+    return { ok: true }
+  },
+
+  async uploadPermit(file: File, ownerId: string): Promise<ServiceResult<{ path: string }>> {
+    const validation = companyService.validatePermitFile(file)
+    if (!validation.ok) {
+      return { data: null, error: new Error(validation.error) }
+    }
+
+    const extension = file.name.split(".").pop()?.toLowerCase() || "bin"
+    const safeExtension = extension.replace(/[^a-z0-9]/g, "") || "bin"
+    const objectPath = `${ownerId}/${crypto.randomUUID()}.${safeExtension}`
+
+    const supabase = await createServerClient()
+    const { error } = await supabase.storage
+      .from(COMPANY_PERMIT_BUCKET)
+      .upload(objectPath, file, { upsert: false, contentType: file.type })
+
+    if (error) {
+      return { data: null, error }
+    }
+
+    return { data: { path: objectPath }, error: null }
   },
 }

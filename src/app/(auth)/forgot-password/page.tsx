@@ -23,13 +23,13 @@ export default function ForgotPasswordPage() {
       <Card className="w-full max-w-md border-0 shadow-xl">
         <CardHeader className="pb-2 text-center">
           <CardTitle className="text-2xl font-bold">Forgot your password?</CardTitle>
-          <CardDescription className="text-slate-500">
+          <CardDescription>
             Enter your email and we&apos;ll send you a link to reset your password.
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-4">
           <ForgotPasswordForm />
-          <p className="mt-6 text-center text-sm text-slate-500">
+          <p className="mt-6 text-center text-sm text-muted-foreground">
             Remembered it?{" "}
             <Link
               href={ROUTE_PATHS.PUBLIC.AUTH.LOGIN}

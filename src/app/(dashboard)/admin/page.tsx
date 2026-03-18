@@ -94,7 +94,7 @@ export default async function AdminPage() {
           Flags &amp; alerts
         </h2>
         <div className="grid gap-4 md:grid-cols-2">
-          <Card>
+          <Card className="h-full">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-base">
                 Pending businesses
@@ -132,7 +132,7 @@ export default async function AdminPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="h-full">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-base">Moderation queue</CardTitle>
               <Badge variant={moderationCount > 0 ? "destructive" : "secondary"}>
@@ -162,7 +162,7 @@ export default async function AdminPage() {
           Quick access
         </h2>
         <div className="grid gap-4 md:grid-cols-3">
-          <Card>
+          <Card className="h-full">
             <CardContent className="flex flex-col items-center justify-center gap-3 py-8">
               <UsersRound className="h-8 w-8 text-muted-foreground" />
               <div className="text-center">
@@ -179,7 +179,7 @@ export default async function AdminPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="h-full">
             <CardContent className="flex flex-col items-center justify-center gap-3 py-8">
               <Settings className="h-8 w-8 text-muted-foreground" />
               <div className="text-center">
@@ -196,7 +196,7 @@ export default async function AdminPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="h-full">
             <CardContent className="flex flex-col items-center justify-center gap-3 py-8">
               <TrendingUp className="h-8 w-8 text-muted-foreground" />
               <div className="text-center">

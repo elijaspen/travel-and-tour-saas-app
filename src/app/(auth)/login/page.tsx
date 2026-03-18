@@ -22,13 +22,13 @@ export default function LoginPage() {
       <Card className="w-full max-w-md border-0 shadow-xl">
         <CardHeader className="pb-2 text-center">
           <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
-          <CardDescription className="text-slate-500">
+          <CardDescription>
             Log in to continue your adventure
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-4">
           <LoginForm />
-          <p className="mt-6 text-center text-sm text-slate-500">
+          <p className="mt-6 text-center text-sm text-muted-foreground">
             Don&apos;t have an account?{" "}
             <Link href={ROUTE_PATHS.PUBLIC.AUTH.SIGNUP} className="font-semibold text-brand hover:underline">
               Sign up
