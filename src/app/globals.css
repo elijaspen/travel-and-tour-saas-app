@@ -135,6 +135,7 @@
   }
 }
 
+<<<<<<< HEAD
 /*
  * Embedded Mapbox (location picker): compact attribution is set in React.
  * Slightly tame default ctrl chrome; wordmark must stay visible (Mapbox terms).
@@ -149,6 +150,8 @@
   }
 }
 
+=======
+>>>>>>> 6d46233 (feat: add css styles for titap)
 /* Tiptap / ProseMirror editor styles */
 .ProseMirror p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);
