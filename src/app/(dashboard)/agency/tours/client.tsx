@@ -7,8 +7,8 @@ import { ArrowUpDown, ChevronDown, Plus } from "lucide-react";
 import { ROUTE_PATHS } from "@/config/routes";
 import { Button } from "@/components/ui/button";
 import { SearchInput } from "@/components/ui/search-input";
-import { ListPageToolbar } from "@/components/shared/list-page-toolbar";
 import { PageSectionHeader } from "@/components/shared/page-section-header";
+import { ListPageToolbar } from "@/components/shared/list-page-toolbar";
 import { Pagination } from "@/components/shared/pagination";
 import { ToursTable, type TourRow } from "./components/tours-table";
 
@@ -121,8 +121,12 @@ export function ToursClient() {
   const [page, setPage] = useState(1);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
       <PageSectionHeader
+        back={{
+          href: ROUTE_PATHS.AUTHED.AGENCY.ROOT,
+          label: "Agency",
+        }}
         breadcrumb="Agency / Tours"
         title="Tours Inventory"
       />

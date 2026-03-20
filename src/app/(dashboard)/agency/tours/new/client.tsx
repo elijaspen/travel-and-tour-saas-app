@@ -1,10 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Check, ChevronLeft, ChevronRight } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 
+import { PageSectionHeader } from "@/components/shared/page-section-header";
 import { Button } from "@/components/ui/button";
 import { ROUTE_PATHS } from "@/config/routes";
 import { createTourSchema } from "@/features/tours/tour.validation";
@@ -107,14 +107,14 @@ export function CreateTourWizardClient() {
     <div className="flex flex-col">
       <div className="px-4 sm:px-6 flex flex-col">
         <div className="flex flex-col max-w-7xl mx-auto w-full pb-28">
-          <div className="flex items-center gap-3 shrink-0 pt-4 pb-2">
-            <Button asChild variant="ghost" size="sm" className="-ml-2 gap-1.5 text-muted-foreground hover:text-foreground">
-              <Link href={ROUTE_PATHS.AUTHED.AGENCY.TOURS}>
-                <ArrowLeft className="h-4 w-4" />
-                Tours
-              </Link>
-            </Button>
-          </div>
+          <PageSectionHeader
+            className="shrink-0 pt-4 pb-2"
+            back={{
+              href: ROUTE_PATHS.AUTHED.AGENCY.TOURS,
+              label: "Tours",
+            }}
+            centerTitle="Create Tour"
+          />
           <div className="shrink-0 py-4">
             <StepperProgress
               steps={CREATE_TOUR_STEPS}
