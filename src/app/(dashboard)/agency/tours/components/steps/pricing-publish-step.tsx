@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import { Plus, Pencil, Trash2, Calendar, DollarSign } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Plus, Pencil, Trash2, Calendar } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,84 +10,121 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Select } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-
 import type {
-  CreateTourPayload,
-  PricingTierPayload,
-  BlackoutDatePayload,
-} from "@/features/tours/tour.validation";
-import { CURRENCY_SELECT_OPTIONS } from "@/lib/geo/currencies";
+  BlackoutDateForm,
+  CreateTourWizardState,
+  PricingTierForm,
+} from "@/features/tours/tour.types";
+import {
+  CURRENCY_SELECT_OPTIONS,
+  DEFAULT_PRICING_CURRENCY,
+  formatPriceFromMinorUnits,
+  getCurrencySymbol,
+  parseMoneyInputToCents,
+} from "@/lib/geo/currencies";
+import { cn } from "@/lib/utils";
 
 type PricingPublishStepProps = {
-  data: CreateTourPayload;
-  onUpdate: (updates: Partial<CreateTourPayload>) => void;
+  data: CreateTourWizardState;
+  onUpdate: (updates: Partial<CreateTourWizardState>) => void;
 };
 
-const defaultTier = (): PricingTierPayload => ({
+const defaultTier = (): PricingTierForm => ({
   id: crypto.randomUUID(),
-  minPax: 1,
-  maxPax: 5,
-  amount: 5000,
-  currency: "USD",
+  min_pax: 1,
+  max_pax: 5,
+  amount: 10_000,
+  currency: DEFAULT_PRICING_CURRENCY,
 });
 
-const defaultBlackout = (): BlackoutDatePayload => ({
+const defaultBlackout = (): BlackoutDateForm => ({
   id: crypto.randomUUID(),
-  startDate: "",
-  endDate: "",
+  start_date: "",
+  end_date: "",
   reason: "",
 });
 
 export function PricingPublishStep({ data, onUpdate }: PricingPublishStepProps) {
-  const tiers = data.pricingTiers ?? [];
-  const blackouts = data.blackoutDates ?? [];
-  const [formTier, setFormTier] = React.useState<PricingTierPayload | null>(null);
-  const [startDate, setStartDate] = React.useState("");
-  const [endDate, setEndDate] = React.useState("");
-  const [reason, setReason] = React.useState("");
+  const tiers = data.pricing_tiers ?? [];
+  const blackouts = data.blackout_dates ?? [];
+  const [formTier, setFormTier] = useState<PricingTierForm | null>(null);
+  const [amountInput, setAmountInput] = useState("");
+  const [amountError, setAmountError] = useState<string | null>(null);
+  const [start_date, setStartDate] = useState("");
+  const [end_date, setEndDate] = useState("");
+  const [reason, setReason] = useState("");
+
+  useEffect(() => {
+    if (!formTier) return;
+    /* eslint-disable react-hooks/set-state-in-effect -- local amount string tracks tier when switching rows */
+    setAmountInput((formTier.amount / 100).toFixed(2));
+    setAmountError(null);
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, [formTier?.id]); // eslint-disable-line react-hooks/exhaustive-deps -- sync amount input only when tier id changes
+
+  const priceSymbol = formTier ? getCurrencySymbol(formTier.currency) : "";
+
+  const commitAmountFromField = () => {
+    const cents = parseMoneyInputToCents(amountInput);
+    if (cents === null) {
+      setAmountError("Enter a valid price (e.g. 100.10)");
+      return;
+    }
+    setAmountError(null);
+    setFormTier((prev) => (prev ? { ...prev, amount: cents } : null));
+    setAmountInput((cents / 100).toFixed(2));
+  };
 
   const addTier = () => {
     const newTier = defaultTier();
-    onUpdate({ pricingTiers: [...tiers, newTier] });
+    onUpdate({ pricing_tiers: [...tiers, newTier] });
     setFormTier(newTier);
   };
 
-  const editTier = (tier: PricingTierPayload) => setFormTier({ ...tier });
+  const editTier = (tier: PricingTierForm) => setFormTier({ ...tier });
 
   const saveTier = () => {
     if (!formTier) return;
-    const idx = tiers.findIndex((t) => t.id === formTier.id);
+    const cents = parseMoneyInputToCents(amountInput);
+    if (cents === null) {
+      setAmountError("Enter a valid price (e.g. 100.10)");
+      return;
+    }
+    setAmountError(null);
+    const normalized = { ...formTier, amount: cents };
+    const idx = tiers.findIndex((t) => t.id === normalized.id);
     const next =
-      idx >= 0 ? tiers.map((t) => (t.id === formTier.id ? formTier : t)) : [...tiers, formTier];
-    onUpdate({ pricingTiers: next });
+      idx >= 0
+        ? tiers.map((t) => (t.id === normalized.id ? normalized : t))
+        : [...tiers, normalized];
+    onUpdate({ pricing_tiers: next });
     setFormTier(null);
   };
 
   const removeTier = (id: string) => {
-    onUpdate({ pricingTiers: tiers.filter((t) => t.id !== id) });
+    onUpdate({ pricing_tiers: tiers.filter((t) => t.id !== id) });
     if (formTier?.id === id) setFormTier(null);
   };
 
   const addBlackout = () => {
-    const b: BlackoutDatePayload = {
+    const b: BlackoutDateForm = {
       ...defaultBlackout(),
-      startDate,
-      endDate,
+      start_date,
+      end_date,
       reason,
     };
-    onUpdate({ blackoutDates: [...blackouts, b] });
+    onUpdate({ blackout_dates: [...blackouts, b] });
     setStartDate("");
     setEndDate("");
     setReason("");
   };
 
   const removeBlackout = (id: string) => {
-    onUpdate({ blackoutDates: blackouts.filter((b) => b.id !== id) });
+    onUpdate({ blackout_dates: blackouts.filter((b) => b.id !== id) });
   };
 
   return (
     <div className="w-full space-y-10">
-      {/* Pricing */}
       <div className="space-y-6">
         <div className="space-y-1">
           <h2 className="text-xl font-semibold text-foreground">Pricing</h2>
@@ -97,62 +134,106 @@ export function PricingPublishStep({ data, onUpdate }: PricingPublishStepProps) 
         </div>
 
         {formTier && (
-          <div>
-            <Card className="border border-border rounded-lg p-6 space-y-4">
-              <h4 className="font-medium">Add / Edit tier</h4>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label>Currency</Label>
+          <div className="min-w-0">
+            <Card className="border border-border rounded-lg overflow-hidden p-4 sm:p-6">
+              <div className="space-y-4 min-w-0">
+                <div>
+                  <h4 className="font-medium">Add / Edit tier</h4>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Price per person in major units; stored as centavos. Default currency is PHP.
+                  </p>
+                </div>
+                <div className="space-y-2 min-w-0">
+                  <Label htmlFor="pub-tier-currency">Currency</Label>
                   <Select
                     value={formTier.currency}
                     onValueChange={(v) => setFormTier({ ...formTier, currency: v })}
                     options={[...CURRENCY_SELECT_OPTIONS]}
+                    searchable
+                    searchPlaceholder="Search code or name…"
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label>Min pax</Label>
-                  <Input
-                    type="number"
-                    min={1}
-                    value={formTier.minPax}
-                    onChange={(e) =>
-                      setFormTier({ ...formTier, minPax: Number(e.target.value) || 0 })
-                    }
-                  />
+                <div className="grid grid-cols-2 gap-3 min-w-0 sm:gap-4">
+                  <div className="space-y-2 min-w-0">
+                    <Label htmlFor="pub-tier-min">Min pax</Label>
+                    <Input
+                      id="pub-tier-min"
+                      type="number"
+                      min={1}
+                      className="min-w-0"
+                      value={formTier.min_pax}
+                      onChange={(e) =>
+                        setFormTier({ ...formTier, min_pax: Number(e.target.value) || 0 })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2 min-w-0">
+                    <Label htmlFor="pub-tier-max">Max pax</Label>
+                    <Input
+                      id="pub-tier-max"
+                      type="number"
+                      min={1}
+                      className="min-w-0"
+                      value={formTier.max_pax}
+                      onChange={(e) =>
+                        setFormTier({ ...formTier, max_pax: Number(e.target.value) || 0 })
+                      }
+                    />
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label>Max pax</Label>
-                  <Input
-                    type="number"
-                    min={1}
-                    value={formTier.maxPax}
-                    onChange={(e) =>
-                      setFormTier({ ...formTier, maxPax: Number(e.target.value) || 0 })
-                    }
-                  />
+                <div className="space-y-2 min-w-0">
+                  <Label htmlFor="pub-tier-amount">Price per person</Label>
+                  <div
+                    className={cn(
+                      "flex min-w-0 items-center gap-2 rounded-md border border-input bg-background px-3 shadow-xs focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]",
+                      amountError &&
+                        "border-destructive focus-within:border-destructive focus-within:ring-destructive/20",
+                    )}
+                  >
+                    <span
+                      className="shrink-0 text-sm font-medium text-muted-foreground tabular-nums"
+                      aria-hidden
+                    >
+                      {priceSymbol}
+                    </span>
+                    <Input
+                      id="pub-tier-amount"
+                      type="text"
+                      inputMode="decimal"
+                      autoComplete="off"
+                      placeholder="100.10"
+                      className={cn(
+                        "min-w-0 flex-1 border-0 bg-transparent px-0 shadow-none focus-visible:ring-0 font-medium tabular-nums",
+                        amountError && "text-destructive",
+                      )}
+                      value={amountInput}
+                      onChange={(e) => {
+                        setAmountInput(e.target.value);
+                        setAmountError(null);
+                      }}
+                      onBlur={commitAmountFromField}
+                    />
+                  </div>
+                  {amountError ? (
+                    <p className="text-xs text-destructive">{amountError}</p>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">
+                      Use decimals like 100.10 — we convert to centavos when you save.
+                    </p>
+                  )}
                 </div>
-              </div>
-              <div className="space-y-2 max-w-xs">
-                <Label>Amount (cents)</Label>
-                <div className="relative">
-                  <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    type="number"
-                    min={0}
-                    className="pl-10"
-                    value={formTier.amount}
-                    onChange={(e) =>
-                      setFormTier({ ...formTier, amount: Number(e.target.value) || 0 })
-                    }
-                  />
+                <div className="flex flex-wrap gap-2">
+                  <Button onClick={saveTier}>Save tier</Button>
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      setFormTier(null);
+                      setAmountError(null);
+                    }}
+                  >
+                    Cancel
+                  </Button>
                 </div>
-                <p className="text-xs text-muted-foreground">e.g. 5000 = $50.00</p>
-              </div>
-              <div className="flex gap-2">
-                <Button onClick={saveTier}>Save tier</Button>
-                <Button variant="ghost" onClick={() => setFormTier(null)}>
-                  Cancel
-                </Button>
               </div>
             </Card>
           </div>
@@ -164,42 +245,44 @@ export function PricingPublishStep({ data, onUpdate }: PricingPublishStepProps) 
         </Button>
 
         {tiers.length > 0 && (
-          <div className="space-y-3">
+          <div className="space-y-3 min-w-0">
             <h4 className="text-base font-medium">Active tiers</h4>
             <div className="space-y-2">
               {tiers.map((tier) => (
                 <Card
                   key={tier.id}
-                  className="bg-secondary/50 border border-border rounded-lg p-4"
+                  className="overflow-hidden bg-secondary/50 border border-border rounded-lg p-4"
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <span className="inline-flex items-center px-3 py-1 rounded-lg text-sm font-medium bg-muted text-muted-foreground">
-                        {tier.minPax}–{tier.maxPax} pax
+                  <div className="flex flex-col gap-3 min-[420px]:flex-row min-[420px]:items-center min-[420px]:justify-between">
+                    <div className="flex min-w-0 flex-1 flex-col gap-2 min-[420px]:flex-row min-[420px]:items-center min-[420px]:gap-4">
+                      <span className="inline-flex w-fit shrink-0 items-center rounded-lg bg-muted px-3 py-1 text-sm font-medium text-muted-foreground">
+                        {tier.min_pax}–{tier.max_pax} pax
                       </span>
-                      <div>
-                        <span className="text-lg font-semibold">
-                          ${(tier.amount / 100).toFixed(2)}
-                        </span>
-                        <span className="text-sm text-muted-foreground ml-1">
-                          {tier.currency}
-                        </span>
+                      <div className="min-w-0">
+                        <div className="break-words text-lg font-semibold">
+                          {formatPriceFromMinorUnits(tier.amount, tier.currency)}
+                        </div>
+                        <div className="break-words text-sm text-muted-foreground">
+                          {tier.currency} · per person
+                        </div>
                       </div>
                     </div>
-                    <div className="flex gap-1">
+                    <div className="flex shrink-0 justify-end gap-1">
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="w-8 h-8"
+                        className="h-8 w-8 shrink-0"
                         onClick={() => editTier(tier)}
+                        aria-label="Edit tier"
                       >
                         <Pencil className="w-4 h-4" />
                       </Button>
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="w-8 h-8 text-destructive"
+                        className="h-8 w-8 shrink-0 text-destructive"
                         onClick={() => removeTier(tier.id)}
+                        aria-label="Remove tier"
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
@@ -212,7 +295,6 @@ export function PricingPublishStep({ data, onUpdate }: PricingPublishStepProps) 
         )}
       </div>
 
-      {/* Blackout dates */}
       <div className="space-y-4 pt-6 border-t border-border">
         <div className="space-y-1">
           <h3 className="text-base font-medium">Blackout dates</h3>
@@ -228,7 +310,7 @@ export function PricingPublishStep({ data, onUpdate }: PricingPublishStepProps) 
               <Input
                 type="date"
                 className="pl-10"
-                value={startDate}
+                value={start_date}
                 onChange={(e) => setStartDate(e.target.value)}
               />
             </div>
@@ -240,7 +322,7 @@ export function PricingPublishStep({ data, onUpdate }: PricingPublishStepProps) 
               <Input
                 type="date"
                 className="pl-10"
-                value={endDate}
+                value={end_date}
                 onChange={(e) => setEndDate(e.target.value)}
               />
             </div>
@@ -266,7 +348,7 @@ export function PricingPublishStep({ data, onUpdate }: PricingPublishStepProps) 
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="text-sm font-medium">
-                      {b.startDate} – {b.endDate}
+                      {b.start_date} – {b.end_date}
                     </div>
                     {b.reason && (
                       <div className="text-sm text-muted-foreground">{b.reason}</div>
@@ -287,7 +369,6 @@ export function PricingPublishStep({ data, onUpdate }: PricingPublishStepProps) 
         )}
       </div>
 
-      {/* Publish */}
       <div className="space-y-4 pt-6 border-t border-border">
         <h3 className="text-base font-medium">Publish</h3>
         <div className="flex items-center justify-between p-4 rounded-lg bg-muted/60">
@@ -298,15 +379,15 @@ export function PricingPublishStep({ data, onUpdate }: PricingPublishStepProps) 
             </div>
           </div>
           <Switch
-            checked={data.isActive ?? true}
-            onCheckedChange={(v) => onUpdate({ isActive: v })}
+            checked={data.is_active ?? true}
+            onCheckedChange={(v) => onUpdate({ is_active: v })}
             className="data-[state=checked]:bg-primary"
           />
         </div>
         <Card className="bg-accent/50 border border-border rounded-lg p-4">
           <p className="text-sm text-accent-foreground">
-            Once published, your tour will be visible and available for booking. You can
-            change this anytime from the tour dashboard.
+            Once published, your tour will be visible and available for booking. You can change this
+            anytime from the tour dashboard.
           </p>
         </Card>
       </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import { useState } from "react";
 import { Plus, Calendar, Trash2 } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
@@ -11,46 +11,44 @@ import { Switch } from "@/components/ui/switch";
 import { Card, CardContent } from "@/components/ui/card";
 import { FormStepLayout } from "@/components/shared/form-step-layout";
 import { cn } from "@/lib/utils";
-
-import type {
-  CreateTourPayload,
-  BlackoutDatePayload,
-} from "@/features/tours/tour.validation";
+import type { BlackoutDateForm, CreateTourWizardState } from "@/features/tours/tour.types";
 
 type PublishStepProps = {
-  data: CreateTourPayload;
-  onUpdate: (updates: Partial<CreateTourPayload>) => void;
+  data: CreateTourWizardState;
+  onUpdate: (updates: Partial<CreateTourWizardState>) => void;
 };
 
-const defaultBlackout = (): BlackoutDatePayload => ({
+const defaultBlackout = (): BlackoutDateForm => ({
   id: crypto.randomUUID(),
-  startDate: "",
-  endDate: "",
+  start_date: "",
+  end_date: "",
   reason: "",
 });
 
 export function PublishStep({ data, onUpdate }: PublishStepProps) {
-  const blackouts = data.blackoutDates ?? [];
-  const [startDate, setStartDate] = React.useState("");
-  const [endDate, setEndDate] = React.useState("");
-  const [reason, setReason] = React.useState("");
+  const blackouts = data.blackout_dates ?? [];
+  const [start_date, setStartDate] = useState("");
+  const [end_date, setEndDate] = useState("");
+  const [reason, setReason] = useState("");
 
   const addBlackout = () => {
-    const b: BlackoutDatePayload = {
+    const b: BlackoutDateForm = {
       ...defaultBlackout(),
-      startDate,
-      endDate,
+      start_date,
+      end_date,
       reason,
     };
-    onUpdate({ blackoutDates: [...blackouts, b] });
+    onUpdate({ blackout_dates: [...blackouts, b] });
     setStartDate("");
     setEndDate("");
     setReason("");
   };
 
   const removeBlackout = (id: string) => {
-    onUpdate({ blackoutDates: blackouts.filter((b) => b.id !== id) });
+    onUpdate({ blackout_dates: blackouts.filter((b) => b.id !== id) });
   };
+
+  const canAddBlackout = Boolean(start_date && end_date && start_date <= end_date);
 
   return (
     <FormStepLayout
@@ -70,7 +68,7 @@ export function PublishStep({ data, onUpdate }: PublishStepProps) {
               <Input
                 type="date"
                 className="pl-10 h-11 rounded-lg border-input bg-background"
-                value={startDate}
+                value={start_date}
                 onChange={(e) => setStartDate(e.target.value)}
               />
             </div>
@@ -82,7 +80,7 @@ export function PublishStep({ data, onUpdate }: PublishStepProps) {
               <Input
                 type="date"
                 className="pl-10 h-11 rounded-lg border-input bg-background"
-                value={endDate}
+                value={end_date}
                 onChange={(e) => setEndDate(e.target.value)}
               />
             </div>
@@ -101,11 +99,13 @@ export function PublishStep({ data, onUpdate }: PublishStepProps) {
         </div>
         <button
           type="button"
+          disabled={!canAddBlackout}
           onClick={addBlackout}
           className={cn(
             "w-full rounded-lg border-2 border-dashed border-border bg-muted/30 min-h-[80px]",
             "flex flex-col items-center justify-center gap-1 p-6",
-            "hover:border-primary/50 hover:bg-muted/50 transition-colors cursor-pointer"
+            "hover:border-primary/50 hover:bg-muted/50 transition-colors",
+            canAddBlackout ? "cursor-pointer" : "opacity-50 cursor-not-allowed",
           )}
         >
           <Plus className="w-8 h-8 text-muted-foreground" />
@@ -121,7 +121,7 @@ export function PublishStep({ data, onUpdate }: PublishStepProps) {
                 <div className="flex items-center justify-between p-4 sm:p-5">
                   <div>
                     <div className="text-sm font-medium text-foreground">
-                      {b.startDate} – {b.endDate}
+                      {b.start_date} – {b.end_date}
                     </div>
                     {b.reason && (
                       <div className="text-sm text-muted-foreground mt-0.5">{b.reason}</div>
@@ -157,16 +157,16 @@ export function PublishStep({ data, onUpdate }: PublishStepProps) {
               </div>
             </div>
             <Switch
-              checked={data.isActive ?? true}
-              onCheckedChange={(v) => onUpdate({ isActive: v })}
+              checked={data.is_active ?? true}
+              onCheckedChange={(v) => onUpdate({ is_active: v })}
             />
           </div>
         </Card>
         <Card className="border-border bg-accent/30">
           <CardContent className="p-4 sm:p-5">
             <p className="text-sm text-accent-foreground">
-              Once published, your tour will be visible and available for booking. You can
-              change this anytime from the tour dashboard.
+              Once published, your tour will be visible and available for booking. You can change
+              this anytime from the tour dashboard.
             </p>
           </CardContent>
         </Card>

@@ -1,45 +1,44 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { Check, ChevronLeft, ChevronRight } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
 import { PageSectionHeader } from "@/components/shared/page-section-header";
 import { Button } from "@/components/ui/button";
 import { ROUTE_PATHS } from "@/config/routes";
-import { createTourSchema } from "@/features/tours/tour.validation";
-import type { CreateTourPayload } from "@/features/tours/tour.validation";
-
+import { BasicsStep } from "@/app/(dashboard)/agency/tours/components/steps/basics-step";
+import { ItineraryStep } from "@/app/(dashboard)/agency/tours/components/steps/itinerary-step";
+import { LocationStep } from "@/app/(dashboard)/agency/tours/components/steps/location-step";
+import { PricingStep } from "@/app/(dashboard)/agency/tours/components/steps/pricing-step";
+import { PublishStep } from "@/app/(dashboard)/agency/tours/components/steps/publish-step";
 import { getTextFromHtml } from "@/components/shared/rich-text-editor";
 import { StepperProgress } from "@/components/shared/stepper-progress";
-import { BasicsStep } from '@/app/(dashboard)/agency/tours/components/steps/basics-step';
-import { LocationStep } from '@/app/(dashboard)/agency/tours/components/steps/location-step';
-import { ItineraryStep } from '@/app/(dashboard)/agency/tours/components/steps/itinerary-step';
-import { PricingStep } from '@/app/(dashboard)/agency/tours/components/steps/pricing-step';
-import { PublishStep } from '@/app/(dashboard)/agency/tours/components/steps/publish-step';
-import { useState, useCallback } from "react";
+import { createTourAction } from "@/features/tours/tour.actions";
+import {
+  type CreateTourWizardState,
+  defaultCreateTourWizardState,
+} from "@/features/tours/tour.types";
+import { createTourSchema } from "@/features/tours/tour.validation";
+import {
+  isContiguousPartition,
+  pricingScaleMaxPax,
+} from "@/features/tours/pricing-tier-partition";
 import { CREATE_TOUR_STEPS } from "./create-tour-steps";
 
-const defaultFormData: CreateTourPayload = {
-  title: "",
-  shortDescription: undefined,
-  description: "",
-  location: {},
-  durationDays: 3,
-  defaultCapacity: 15,
-  maxSimultaneousBookings: 2,
-  tourType: "on_demand",
-  photos: [],
-  itineraryDays: [],
-  pricingTiers: [],
-  blackoutDates: [],
-  isActive: true,
-};
+function wizardToJsonPayload(state: CreateTourWizardState) {
+  const orderedPhotos = [...(state.photos ?? [])].sort((a, b) => a.sort_order - b.sort_order);
+  return {
+    ...state,
+    photos: orderedPhotos.map((p) => ({ id: p.id })),
+  };
+}
 
 export function CreateTourWizardClient() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState<CreateTourPayload>(defaultFormData);
+  const [formData, setFormData] = useState<CreateTourWizardState>(defaultCreateTourWizardState);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const totalSteps = CREATE_TOUR_STEPS.length;
@@ -47,7 +46,7 @@ export function CreateTourWizardClient() {
   const isFirstStep = currentStep === 1;
   const isLastStep = currentStep === totalSteps;
 
-  const updateForm = useCallback((updates: Partial<CreateTourPayload>) => {
+  const updateForm = useCallback((updates: Partial<CreateTourWizardState>) => {
     setFormData((prev) => ({ ...prev, ...updates }));
   }, []);
 
@@ -55,9 +54,52 @@ export function CreateTourWizardClient() {
     if (!isFirstStep) setCurrentStep((s) => s - 1);
   };
 
+  const handleSubmit = async () => {
+    const orderedPhotos = [...(formData.photos ?? [])].sort((a, b) => a.sort_order - b.sort_order);
+    if (orderedPhotos.length > 0) {
+      for (const p of orderedPhotos) {
+        if (!p.file) {
+          toast.error("Each photo must have a file. Re-upload images if needed.");
+          return;
+        }
+      }
+    }
+
+    const jsonPayload = wizardToJsonPayload({ ...formData, photos: orderedPhotos });
+    const parsed = createTourSchema.safeParse(jsonPayload);
+    if (!parsed.success) {
+      const first = parsed.error.issues[0];
+      toast.error(first?.message ?? "Please fix the form errors.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const fd = new FormData();
+      fd.set("payload", JSON.stringify(jsonPayload));
+      for (const p of orderedPhotos) {
+        if (p.file) fd.append("photo", p.file);
+      }
+      const result = await createTourAction(fd);
+      if (!result.success) {
+        const msg =
+          result.message ??
+          (result.fieldErrors
+            ? Object.values(result.fieldErrors).flat().join(" ")
+            : "Could not create tour.");
+        toast.error(msg);
+        return;
+      }
+      toast.success("Tour created successfully!");
+      router.push(ROUTE_PATHS.AUTHED.AGENCY.TOURS);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const handleNext = () => {
     if (isLastStep) {
-      handleSubmit();
+      void handleSubmit();
     } else {
       setCurrentStep((s) => s + 1);
     }
@@ -65,19 +107,6 @@ export function CreateTourWizardClient() {
 
   const handleStepClick = (step: number) => {
     if (step <= completedCount + 1) setCurrentStep(step);
-  };
-
-  const handleSubmit = () => {
-    const result = createTourSchema.safeParse(formData);
-    if (!result.success) {
-      const first = result.error.issues[0];
-      toast.error(first?.message ?? "Please fix the form errors.");
-      return;
-    }
-    setIsSubmitting(true);
-    console.log("Create tour payload:", formData);
-    toast.success("Tour created successfully!");
-    router.push(ROUTE_PATHS.AUTHED.AGENCY.TOURS);
   };
 
   const getStepValidation = () => {
@@ -95,8 +124,10 @@ export function CreateTourWizardClient() {
       };
     }
     if (currentStep === 4) {
-      const hasTier = (formData.pricingTiers?.length ?? 0) >= 1;
-      return { canProceed: hasTier, errors: {} };
+      const maxPax = pricingScaleMaxPax(formData.default_capacity);
+      const tiers = formData.pricing_tiers ?? [];
+      const canProceed = isContiguousPartition(tiers, maxPax);
+      return { canProceed, errors: {} };
     }
     return { canProceed: true, errors: {} };
   };
@@ -130,7 +161,12 @@ export function CreateTourWizardClient() {
                 <BasicsStep
                   data={formData}
                   onUpdate={updateForm}
-                  errors={getStepValidation().errors as { title?: string; description?: string }}
+                  errors={
+                    getStepValidation().errors as {
+                      title?: string;
+                      description?: string;
+                    }
+                  }
                 />
               )}
               {currentStep === 2 && (

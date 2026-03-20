@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import { useState } from "react";
 import { ImageIcon, Plus, Pencil, Trash2 } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
@@ -17,39 +17,36 @@ import {
 } from "@/components/ui/dialog";
 import { FormStepLayout } from "@/components/shared/form-step-layout";
 import { cn } from "@/lib/utils";
-
-import type {
-  CreateTourPayload,
-  ItineraryDayPayload,
-} from "@/features/tours/tour.validation";
+import type { CreateTourWizardState, ItineraryDayForm } from "@/features/tours/tour.types";
 
 type ItineraryStepProps = {
-  data: CreateTourPayload;
-  onUpdate: (updates: Partial<CreateTourPayload>) => void;
+  data: CreateTourWizardState;
+  onUpdate: (updates: Partial<CreateTourWizardState>) => void;
 };
 
-const defaultDay = (dayNumber: number): ItineraryDayPayload => ({
+const defaultDay = (dayNumber: number): ItineraryDayForm => ({
   id: crypto.randomUUID(),
-  dayNumber,
+  day_number: dayNumber,
   title: "",
-  startTime: "",
+  start_time: "",
   description: "",
-  imageUrl: "",
+  image_url: "",
 });
 
 export function ItineraryStep({ data, onUpdate }: ItineraryStepProps) {
-  const days = data.itineraryDays ?? [];
-  const [editingId, setEditingId] = React.useState<string | null>(null);
-  const [formDay, setFormDay] = React.useState<ItineraryDayPayload | null>(null);
+  const days = data.itinerary_days ?? [];
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [formDay, setFormDay] = useState<ItineraryDayForm | null>(null);
 
   const addDay = () => {
-    const nextNum = days.length === 0 ? 1 : Math.max(...days.map((d) => d.dayNumber)) + 1;
+    const nextNum =
+      days.length === 0 ? 1 : Math.max(...days.map((d) => d.day_number)) + 1;
     const newDay = defaultDay(nextNum);
     setFormDay(newDay);
     setEditingId(newDay.id);
   };
 
-  const editDay = (day: ItineraryDayPayload) => {
+  const editDay = (day: ItineraryDayForm) => {
     setFormDay({ ...day });
     setEditingId(day.id);
   };
@@ -61,7 +58,7 @@ export function ItineraryStep({ data, onUpdate }: ItineraryStepProps) {
       idx >= 0
         ? days.map((d) => (d.id === formDay.id ? formDay : d))
         : [...days, formDay];
-    onUpdate({ itineraryDays: next });
+    onUpdate({ itinerary_days: next });
     setFormDay(null);
     setEditingId(null);
   };
@@ -69,7 +66,7 @@ export function ItineraryStep({ data, onUpdate }: ItineraryStepProps) {
   const isOpen = !!formDay && !!editingId;
 
   const removeDay = (id: string) => {
-    onUpdate({ itineraryDays: days.filter((d) => d.id !== id) });
+    onUpdate({ itinerary_days: days.filter((d) => d.id !== id) });
     if (editingId === id) {
       setFormDay(null);
       setEditingId(null);
@@ -82,15 +79,9 @@ export function ItineraryStep({ data, onUpdate }: ItineraryStepProps) {
   };
 
   return (
-    <FormStepLayout
-      title="Itinerary"
-      description="Add daily activities and schedules."
-    >
+    <FormStepLayout title="Itinerary" description="Add daily activities and schedules.">
       <Dialog open={isOpen} onOpenChange={(open) => !open && cancelEdit()}>
-        <DialogContent
-          className="sm:max-w-[520px]"
-          showCloseButton={true}
-        >
+        <DialogContent className="sm:max-w-[520px]" showCloseButton={true}>
           {formDay && (
             <>
               <DialogHeader>
@@ -108,9 +99,9 @@ export function ItineraryStep({ data, onUpdate }: ItineraryStepProps) {
                       type="number"
                       min={1}
                       className="h-11 rounded-lg border-input bg-background"
-                      value={formDay.dayNumber}
+                      value={formDay.day_number}
                       onChange={(e) =>
-                        setFormDay({ ...formDay, dayNumber: Number(e.target.value) || 1 })
+                        setFormDay({ ...formDay, day_number: Number(e.target.value) || 1 })
                       }
                     />
                   </div>
@@ -134,8 +125,8 @@ export function ItineraryStep({ data, onUpdate }: ItineraryStepProps) {
                   <Input
                     type="time"
                     className="h-11 rounded-lg border-input bg-background"
-                    value={formDay.startTime ?? ""}
-                    onChange={(e) => setFormDay({ ...formDay, startTime: e.target.value })}
+                    value={formDay.start_time ?? ""}
+                    onChange={(e) => setFormDay({ ...formDay, start_time: e.target.value })}
                   />
                 </div>
 
@@ -153,18 +144,28 @@ export function ItineraryStep({ data, onUpdate }: ItineraryStepProps) {
 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-foreground mb-2 block">
+                    Optional day image URL
+                  </Label>
+                  <Input
+                    placeholder="https://…"
+                    className="h-11 rounded-lg border-input bg-background"
+                    value={formDay.image_url ?? ""}
+                    onChange={(e) => setFormDay({ ...formDay, image_url: e.target.value })}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-foreground mb-2 block">
                     Optional day image
                   </Label>
                   <div
                     className={cn(
                       "min-h-[100px] border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center gap-2 bg-muted/30 py-4",
-                      "hover:border-primary/50 transition-colors cursor-pointer"
+                      "hover:border-primary/50 transition-colors cursor-pointer",
                     )}
                   >
                     <ImageIcon className="w-8 h-8 text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground">
-                      Click to upload day image (optional)
-                    </p>
+                    <p className="text-sm text-muted-foreground">Paste image URL above (optional)</p>
                   </div>
                 </div>
               </div>
@@ -187,7 +188,7 @@ export function ItineraryStep({ data, onUpdate }: ItineraryStepProps) {
         className={cn(
           "w-full mb-6 rounded-lg border-2 border-dashed border-border bg-muted/30 min-h-[100px]",
           "flex flex-col items-center justify-center gap-2 p-6",
-          "hover:border-primary/50 hover:bg-muted/50 transition-colors cursor-pointer"
+          "hover:border-primary/50 hover:bg-muted/50 transition-colors cursor-pointer",
         )}
       >
         <Plus className="w-10 h-10 text-muted-foreground" />
@@ -205,9 +206,9 @@ export function ItineraryStep({ data, onUpdate }: ItineraryStepProps) {
                 className="overflow-hidden border-border transition-colors hover:border-primary/20"
               >
                 <div className="flex items-stretch gap-4 p-4 sm:p-5">
-                  {day.imageUrl ? (
+                  {day.image_url ? (
                     <img
-                      src={day.imageUrl}
+                      src={day.image_url}
                       alt={day.title || "Day"}
                       className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg object-cover shrink-0 border border-border"
                     />
@@ -219,7 +220,7 @@ export function ItineraryStep({ data, onUpdate }: ItineraryStepProps) {
                   <div className="flex-1 min-w-0 flex flex-col justify-center">
                     <div className="flex items-center gap-2 mb-1.5">
                       <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-primary text-primary-foreground text-xs font-medium shrink-0">
-                        {day.dayNumber}
+                        {day.day_number}
                       </span>
                       <h5 className="text-base font-medium text-foreground truncate">
                         {day.title || "(Untitled)"}
