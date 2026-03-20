@@ -107,6 +107,8 @@ export function TourDetailsStep({ data, onUpdate }: TourDetailsStepProps) {
               onValueChange={(v) => onUpdate({ country_code: v || undefined })}
               options={[...COUNTRY_SELECT_OPTIONS]}
               placeholder="Select country"
+              searchable
+              searchPlaceholder="Search country…"
             />
           </div>
           <div className="space-y-2">
