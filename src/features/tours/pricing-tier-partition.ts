@@ -9,14 +9,14 @@ export type PartitionPricingTier = {
 
 /** Upper bound for the pricing scale (participants 1..max). */
 export function pricingScaleMaxPax(defaultCapacity: number | undefined | null): number {
-  return Math.max(1, defaultCapacity ?? 15);
+  return Math.max(1, defaultCapacity ?? 5);
 }
 
 export function sortTiersByMinPax(tiers: PartitionPricingTier[]): PartitionPricingTier[] {
   return [...tiers].sort((a, b) => a.min_pax - b.min_pax || a.max_pax - b.max_pax);
 }
 
-/** Single band covering 1..maxPax with defaults suitable for PHP wizard. */
+/** Single tier covering 1..maxPax with defaults suitable for PHP wizard. */
 export function createSinglePartitionBand(
   maxPax: number,
   currency: string,
@@ -34,7 +34,7 @@ export function createSinglePartitionBand(
 
 /**
  * Coerce any tier list into a contiguous partition of [1, maxPax], preserving tier order
- * and extending the last band when needed. Gaps are filled by extending the next tier
+ * and extending the last tier when needed. Gaps are filled by extending the next tier
  * downward; overlaps collapse by consuming the range in first-come order.
  */
 export function normalizeToContiguousPartition(
@@ -73,7 +73,7 @@ export function normalizeToContiguousPartition(
   return sortTiersByMinPax(out);
 }
 
-/** After pax K: left band ends at K, right starts at K+1. */
+/** After pax K: left tier ends at K, right starts at K+1. */
 export function splitBandAfterPax(
   tiers: PartitionPricingTier[],
   tierId: string,
@@ -99,7 +99,7 @@ export function splitBandAfterPax(
 
 /**
  * Move the boundary between `sorted[boundaryIndex]` and `sorted[boundaryIndex+1]` so the
- * left band ends at `newCut` (inclusive) and the right band starts at `newCut + 1`.
+ * left tier ends at `newCut` (inclusive) and the right tier starts at `newCut + 1`.
  */
 export function movePartitionBoundary(
   tiers: PartitionPricingTier[],
@@ -119,7 +119,7 @@ export function movePartitionBoundary(
   return sortTiersByMinPax(next);
 }
 
-/** Split the widest band at roughly its midpoint; returns null if every band is a single pax. */
+/** Split the widest tier at roughly its midpoint; returns null if every tier is a single pax. */
 export function addSplitToWidestBand(tiers: PartitionPricingTier[]): PartitionPricingTier[] | null {
   const sorted = sortTiersByMinPax(tiers);
   let bestIdx = -1;
@@ -137,24 +137,24 @@ export function addSplitToWidestBand(tiers: PartitionPricingTier[]): PartitionPr
   return splitBandAfterPax(tiers, t.id, after);
 }
 
-/** Merge band at sorted index with the next band; keeps left band's amount. */
+/** Merge tier at sorted index with the next tier; keeps left tier's amount. */
 export function mergeBandWithNext(
   tiers: PartitionPricingTier[],
-  bandIndex: number,
+  tierIndex: number,
 ): PartitionPricingTier[] | null {
   const sorted = sortTiersByMinPax(tiers);
-  if (bandIndex < 0 || bandIndex >= sorted.length - 1) return null;
-  const left = sorted[bandIndex];
-  const right = sorted[bandIndex + 1];
+  if (tierIndex < 0 || tierIndex >= sorted.length - 1) return null;
+  const left = sorted[tierIndex];
+  const right = sorted[tierIndex + 1];
   if (left.max_pax + 1 !== right.min_pax) return null;
   const merged: PartitionPricingTier = {
     ...left,
     max_pax: right.max_pax,
   };
   return sortTiersByMinPax([
-    ...sorted.slice(0, bandIndex),
+    ...sorted.slice(0, tierIndex),
     merged,
-    ...sorted.slice(bandIndex + 2),
+    ...sorted.slice(tierIndex + 2),
   ]);
 }
 
@@ -204,7 +204,7 @@ export function isContiguousPartition(
   return true;
 }
 
-/** Slot counts per part when dividing `total` participants into `parts` bands as evenly as possible. */
+/** Slot counts per part when dividing `total` participants into `parts` tiers as evenly as possible. */
 export function evenSlotPartitionSizes(total: number, parts: number): number[] {
   const cap = Math.max(1, total);
   const k = Math.max(1, Math.floor(parts));
@@ -213,7 +213,7 @@ export function evenSlotPartitionSizes(total: number, parts: number): number[] {
   return Array.from({ length: k }, (_, i) => base + (i < rem ? 1 : 0));
 }
 
-/** One band 1..maxPax; amount and currency from the first tier when sorted by min_pax. */
+/** One tier covering 1..maxPax; amount and currency from the first tier when sorted by min_pax. */
 export function resetToSinglePartitionBand(
   tiers: PartitionPricingTier[],
   maxPax: number,
@@ -256,7 +256,7 @@ function splitSingleIntoThreeEvenBands(
 
 /**
  * Evenly redistribute boundaries across existing tiers (same count, same tier order, same amounts).
- * When there is only one tier and maxPax >= 3, splits into three as-even-as-possible bands with the same amount each.
+ * When there is only one tier and maxPax >= 3, splits into three as-even-as-possible tiers with the same amount each.
  */
 export function rebalancePartitionsEvenly(
   tiers: PartitionPricingTier[],
