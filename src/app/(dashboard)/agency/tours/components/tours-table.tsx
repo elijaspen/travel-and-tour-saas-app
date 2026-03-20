@@ -14,6 +14,12 @@ import { getCurrencySymbol } from "@/lib/geo/currencies";
 const FALLBACK_IMAGE =
   "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=160&h=160&fit=crop";
 
+function scheduleLabel(tourType: TourListItem["tour_type"]) {
+  if (tourType === "on_demand") return "On demand";
+  if (tourType === "fixed_schedule") return "Fixed schedule";
+  return "—";
+}
+
 function displayPrice(row: TourListItem) {
   const rows = row.tour_prices ?? [];
   if (rows.length === 0) return null;
@@ -123,6 +129,14 @@ const columns: DataTableColumn<TourListItem>[] = [
         </div>
       );
     },
+  },
+  {
+    id: "schedule",
+    header: "Schedule",
+    width: "140px",
+    cell: (row) => (
+      <span className="text-[14px] font-medium">{scheduleLabel(row.tour_type)}</span>
+    ),
   },
   {
     id: "published",
