@@ -2,16 +2,11 @@
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, type SelectOption } from "@/components/ui/select";
+import { Select } from "@/components/ui/select";
 import { FormStepLayout } from "@/components/shared/form-step-layout";
 import { MapboxLocationPicker } from "@/components/shared/mapbox-location-picker";
-import type { CreateTourWizardState, TourType } from "@/features/tours/tour.types";
+import type { CreateTourWizardState } from "@/features/tours/tour.types";
 import { COUNTRY_SELECT_OPTIONS } from "@/lib/geo/countries";
-
-const TOUR_TYPE_OPTIONS: SelectOption<TourType>[] = [
-  { value: "on_demand", label: "On Demand" },
-  { value: "fixed_schedule", label: "Fixed Schedule" },
-];
 
 type LocationStepProps = {
   data: CreateTourWizardState;
@@ -21,15 +16,12 @@ type LocationStepProps = {
 export function LocationStep({ data, onUpdate }: LocationStepProps) {
   return (
     <FormStepLayout
-      title="Where & when"
-      description="Location details and operational settings for your tour."
+      title="Location"
+      description="Where your tour is based."
     >
       <div className="mb-6">
-        <h3 className="text-base font-semibold text-foreground mb-2">Location</h3>
-        <p className="text-[13px] text-muted-foreground mb-4">
-          Search and select the primary location for your tour.
-        </p>
         <MapboxLocationPicker
+          mapLayout="modal"
           value={{
             address_line: data.address_line,
             city: data.city,
@@ -55,7 +47,11 @@ export function LocationStep({ data, onUpdate }: LocationStepProps) {
         />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
           <div className="space-y-2">
-            <Label htmlFor="city" className="text-sm font-medium text-foreground mb-2 block">
+            <Label
+              htmlFor="city"
+              className="text-sm font-medium text-foreground mb-2 block"
+              required
+            >
               City
             </Label>
             <Input
@@ -64,6 +60,7 @@ export function LocationStep({ data, onUpdate }: LocationStepProps) {
               className="h-11 rounded-lg border-input bg-background"
               value={data.city ?? ""}
               onChange={(e) => onUpdate({ city: e.target.value || undefined })}
+              aria-required
             />
           </div>
           <div className="space-y-2">
@@ -83,12 +80,16 @@ export function LocationStep({ data, onUpdate }: LocationStepProps) {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
           <div className="space-y-2">
-            <Label className="text-sm font-medium text-foreground mb-2 block">Country</Label>
+            <Label className="text-sm font-medium text-foreground mb-2 block" required>
+              Country
+            </Label>
             <Select
               value={data.country_code}
               onValueChange={(v) => onUpdate({ country_code: v || undefined })}
               options={[...COUNTRY_SELECT_OPTIONS]}
               placeholder="Select country"
+              searchable
+              searchPlaceholder="Search country…"
             />
           </div>
           <div className="space-y-2">
@@ -103,80 +104,6 @@ export function LocationStep({ data, onUpdate }: LocationStepProps) {
               onChange={(e) => onUpdate({ postal_code: e.target.value || undefined })}
             />
           </div>
-        </div>
-      </div>
-
-      <div className="pt-6 border-t border-border">
-        <h3 className="text-base font-semibold text-foreground mb-2">Operational settings</h3>
-        <p className="text-[13px] text-muted-foreground mb-4">
-          Duration, capacity, and tour type.
-        </p>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-          <div className="space-y-2">
-            <Label htmlFor="duration" className="text-sm font-medium text-foreground mb-2 block">
-              Duration (days)
-            </Label>
-            <Input
-              id="duration"
-              type="number"
-              min={1}
-              placeholder="3"
-              className="h-11 rounded-lg border-input bg-background"
-              value={data.duration_days ?? ""}
-              onChange={(e) =>
-                onUpdate({
-                  duration_days: e.target.value ? Number(e.target.value) : undefined,
-                })
-              }
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="capacity" className="text-sm font-medium text-foreground mb-2 block">
-              Default capacity (persons)
-            </Label>
-            <Input
-              id="capacity"
-              type="number"
-              min={1}
-              placeholder="15"
-              className="h-11 rounded-lg border-input bg-background"
-              value={data.default_capacity ?? ""}
-              onChange={(e) =>
-                onUpdate({
-                  default_capacity: e.target.value ? Number(e.target.value) : undefined,
-                })
-              }
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="max_bookings" className="text-sm font-medium text-foreground mb-2 block">
-              Max simultaneous bookings
-            </Label>
-            <Input
-              id="max_bookings"
-              type="number"
-              min={1}
-              placeholder="2"
-              className="h-11 rounded-lg border-input bg-background"
-              value={data.max_simultaneous_bookings ?? ""}
-              onChange={(e) =>
-                onUpdate({
-                  max_simultaneous_bookings: e.target.value
-                    ? Number(e.target.value)
-                    : undefined,
-                })
-              }
-            />
-          </div>
-        </div>
-        <div className="space-y-2 w-full">
-          <Label className="text-sm font-medium text-foreground mb-2 block">Tour type</Label>
-          <Select
-            value={data.tour_type}
-            onValueChange={(v) => onUpdate({ tour_type: v as TourType })}
-            options={TOUR_TYPE_OPTIONS}
-            placeholder="Select tour type"
-          />
         </div>
       </div>
     </FormStepLayout>

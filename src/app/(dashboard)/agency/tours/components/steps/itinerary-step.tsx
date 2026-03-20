@@ -106,7 +106,10 @@ export function ItineraryStep({ data, onUpdate }: ItineraryStepProps) {
                     />
                   </div>
                   <div className="space-y-2 sm:col-span-2">
-                    <Label className="text-sm font-medium text-foreground mb-2 block">
+                    <Label
+                      className="text-sm font-medium text-foreground mb-2 block"
+                      required
+                    >
                       Day title
                     </Label>
                     <Input
@@ -114,6 +117,7 @@ export function ItineraryStep({ data, onUpdate }: ItineraryStepProps) {
                       className="h-11 rounded-lg border-input bg-background"
                       value={formDay.title}
                       onChange={(e) => setFormDay({ ...formDay, title: e.target.value })}
+                      aria-required
                     />
                   </div>
                 </div>

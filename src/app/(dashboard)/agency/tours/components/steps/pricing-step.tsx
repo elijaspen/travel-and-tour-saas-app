@@ -49,18 +49,20 @@ export function PricingStep({ data, onUpdate }: PricingStepProps) {
   return (
     <FormStepLayout
       title="Pricing"
-      description="Set price per person for each group-size band along the scale. Capacity comes from your Location step (default capacity)."
+      description="Set price per person for each group-size tier along the scale. Default capacity from the Location step sets how far the scale runs; tiers must cover every group size from 1 through that capacity with no gaps or overlaps."
     >
       <div className="flex min-w-0 flex-col gap-8">
         <p className="text-sm leading-relaxed text-muted-foreground">
-          Bands run from <span className="font-medium text-foreground">1</span> through{" "}
+          Tiers run from <span className="font-medium text-foreground">1</span> through{" "}
           <span className="font-medium text-foreground">{maxPax}</span> participants (default
           capacity from Location). Change capacity in step 2 if needed—the editor below shows the
           same limit.
         </p>
 
         <div className="min-w-0 max-w-xl space-y-2">
-          <Label className="text-sm font-medium">Currency (all bands)</Label>
+          <Label className="text-sm font-medium" required>
+            Currency (all tiers)
+          </Label>
           <Select
             value={sharedCurrency}
             onValueChange={handleCurrencyChange}
@@ -78,7 +80,7 @@ export function PricingStep({ data, onUpdate }: PricingStepProps) {
             onTiersChange={(next) => onUpdate({ pricing_tiers: next })}
           />
         ) : (
-          <p className="text-sm text-muted-foreground">Preparing pricing bands…</p>
+          <p className="text-sm text-muted-foreground">Preparing pricing tiers…</p>
         )}
       </div>
     </FormStepLayout>
