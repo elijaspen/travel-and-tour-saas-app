@@ -1,23 +1,13 @@
 "use client";
 
-import React, { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, type ChangeEvent } from "react";
 import dynamic from "next/dynamic";
 import { MapPin, Search } from "lucide-react";
 
+import type { TourLocationValue } from "@/features/tours/tour.types";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-
-export type LocationValue = {
-  addressLine?: string;
-  city?: string;
-  provinceState?: string;
-  countryCode?: string;
-  postalCode?: string;
-  latitude?: number;
-  longitude?: number;
-  placeId?: string;
-};
 
 function MapLoadingPlaceholder() {
   return (
@@ -27,10 +17,10 @@ function MapLoadingPlaceholder() {
   );
 }
 
-const MapboxContent = dynamic(
-  () => import("./mapbox-location-picker-map"),
-  { ssr: false, loading: MapLoadingPlaceholder }
-);
+const MapboxContent = dynamic(() => import("./mapbox-location-picker-map"), {
+  ssr: false,
+  loading: MapLoadingPlaceholder,
+});
 
 type GeocodingFeature = {
   id: string;
@@ -40,20 +30,16 @@ type GeocodingFeature = {
 };
 
 type MapboxLocationPickerProps = {
-  value?: LocationValue;
-  onChange: (location: LocationValue) => void;
+  value?: TourLocationValue;
+  onChange: (location: TourLocationValue) => void;
   className?: string;
 };
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
-export function MapboxLocationPicker({
-  value,
-  onChange,
-  className,
-}: MapboxLocationPickerProps) {
+export function MapboxLocationPicker({ value, onChange, className }: MapboxLocationPickerProps) {
   const [query, setQuery] = useState(
-    [value?.addressLine, value?.city].filter(Boolean).join(", ") || ""
+    [value?.address_line, value?.city].filter(Boolean).join(", ") || "",
   );
   const [suggestions, setSuggestions] = useState<GeocodingFeature[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -64,28 +50,25 @@ export function MapboxLocationPicker({
   const lng = value?.longitude ?? 120.9842;
   const hasToken = !!MAPBOX_TOKEN;
 
-  const search = useCallback(
-    (q: string) => {
-      if (!MAPBOX_TOKEN || !q.trim()) {
-        setSuggestions([]);
-        return;
-      }
-      setIsSearching(true);
-      fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(q)}.json?access_token=${MAPBOX_TOKEN}&limit=5`
-      )
-        .then((res) => res.json())
-        .then((data: { features?: GeocodingFeature[] }) => {
-          setSuggestions(data.features ?? []);
-          setShowSuggestions(true);
-        })
-        .catch(() => setSuggestions([]))
-        .finally(() => setIsSearching(false));
-    },
-    []
-  );
+  const search = useCallback((q: string) => {
+    if (!MAPBOX_TOKEN || !q.trim()) {
+      setSuggestions([]);
+      return;
+    }
+    setIsSearching(true);
+    fetch(
+      `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(q)}.json?access_token=${MAPBOX_TOKEN}&limit=5`,
+    )
+      .then((res) => res.json())
+      .then((data: { features?: GeocodingFeature[] }) => {
+        setSuggestions(data.features ?? []);
+        setShowSuggestions(true);
+      })
+      .catch(() => setSuggestions([]))
+      .finally(() => setIsSearching(false));
+  }, []);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const v = e.target.value;
     setQuery(v);
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -102,14 +85,14 @@ export function MapboxLocationPicker({
     const place = context.find((c) => c.id.startsWith("place"));
 
     onChange({
-      addressLine: address,
+      address_line: address,
       city: place?.text,
-      provinceState: region?.text,
-      countryCode: country?.short_code?.toUpperCase(),
-      postalCode: postcode?.text,
+      province_state: region?.text,
+      country_code: country?.short_code?.toUpperCase(),
+      postal_code: postcode?.text,
       latitude: latVal,
       longitude: lngVal,
-      placeId: feature.id,
+      place_id: feature.id,
     });
     setQuery(address);
     setSuggestions([]);
@@ -123,7 +106,8 @@ export function MapboxLocationPicker({
         <div className="w-full aspect-square bg-muted rounded-lg flex flex-col items-center justify-center gap-2 p-4">
           <MapPin className="w-8 h-8 text-muted-foreground" />
           <p className="text-sm text-muted-foreground text-center">
-            Add <code className="bg-muted px-1 rounded">NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN</code> to enable the map.
+            Add <code className="bg-muted px-1 rounded">NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN</code> to
+            enable the map.
           </p>
           <Input
             placeholder="Enter address manually"
@@ -131,7 +115,7 @@ export function MapboxLocationPicker({
             onChange={(e) => setQuery(e.target.value)}
             onBlur={() => {
               if (query.trim()) {
-                onChange({ ...value, addressLine: query });
+                onChange({ ...value, address_line: query });
               }
             }}
             className="max-w-sm"
@@ -186,19 +170,11 @@ export function MapboxLocationPicker({
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label className="text-sm font-medium">Latitude</Label>
-            <Input
-              value={value?.latitude ?? ""}
-              readOnly
-              className="bg-muted"
-            />
+            <Input value={value?.latitude ?? ""} readOnly className="bg-muted" />
           </div>
           <div className="space-y-2">
             <Label className="text-sm font-medium">Longitude</Label>
-            <Input
-              value={value?.longitude ?? ""}
-              readOnly
-              className="bg-muted"
-            />
+            <Input value={value?.longitude ?? ""} readOnly className="bg-muted" />
           </div>
         </div>
       )}
