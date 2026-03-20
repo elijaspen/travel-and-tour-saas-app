@@ -81,7 +81,7 @@ function slotLeftFrac(p: number, maxPax: number): number {
 }
 
 /**
- * X-position of the boundary immediately after participant `cut` (left band ends at cut).
+ * X-position of the boundary immediately after participant `cut` (left tier ends at cut).
  * Aligns with the right edge of slot `cut`: cut/cap of track width from the left.
  */
 function splitBoundaryFrac(cut: number, maxPax: number): number {
@@ -299,7 +299,7 @@ export function PricingTierScaleEditor({
                   />
                   <span>
                     <span className="font-medium text-foreground">Hover</span> a split to
-                    remove it (merges with the band on the right).
+                    remove it (merges with the tier on the right).
                   </span>
                 </li>
                 <li className="flex gap-2.5">
@@ -308,7 +308,7 @@ export function PricingTierScaleEditor({
                     aria-hidden
                   />
                   <span>
-                    <span className="font-medium text-foreground">Tap</span> a band to
+                    <span className="font-medium text-foreground">Tap</span> a tier to
                     open the price editor.
                   </span>
                 </li>
@@ -331,9 +331,8 @@ export function PricingTierScaleEditor({
             </div>
             <Button
               type="button"
-              variant="secondary"
-              size="sm"
-              className="h-9 shrink-0 gap-1.5 self-start rounded-lg shadow-xs sm:mt-0.5"
+              variant="outline"
+              className="h-10 shrink-0 gap-1.5 self-start border-border sm:mt-0.5"
               disabled={!canAddAnySplit(sorted)}
               onClick={handleAddSplit}
             >
@@ -370,7 +369,7 @@ export function PricingTierScaleEditor({
                     left: `${leftPct}%`,
                     width: `${widthPct}%`,
                   }}
-                  aria-label={`Band ${tier.min_pax} to ${tier.max_pax} participants, ${formatPriceFromMinorUnits(tier.amount, sharedCurrency)} per person. Click to edit price.`}
+                  aria-label={`Tier ${tier.min_pax} to ${tier.max_pax} participants, ${formatPriceFromMinorUnits(tier.amount, sharedCurrency)} per person. Click to edit price.`}
                 >
                   <span className="text-xs font-medium text-muted-foreground">
                     {tier.min_pax}–{tier.max_pax} people
@@ -552,13 +551,13 @@ export function PricingTierScaleEditor({
           </CollapsibleTrigger>
         </div>
         <CollapsibleContent className="mt-6 space-y-4 data-[state=closed]:animate-out">
-          {sorted.map((tier, bandIndex) => (
+          {sorted.map((tier, tierIndex) => (
             <Card key={tier.id} className="border-border bg-card shadow-sm">
               <CardContent className="p-4">
                 <div className="grid grid-cols-1 items-start gap-4 min-[480px]:grid-cols-[1fr_1fr] min-[720px]:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
                   <div>
                     <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                      Band {bandIndex + 1}
+                      Tier {tierIndex + 1}
                     </p>
                     <p className="mt-1 text-sm font-semibold text-foreground">
                       {tier.min_pax}–{tier.max_pax} participants
@@ -624,7 +623,7 @@ export function PricingTierScaleEditor({
             Pricing summary
           </CardTitle>
           <CardDescription className="text-xs sm:text-sm">
-            {sorted.length} price band{sorted.length === 1 ? "" : "s"}, charged per person
+            {sorted.length} price tier{sorted.length === 1 ? "" : "s"}, charged per person
           </CardDescription>
         </CardHeader>
         <CardContent className="p-0">
@@ -665,7 +664,7 @@ export function PricingTierScaleEditor({
                   {activeTier.min_pax}–{activeTier.max_pax} participants
                 </DialogTitle>
                 <p className="text-sm text-muted-foreground">
-                  Price per person for this band. Splits are adjusted on the scale above.
+                  Price per person for this tier. Splits are adjusted on the scale above.
                 </p>
               </DialogHeader>
               <div className="space-y-2 py-2">
