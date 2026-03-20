@@ -39,6 +39,7 @@ type RichTextEditorProps = {
   minHeight?: string;
   className?: string;
   "aria-invalid"?: boolean;
+  "aria-required"?: boolean;
 };
 
 export function RichTextEditor({
@@ -51,6 +52,7 @@ export function RichTextEditor({
   minHeight = "280px",
   className,
   "aria-invalid": ariaInvalid,
+  "aria-required": ariaRequired,
 }: RichTextEditorProps) {
   const editor = useEditor({
     immediatelyRender: false,
@@ -63,6 +65,7 @@ export function RichTextEditor({
     editorProps: {
       attributes: {
         ...(ariaInvalid && { "aria-invalid": "true" as const }),
+        ...(ariaRequired && { "aria-required": "true" as const }),
         class: "text-sm text-foreground leading-relaxed min-w-0 outline-none",
       },
       handleDOMEvents: {

@@ -26,7 +26,7 @@ export function StepperProgress({
   return (
     <>
       <div className="hidden sm:block">
-        <div className="flex items-center justify-between max-w-[1100px] mx-auto">
+        <div className="flex items-center justify-between max-w-[920px] mx-auto">
           {steps.map((step, index) => {
             const isCompleted = completedCount >= step.number;
             const isActive = currentStep === step.number;
@@ -36,7 +36,7 @@ export function StepperProgress({
 
             return (
               <React.Fragment key={step.number}>
-                <div className="flex flex-col items-center gap-2">
+                <div className="flex flex-col items-center gap-1">
                   <button
                     type="button"
                     onClick={() => isClickable && onStepClick?.(step.number)}
@@ -44,7 +44,7 @@ export function StepperProgress({
                     aria-current={isActive ? "step" : undefined}
                     aria-label={`${step.label}${isCompleted ? ", completed" : isActive ? ", current step" : ""}`}
                     className={cn(
-                      "w-12 h-12 rounded-full flex items-center justify-center text-sm font-medium shrink-0",
+                      "size-9 rounded-full flex items-center justify-center text-xs font-semibold shrink-0",
                       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                       isCompleted && "bg-primary text-primary-foreground",
                       isActive && !isCompleted && "bg-primary text-primary-foreground",
@@ -54,14 +54,14 @@ export function StepperProgress({
                     )}
                   >
                     {isCompleted ? (
-                      <Check className="w-6 h-6" />
+                      <Check className="size-4" strokeWidth={2.5} />
                     ) : (
                       step.number
                     )}
                   </button>
                   <span
                     className={cn(
-                      "text-base font-medium whitespace-nowrap",
+                      "text-xs font-medium text-center leading-tight whitespace-nowrap",
                       isActive ? "text-foreground" : "text-muted-foreground"
                     )}
                   >
@@ -69,7 +69,7 @@ export function StepperProgress({
                   </span>
                 </div>
                 {index < steps.length - 1 && (
-                  <div className="flex-1 h-0.5 mx-4 mt-[-24px]" aria-hidden>
+                  <div className="flex-1 h-0.5 mx-2 mt-[-18px]" aria-hidden>
                     <div
                       className={cn(
                         "h-full",
@@ -85,8 +85,8 @@ export function StepperProgress({
       </div>
 
       {/* Mobile: progress bar + current step label */}
-      <div className="flex sm:hidden flex-col gap-2">
-        <div className="flex justify-between text-sm">
+      <div className="flex sm:hidden flex-col gap-1.5">
+        <div className="flex justify-between text-xs">
           <span className="font-medium text-foreground">
             {steps[currentStep - 1]?.label ?? "Step"}
           </span>

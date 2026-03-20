@@ -2,16 +2,18 @@ import React from "react";
 
 type FormStepLayoutProps = {
   title: string;
-  description: string;
+  description?: string;
   children: React.ReactNode;
 };
 
 export function FormStepLayout({ title, description, children }: FormStepLayoutProps) {
   return (
     <div className="max-w-[800px] mx-auto w-full">
-      <div className="mb-8">
+      <div className={description ? "mb-8" : "mb-6"}>
         <h2 className="text-xl font-semibold text-foreground mb-2">{title}</h2>
-        <p className="text-sm text-muted-foreground">{description}</p>
+        {description ? (
+          <p className="text-sm text-muted-foreground">{description}</p>
+        ) : null}
       </div>
       {children}
     </div>
