@@ -36,29 +36,26 @@ export function supabaseService<T extends TableName>(table: T) {
       return { data: (data ?? null) as Row | null, error }
     },
 
-    async getById(
-      id: Row["id"],
-      params?: SelectParams,
-    ): Promise<ServiceResult<Row>> {
+    async getById(id: string, params?: SelectParams): Promise<ServiceResult<Row>> {
       const q = await from()
       const select = params?.select ?? "*"
       const { data, error } = await q.select(select).eq("id", id as string).single()
       return { data: (data ?? null) as Row | null, error }
     },
 
-    async update(id: Row["id"], payload: Update): Promise<ServiceResult<Row>> {
+    async update(id: string, payload: Update): Promise<ServiceResult<Row>> {
       const q = await from()
       const { data, error } = await q.update(payload as object).eq("id", id as string).select().single()
       return { data: (data ?? null) as Row | null, error }
     },
 
-    async patch(id: Row["id"], patch: Partial<Update>): Promise<ServiceResult<Row>> {
+    async patch(id: string, patch: Partial<Update>): Promise<ServiceResult<Row>> {
       const q = await from()
       const { data, error } = await q.update(patch as object).eq("id", id as string).select().single()
       return { data: (data ?? null) as Row | null, error }
     },
 
-    async remove(id: Row["id"]): Promise<ServiceResult<null>> {
+    async remove(id: string): Promise<ServiceResult<null>> {
       const q = await from()
       const { error } = await q.delete().eq("id", id as string)
       return { data: null, error }
