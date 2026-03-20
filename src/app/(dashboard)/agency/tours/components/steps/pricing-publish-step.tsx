@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Select, type SelectOption } from "@/components/ui/select";
+import { Select } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 
 import type {
@@ -16,12 +16,7 @@ import type {
   PricingTierPayload,
   BlackoutDatePayload,
 } from "@/features/tours/tour.validation";
-
-const CURRENCY_OPTIONS: SelectOption[] = [
-  { value: "USD", label: "USD" },
-  { value: "PHP", label: "PHP" },
-  { value: "EUR", label: "EUR" },
-];
+import { CURRENCY_SELECT_OPTIONS } from "@/lib/geo/currencies";
 
 type PricingPublishStepProps = {
   data: CreateTourPayload;
@@ -111,7 +106,7 @@ export function PricingPublishStep({ data, onUpdate }: PricingPublishStepProps) 
                   <Select
                     value={formTier.currency}
                     onValueChange={(v) => setFormTier({ ...formTier, currency: v })}
-                    options={CURRENCY_OPTIONS}
+                    options={[...CURRENCY_SELECT_OPTIONS]}
                   />
                 </div>
                 <div className="space-y-2">

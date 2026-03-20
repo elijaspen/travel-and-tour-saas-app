@@ -22,12 +22,7 @@ import type {
   CreateTourPayload,
   PricingTierPayload,
 } from "@/features/tours/tour.validation";
-
-const CURRENCY_OPTIONS: SelectOption[] = [
-  { value: "USD", label: "USD" },
-  { value: "PHP", label: "PHP" },
-  { value: "EUR", label: "EUR" },
-];
+import { CURRENCY_SELECT_OPTIONS } from "@/lib/geo/currencies";
 
 type PricingStepProps = {
   data: CreateTourPayload;
@@ -106,7 +101,7 @@ export function PricingStep({ data, onUpdate }: PricingStepProps) {
                     <Select
                       value={formTier.currency}
                       onValueChange={(v) => setFormTier({ ...formTier, currency: v })}
-                      options={CURRENCY_OPTIONS}
+                      options={[...CURRENCY_SELECT_OPTIONS]}
                     />
                   </div>
                   <div className="space-y-2">

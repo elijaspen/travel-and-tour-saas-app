@@ -8,18 +8,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, type SelectOption } from "@/components/ui/select";
 import { MapboxLocationPicker } from "@/components/shared/mapbox-location-picker";
 import type { CreateTourPayload } from "@/features/tours/tour.validation";
+import { COUNTRY_SELECT_OPTIONS } from "@/lib/geo/countries";
 
 const TOUR_TYPE_OPTIONS: SelectOption<"on_demand" | "fixed_schedule">[] = [
   { value: "on_demand", label: "On Demand" },
   { value: "fixed_schedule", label: "Fixed Schedule" },
-];
-
-const COUNTRY_OPTIONS: SelectOption[] = [
-  { value: "PH", label: "Philippines" },
-  { value: "US", label: "United States" },
-  { value: "JP", label: "Japan" },
-  { value: "TH", label: "Thailand" },
-  { value: "ID", label: "Indonesia" },
 ];
 
 type TourDetailsStepProps = {
@@ -106,7 +99,7 @@ export function TourDetailsStep({ data, onUpdate }: TourDetailsStepProps) {
                   location: { ...data.location, countryCode: v },
                 })
               }
-              options={COUNTRY_OPTIONS}
+              options={[...COUNTRY_SELECT_OPTIONS]}
               placeholder="Select country"
             />
           </div>

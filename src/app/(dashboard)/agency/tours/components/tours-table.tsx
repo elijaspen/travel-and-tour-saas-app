@@ -4,9 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { MapPin } from "lucide-react";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DataTable, type DataTableColumn } from "@/components/shared/data-table";
 import { cn } from "@/lib/utils";
+import { getCurrencySymbol } from "@/lib/geo/currencies";
 
 
 // TODO: Replace with actual tour data
@@ -16,11 +18,13 @@ export type TourRow = {
   location: string;
   thumbnail: string;
   duration: number;
-  type: string;
+  categories: string[];
+  currency: string;
   basePrice: number;
   isActive: boolean;
 };
 
+// TODO: Replace with actual tour columns
 const TOURS_COLUMNS: DataTableColumn<TourRow>[] = [
   {
     id: "thumbnail",
@@ -60,31 +64,48 @@ const TOURS_COLUMNS: DataTableColumn<TourRow>[] = [
     ),
   },
   {
-    id: "type",
-    header: "Type",
-    width: "140px",
+    id: "categories",
+    header: "Categories",
+    width: "200px",
+    cellClassName: "whitespace-normal",
     cell: (tour) => (
-      <span className="inline-block rounded-lg bg-muted px-3 py-1 text-xs font-medium text-foreground">
-        {tour.type}
-      </span>
+      <div className="flex flex-wrap gap-1.5">
+        {tour.categories.map((label, index) => (
+          <Badge
+            key={`${tour.id}-${index}`}
+            variant="outline"
+            className={cn(
+              "h-auto max-w-full rounded-full border-primary/20 bg-primary/5 px-2.5 py-0.5 font-medium shadow-none",
+              "text-foreground/90 normal-case tracking-tight",
+              "dark:border-primary/35 dark:bg-primary/15 dark:text-foreground"
+            )}
+          >
+            {label}
+          </Badge>
+        ))}
+      </div>
     ),
   },
   {
     id: "price",
     header: "Base Price",
     width: "140px",
-    cell: (tour) => (
-      <div>
-        <div className="text-[12px] text-muted-foreground">from</div>
-        <div className="text-[15px] font-semibold">
-          ${tour.basePrice.toLocaleString()}
+    cell: (tour) => {
+      const symbol = getCurrencySymbol(tour.currency);
+      return (
+        <div>
+          <div className="text-[12px] text-muted-foreground">from</div>
+          <div className="text-[15px] font-semibold tabular-nums">
+            {symbol}
+            {tour.basePrice.toLocaleString()}
+          </div>
         </div>
-      </div>
-    ),
+      );
+    },
   },
   {
-    id: "status",
-    header: "Status",
+    id: "published",
+    header: "Published",
     width: "120px",
     cell: (tour) => (
       <div
@@ -107,7 +128,7 @@ const TOURS_COLUMNS: DataTableColumn<TourRow>[] = [
     header: "Actions",
     width: "120px",
     cell: () => (
-      <Button variant="secondary" size="sm" asChild>
+      <Button variant="outline" size="sm" asChild>
         <Link href="#">Manage</Link>
       </Button>
     ),

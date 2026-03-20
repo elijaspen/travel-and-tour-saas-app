@@ -12,6 +12,7 @@ import { PageSectionHeader } from "@/components/shared/page-section-header";
 import { Pagination } from "@/components/shared/pagination";
 import { ToursTable, type TourRow } from "./components/tours-table";
 
+// TODO: Replace with actual tour data
 const tourData: TourRow[] = [
   {
     id: 1,
@@ -20,7 +21,8 @@ const tourData: TourRow[] = [
     thumbnail:
       "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=160&h=160",
     duration: 7,
-    type: "Adventure",
+    categories: ["Adventure", "Hiking", "Mountains"],
+    currency: "PHP",
     basePrice: 2499,
     isActive: true,
   },
@@ -31,7 +33,8 @@ const tourData: TourRow[] = [
     thumbnail:
       "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=160&h=160",
     duration: 5,
-    type: "Cultural",
+    categories: ["Cultural", "City", "Food"],
+    currency: "PHP",
     basePrice: 1799,
     isActive: true,
   },
@@ -42,7 +45,8 @@ const tourData: TourRow[] = [
     thumbnail:
       "https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=160&h=160",
     duration: 4,
-    type: "Relaxation",
+    categories: ["Relaxation", "Beach", "Wellness"],
+    currency: "PHP",
     basePrice: 1299,
     isActive: false,
   },
@@ -53,7 +57,8 @@ const tourData: TourRow[] = [
     thumbnail:
       "https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=160&h=160",
     duration: 10,
-    type: "Adventure",
+    categories: ["Adventure", "Wildlife", "Photography"],
+    currency: "PHP",
     basePrice: 3299,
     isActive: true,
   },
@@ -64,7 +69,8 @@ const tourData: TourRow[] = [
     thumbnail:
       "https://images.unsplash.com/photo-1523531294919-4bcd7c65e216?w=160&h=160",
     duration: 6,
-    type: "Cultural",
+    categories: ["Cultural", "Wine", "Culinary"],
+    currency: "PHP",
     basePrice: 2199,
     isActive: true,
   },
@@ -75,7 +81,8 @@ const tourData: TourRow[] = [
     thumbnail:
       "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?w=160&h=160",
     duration: 5,
-    type: "Relaxation",
+    categories: ["Relaxation", "Luxury", "Beach"],
+    currency: "PHP",
     basePrice: 3899,
     isActive: true,
   },
@@ -86,7 +93,8 @@ const tourData: TourRow[] = [
     thumbnail:
       "https://images.unsplash.com/photo-1489749798305-4fea3ae63d43?w=160&h=160",
     duration: 8,
-    type: "Adventure",
+    categories: ["Adventure", "Desert", "Camping"],
+    currency: "PHP",
     basePrice: 1899,
     isActive: false,
   },
@@ -97,7 +105,8 @@ const tourData: TourRow[] = [
     thumbnail:
       "https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e?w=160&h=160",
     duration: 7,
-    type: "Relaxation",
+    categories: ["Relaxation", "Island", "Sailing"],
+    currency: "PHP",
     basePrice: 2599,
     isActive: true,
   },

@@ -1,5 +1,8 @@
 import { z } from "zod";
 
+import { isValidCountryCode } from "@/lib/geo/countries";
+import { isValidCurrencyCode } from "@/lib/geo/currencies";
+
 function stripHtml(html: string): string {
   return html.replace(/<[^>]*>/g, "");
 }
@@ -8,7 +11,13 @@ export const locationSchema = z.object({
   addressLine: z.string().optional(),
   city: z.string().optional(),
   provinceState: z.string().optional(),
-  countryCode: z.string().optional(),
+  countryCode: z
+    .string()
+    .optional()
+    .refine(
+      (c) => c == null || c === "" || isValidCountryCode(c),
+      "Invalid country code",
+    ),
   postalCode: z.string().optional(),
   latitude: z.number().optional(),
   longitude: z.number().optional(),
@@ -29,7 +38,10 @@ export const pricingTierSchema = z.object({
   minPax: z.coerce.number().min(1),
   maxPax: z.coerce.number().min(1),
   amount: z.coerce.number().min(0),
-  currency: z.string().default("USD"),
+  currency: z
+    .string()
+    .default("USD")
+    .refine(isValidCurrencyCode, "Invalid currency code"),
 });
 
 export const blackoutDateSchema = z.object({
