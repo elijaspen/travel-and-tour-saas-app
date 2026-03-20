@@ -33,6 +33,7 @@ export const ROUTE_PATHS = {
     AGENCY: {
       ROOT: "/agency",
       TOURS: "/agency/tours",
+      TOUR_CREATE: "/agency/tours/new",
       BOOKINGS: "/agency/bookings",
       REVIEWS: "/agency/reviews",
       SETTINGS: "/agency/settings",
