@@ -17,7 +17,7 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "typecheck": "tsc --noEmit",
-    "migrate": "supabase db push --local --include-all && pnpm run types",
+    "migrate": "supabase db push --local --include-all && npm run types",
     "migrate:production": "supabase db push --include-all",
     "create": "supabase db diff -f",
     "types": "supabase gen types typescript --local > supabase/types/database.ts",
