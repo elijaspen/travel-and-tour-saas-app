@@ -1,14 +1,17 @@
 "use client";
 
 import { useState, useCallback, useMemo, type DragEvent } from "react";
-import { Check, GripVertical, Trash2, Upload } from "lucide-react";
+import { Check, Trash2, Upload, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { FormStepLayout } from "@/components/shared/form-step-layout";
 import { RichTextEditor } from "@/components/shared/rich-text-editor";
-import type { CreateTourWizardState, TourPhotoDraft } from "@/features/tours/tour.types";
+import { Select } from "@/components/ui/select";
+import { TOUR_TYPE_SELECT_OPTIONS } from "@/features/tours/tour.constants";
+import type { CreateTourWizardState, TourPhotoDraft, TourType } from "@/features/tours/tour.types";
 
 const ALLOWED_TYPES = ["image/png", "image/jpeg", "image/jpg"];
 const MAX_SIZE = 10 * 1024 * 1024;
@@ -121,10 +124,14 @@ export function BasicsStep({ data, onUpdate, errors }: BasicsStepProps) {
   return (
     <FormStepLayout
       title="Tour details"
-      description="Name, description, and photos for your tour."
+      description="Name, description, capacity, and photos for your tour."
     >
       <div className="mb-6">
-        <Label htmlFor="tourTitle" className="text-sm font-medium text-foreground mb-2 block">
+        <Label
+          htmlFor="tourTitle"
+          className="text-sm font-medium text-foreground mb-2 block"
+          required
+        >
           Tour title
         </Label>
         <div className="relative">
@@ -138,6 +145,7 @@ export function BasicsStep({ data, onUpdate, errors }: BasicsStepProps) {
             value={data.title}
             onChange={(e) => onUpdate({ title: e.target.value })}
             onBlur={handleBlur("title")}
+            aria-required
           />
           {touched.title && titleValid && (
             <div className="absolute right-3 top-1/2 -translate-y-1/2 text-green-600">
@@ -155,7 +163,7 @@ export function BasicsStep({ data, onUpdate, errors }: BasicsStepProps) {
           htmlFor="short_description"
           className="text-sm font-medium text-foreground mb-2 block"
         >
-          Short description (teaser)
+          Short description (teaser, optional)
         </Label>
         <Textarea
           id="short_description"
@@ -168,7 +176,11 @@ export function BasicsStep({ data, onUpdate, errors }: BasicsStepProps) {
       </div>
 
       <div className="mb-8">
-        <Label htmlFor="description" className="text-sm font-medium text-foreground mb-2 block">
+        <Label
+          htmlFor="description"
+          className="text-sm font-medium text-foreground mb-2 block"
+          required
+        >
           Full description
         </Label>
         <RichTextEditor
@@ -179,10 +191,239 @@ export function BasicsStep({ data, onUpdate, errors }: BasicsStepProps) {
           minLength={10}
           maxLength={10_000}
           aria-invalid={touched.description && !!errors?.description ? true : undefined}
+          aria-required
         />
         {touched.description && errors?.description && (
           <p className="text-xs text-destructive mt-1">{errors.description}</p>
         )}
+      </div>
+
+      <div className="mb-8 pt-2">
+        <h3 className="text-base font-semibold text-foreground mb-4">Capacity &amp; scheduling</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+          <div className="space-y-2">
+            <Label
+              htmlFor="duration"
+              className="text-sm font-medium text-foreground mb-2 block"
+              required
+            >
+              Duration (days)
+            </Label>
+            <Input
+              id="duration"
+              type="number"
+              min={1}
+              placeholder="1"
+              className="h-11 rounded-lg border-input bg-background"
+              value={data.duration_days ?? ""}
+              onChange={(e) =>
+                onUpdate({
+                  duration_days: e.target.value ? Number(e.target.value) : undefined,
+                })
+              }
+              aria-required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label
+              htmlFor="capacity"
+              className="text-sm font-medium text-foreground mb-2 block"
+              required
+            >
+              Default capacity (persons)
+            </Label>
+            <Input
+              id="capacity"
+              type="number"
+              min={1}
+              placeholder="5"
+              className="h-11 rounded-lg border-input bg-background"
+              value={data.default_capacity ?? ""}
+              onChange={(e) =>
+                onUpdate({
+                  default_capacity: e.target.value ? Number(e.target.value) : undefined,
+                })
+              }
+              aria-required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label
+              htmlFor="max_bookings"
+              className="text-sm font-medium text-foreground mb-2 block"
+              required
+            >
+              Max simultaneous bookings
+            </Label>
+            <Input
+              id="max_bookings"
+              type="number"
+              min={1}
+              placeholder="1"
+              className="h-11 rounded-lg border-input bg-background"
+              value={data.max_simultaneous_bookings ?? ""}
+              onChange={(e) =>
+                onUpdate({
+                  max_simultaneous_bookings: e.target.value
+                    ? Number(e.target.value)
+                    : undefined,
+                })
+              }
+              aria-required
+            />
+          </div>
+        </div>
+        <div className="space-y-2 w-full">
+          <Label className="text-sm font-medium text-foreground mb-2 block">Tour type</Label>
+          <Select
+            value={data.tour_type}
+            onValueChange={(v) => onUpdate({ tour_type: v as TourType })}
+            options={[...TOUR_TYPE_SELECT_OPTIONS]}
+            placeholder="Select tour type"
+          />
+        </div>
+      </div>
+
+      <div className="mb-8 w-full">
+        <h2 className="text-lg font-semibold text-foreground mb-2">Inclusions &amp; Exclusions</h2>
+        <p className="text-sm text-muted-foreground mb-6">
+          What&apos;s included and excluded in this tour.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <Check
+                className="w-4 h-4 shrink-0 text-green-600 dark:text-green-400"
+                aria-hidden
+              />
+              <span className="text-sm font-medium text-foreground">Inclusions</span>
+            </div>
+            <div
+              className={cn(
+                "rounded-lg border border-border p-4 space-y-3",
+                "bg-brand/5 dark:bg-brand/10",
+              )}
+            >
+              {(data.inclusion_entries ?? []).map((entry) => (
+                <div key={entry.id} className="flex items-center gap-3">
+                  <div
+                    className="w-5 h-5 shrink-0 rounded-full bg-green-500/15 flex items-center justify-center dark:bg-green-400/20"
+                    aria-hidden
+                  >
+                    <Check className="w-3 h-3 text-green-600 dark:text-green-400" />
+                  </div>
+                  <Input
+                    value={entry.text}
+                    onChange={(e) =>
+                      onUpdate({
+                        inclusion_entries: (data.inclusion_entries ?? []).map((row) =>
+                          row.id === entry.id ? { ...row, text: e.target.value } : row,
+                        ),
+                      })
+                    }
+                    className="h-9 flex-1 min-w-0 border-input bg-background"
+                    placeholder="e.g., Professional tour guide"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-sm"
+                    className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive"
+                    onClick={() =>
+                      onUpdate({
+                        inclusion_entries: (data.inclusion_entries ?? []).filter(
+                          (row) => row.id !== entry.id,
+                        ),
+                      })
+                    }
+                    aria-label="Remove inclusion"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              ))}
+              <button
+                type="button"
+                className="w-full text-left text-sm font-medium text-foreground hover:text-foreground/80"
+                onClick={() =>
+                  onUpdate({
+                    inclusion_entries: [
+                      ...(data.inclusion_entries ?? []),
+                      { id: crypto.randomUUID(), text: "" },
+                    ],
+                  })
+                }
+              >
+                + Add inclusion
+              </button>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <X className="w-4 h-4 text-destructive shrink-0" aria-hidden />
+              <span className="text-sm font-medium text-foreground">Exclusions</span>
+            </div>
+            <div
+              className={cn(
+                "rounded-lg border border-border p-4 space-y-3",
+                "bg-brand/5 dark:bg-brand/10",
+              )}
+            >
+              {(data.exclusion_entries ?? []).map((entry) => (
+                <div key={entry.id} className="flex items-center gap-3">
+                  <div
+                    className="w-5 h-5 rounded-full bg-destructive/15 flex items-center justify-center shrink-0"
+                    aria-hidden
+                  >
+                    <X className="w-3 h-3 text-destructive" />
+                  </div>
+                  <Input
+                    value={entry.text}
+                    onChange={(e) =>
+                      onUpdate({
+                        exclusion_entries: (data.exclusion_entries ?? []).map((row) =>
+                          row.id === entry.id ? { ...row, text: e.target.value } : row,
+                        ),
+                      })
+                    }
+                    className="h-9 flex-1 min-w-0 border-input bg-background"
+                    placeholder="e.g., Personal expenses"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-sm"
+                    className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive"
+                    onClick={() =>
+                      onUpdate({
+                        exclusion_entries: (data.exclusion_entries ?? []).filter(
+                          (row) => row.id !== entry.id,
+                        ),
+                      })
+                    }
+                    aria-label="Remove exclusion"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              ))}
+              <button
+                type="button"
+                className="w-full text-left text-sm font-medium text-foreground hover:text-foreground/80"
+                onClick={() =>
+                  onUpdate({
+                    exclusion_entries: [
+                      ...(data.exclusion_entries ?? []),
+                      { id: crypto.randomUUID(), text: "" },
+                    ],
+                  })
+                }
+              >
+                + Add exclusion
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="w-full">
@@ -250,46 +491,24 @@ export function BasicsStep({ data, onUpdate, errors }: BasicsStepProps) {
                 <div className="absolute top-2 left-2 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
                   <span className="text-xs font-medium text-primary-foreground">{index + 1}</span>
                 </div>
-                <button
+                <Button
                   type="button"
-                  className="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/90 flex items-center justify-center hover:bg-white text-foreground"
+                  variant="ghost"
+                  size="icon-sm"
+                  className={cn(
+                    "absolute top-2 right-2 rounded-full shadow-sm",
+                    "bg-background/90 backdrop-blur-sm dark:bg-background/80",
+                    "text-destructive hover:bg-destructive/10 hover:text-destructive",
+                  )}
                   onPointerDown={(e) => e.stopPropagation()}
                   onClick={(e) => {
                     e.stopPropagation();
                     removePhoto(photo.id);
                   }}
+                  aria-label="Remove photo"
                 >
                   <Trash2 className="w-4 h-4" />
-                </button>
-                <div
-                  className="absolute bottom-2 left-2 flex gap-2"
-                  onPointerDown={(e) => e.stopPropagation()}
-                >
-                  {index > 0 && (
-                    <button
-                      type="button"
-                      className="w-6 h-6 rounded bg-white/90 flex items-center justify-center hover:bg-white"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        movePhoto(index, index - 1);
-                      }}
-                    >
-                      <GripVertical className="w-3.5 h-3.5 rotate-90 text-foreground" />
-                    </button>
-                  )}
-                  {index < photos.length - 1 && (
-                    <button
-                      type="button"
-                      className="w-6 h-6 rounded bg-white/90 flex items-center justify-center hover:bg-white"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        movePhoto(index, index + 1);
-                      }}
-                    >
-                      <GripVertical className="w-3.5 h-3.5 -rotate-90 text-foreground" />
-                    </button>
-                  )}
-                </div>
+                </Button>
               </div>
             ))}
           </div>
