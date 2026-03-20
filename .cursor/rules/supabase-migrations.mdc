@@ -50,6 +50,7 @@ pnpm run migrate:production
 | Entity | Location |
 |---|---|
 | `CREATE TABLE`, `ALTER TABLE`, `CREATE INDEX`, `CREATE FUNCTION`, `CREATE VIEW`, RLS policies | `supabase/schemas/` |
+| `storage.buckets` rows and `storage.objects` RLS policies | `supabase/schemas/rls.sql` (or alongside other RLS) — if these exist only in old migrations, `db diff` may spuriously emit `DROP POLICY` |
 | `INSERT`, `UPDATE`, `DELETE` (seed data) | `supabase/seeders/` |
 | Entities `migra` cannot diff (see caveats) | `supabase/migrations/` directly |
 
