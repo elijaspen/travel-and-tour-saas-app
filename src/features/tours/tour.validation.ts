@@ -56,23 +56,34 @@ export const createTourSchema = z
         "Description must be at least 10 characters",
       ),
     address_line: z.string().optional(),
-    city: z.string().optional(),
+    city: z.string().min(1, "City is required"),
     province_state: z.string().optional(),
     country_code: z
       .string()
-      .optional()
-      .refine(
-        (c) => c == null || c === "" || isValidCountryCode(c),
-        "Invalid country code",
-      ),
+      .min(1, "Country is required")
+      .refine(isValidCountryCode, "Invalid country code"),
     postal_code: z.string().optional(),
     latitude: z.number().optional(),
     longitude: z.number().optional(),
     place_id: z.string().optional(),
-    duration_days: z.coerce.number().min(1, "Duration must be at least 1 day").optional(),
-    default_capacity: z.coerce.number().min(1).optional(),
-    max_simultaneous_bookings: z.coerce.number().min(1).optional(),
+    duration_days: z.coerce.number().min(1, "Duration must be at least 1 day"),
+    default_capacity: z.coerce.number().min(1, "Default capacity is required"),
+    max_simultaneous_bookings: z.coerce
+      .number()
+      .min(1, "Max simultaneous bookings is required"),
     tour_type: tourTypeEnum.optional(),
+    inclusions: z
+      .array(z.string().max(500, "Each inclusion must be 500 characters or less"))
+      .optional()
+      .transform((rows) =>
+        (rows ?? []).map((s) => s.trim()).filter((s) => s.length > 0),
+      ),
+    exclusions: z
+      .array(z.string().max(500, "Each exclusion must be 500 characters or less"))
+      .optional()
+      .transform((rows) =>
+        (rows ?? []).map((s) => s.trim()).filter((s) => s.length > 0),
+      ),
     photos: z.array(z.object({ id: z.string() })).optional(),
     itinerary_days: z.array(itineraryDayFormSchema).optional(),
     pricing_tiers: z.array(pricingTierFormSchema).min(1, "Add at least one pricing tier"),
@@ -86,7 +97,7 @@ export const createTourSchema = z
       ctx.addIssue({
         code: "custom",
         message:
-          "Pricing bands must cover all group sizes from 1 through your default capacity with no gaps or overlaps.",
+          "Pricing tiers must cover all group sizes from 1 through your default capacity with no gaps or overlaps.",
         path: ["pricing_tiers"],
       });
     }

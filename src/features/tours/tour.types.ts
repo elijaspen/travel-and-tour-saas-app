@@ -1,4 +1,4 @@
-import type { Database } from "@supabase/types/database";
+import type { Database, Enums } from "@supabase/types/database";
 
 import type {
   BlackoutDateForm,
@@ -17,7 +17,12 @@ export type TourItineraryInsert = T["tour_itineraries"]["Insert"];
 export type TourPhotoInsert = T["tour_photos"]["Insert"];
 export type BlackoutDateInsert = T["blackout_dates"]["Insert"];
 
-export type TourType = Database["public"]["Enums"]["tour_type"];
+export type TourType = Enums<"tour_type">;
+
+export const TourTypes = {
+  ON_DEMAND: "on_demand",
+  FIXED_SCHEDULE: "fixed_schedule",
+} as const satisfies Record<string, TourType>;
 
 /** Geo + address fields on `tours` (Mapbox + manual edits). */
 export type TourLocationValue = Partial<
@@ -42,8 +47,22 @@ export type TourPhotoDraft = {
   file?: File;
 };
 
-export type CreateTourWizardState = Omit<CreateTourFormPayload, "photos"> & {
+/** One line in the inclusions / exclusions editors (stable `id` for React keys). */
+export type TourListEntryDraft = {
+  id: string;
+  text: string;
+};
+
+export type CreateTourWizardState = Omit<
+  CreateTourFormPayload,
+  "photos" | "city" | "country_code" | "inclusions" | "exclusions"
+> & {
   photos: TourPhotoDraft[];
+  /** Empty in the wizard until filled; required by `createTourSchema` on submit. */
+  city?: string;
+  country_code?: string;
+  inclusion_entries: TourListEntryDraft[];
+  exclusion_entries: TourListEntryDraft[];
 };
 
 export function defaultCreateTourWizardState(): CreateTourWizardState {
@@ -59,11 +78,13 @@ export function defaultCreateTourWizardState(): CreateTourWizardState {
     latitude: undefined,
     longitude: undefined,
     place_id: undefined,
-    duration_days: 3,
-    default_capacity: 15,
-    max_simultaneous_bookings: 2,
-    tour_type: "on_demand",
+    duration_days: 1,
+    default_capacity: 5,
+    max_simultaneous_bookings: 1,
+    tour_type: TourTypes.ON_DEMAND,
     photos: [],
+    inclusion_entries: [],
+    exclusion_entries: [],
     itinerary_days: [],
     pricing_tiers: [],
     blackout_dates: [],

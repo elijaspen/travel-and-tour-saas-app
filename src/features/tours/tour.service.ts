@@ -161,6 +161,8 @@ export const tourService = {
       latitude: payload.latitude ?? null,
       longitude: payload.longitude ?? null,
       place_id: payload.place_id ?? null,
+      inclusions: payload.inclusions ?? [],
+      exclusions: payload.exclusions ?? [],
       is_active: payload.is_active ?? true,
     };
 
