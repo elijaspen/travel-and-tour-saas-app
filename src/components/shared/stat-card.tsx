@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { TrendingUp, TrendingDown } from "lucide-react";
 
 import {
@@ -15,9 +16,9 @@ type StatCardTrend = {
 
 type StatCardProps = {
   title: string;
-  value: React.ReactNode;
+  value: ReactNode;
   description?: string;
-  icon?: React.ReactNode;
+  icon?: ReactNode;
   trend?: StatCardTrend;
   className?: string;
 };

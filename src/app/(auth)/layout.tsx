@@ -1,10 +1,10 @@
-import * as React from "react"
+import type { ReactNode } from "react"
 import Link from "next/link"
 
 export default function AuthLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: ReactNode
 }) {
   return (
     <div className="container relative min-h-screen flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">

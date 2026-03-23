@@ -1,13 +1,14 @@
 "use client";
 
-import React from "react";
+import type { ComponentType } from "react";
+import { Fragment } from "react";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export type StepConfig = {
   number: number;
   label: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: ComponentType<{ className?: string }>;
 };
 
 type StepperProgressProps = {
@@ -35,7 +36,7 @@ export function StepperProgress({
             const lineFilled = nextStepCompleted || isCompleted;
 
             return (
-              <React.Fragment key={step.number}>
+              <Fragment key={step.number}>
                 <div className="flex flex-col items-center gap-2">
                   <button
                     type="button"
@@ -78,7 +79,7 @@ export function StepperProgress({
                     />
                   </div>
                 )}
-              </React.Fragment>
+              </Fragment>
             );
           })}
         </div>

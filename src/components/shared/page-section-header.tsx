@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { ArrowLeft, ChevronRight } from "lucide-react";
 
@@ -22,7 +23,7 @@ export type PageSectionHeaderProps = {
    * Use for wizards or flows where the page name should read in the middle.
    */
   centerTitle?: string;
-  actions?: React.ReactNode;
+  actions?: ReactNode;
 };
 
 function normalizeSegment(s: string) {

@@ -1,6 +1,7 @@
 "use client";
 
-import * as React from "react";
+import { useMemo, useState } from "react";
+import type { ReactNode } from "react";
 import dayjs from "dayjs";
 import type { DateRange } from "react-day-picker";
 
@@ -23,7 +24,7 @@ type PackageSearchBarProps = {
 
 export function PackageSearchBar({ className }: PackageSearchBarProps) {
   const [dateRange, setDateRange] =
-    React.useState<DateRange | undefined>();
+    useState<DateRange | undefined>();
 
   return (
     <form
@@ -76,7 +77,7 @@ export function PackageSearchBar({ className }: PackageSearchBarProps) {
 }
 
 type SearchFieldProps = {
-  icon: React.ReactNode;
+  icon: ReactNode;
   label: string;
   name: string;
   placeholder: string;
@@ -112,7 +113,7 @@ function SearchField({
 }
 
 type DateRangeFieldProps = {
-  icon: React.ReactNode;
+  icon: ReactNode;
   label: string;
   placeholder: string;
   dateRange?: DateRange;
@@ -127,7 +128,7 @@ function DateRangeField({
   onDateRangeChange,
 }: DateRangeFieldProps) {
 
-  const displayValue = React.useMemo(() => {
+  const displayValue = useMemo(() => {
     if (!dateRange?.from) return placeholder;
 
     if (dateRange.from && !dateRange.to) {

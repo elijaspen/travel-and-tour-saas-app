@@ -1,6 +1,13 @@
 "use client";
 
-import React from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import type { PointerEvent as ReactPointerEvent } from "react";
 import { ChevronDown, Info, Plus, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -99,34 +106,34 @@ export function PricingTierScaleEditor({
   sharedCurrency,
   onTiersChange,
 }: Props) {
-  const sorted = React.useMemo(() => sortTiersByMinPax(tiers), [tiers]);
-  const trackRef = React.useRef<HTMLDivElement>(null);
+  const sorted = useMemo(() => sortTiersByMinPax(tiers), [tiers]);
+  const trackRef = useRef<HTMLDivElement>(null);
   const cap = Math.max(1, maxPax);
-  const tiersRef = React.useRef(tiers);
+  const tiersRef = useRef(tiers);
 
-  const [activeTier, setActiveTier] = React.useState<PricingTierForm | null>(null);
-  const [amountInput, setAmountInput] = React.useState("");
-  const [amountError, setAmountError] = React.useState<string | null>(null);
+  const [activeTier, setActiveTier] = useState<PricingTierForm | null>(null);
+  const [amountInput, setAmountInput] = useState("");
+  const [amountError, setAmountError] = useState<string | null>(null);
 
-  const [tierDetailsOpen, setTierDetailsOpen] = React.useState(true);
-  const [amountDraftById, setAmountDraftById] = React.useState<
+  const [tierDetailsOpen, setTierDetailsOpen] = useState(true);
+  const [amountDraftById, setAmountDraftById] = useState<
     Record<string, string>
   >({});
-  const [rowErrors, setRowErrors] = React.useState<Record<string, string>>({});
+  const [rowErrors, setRowErrors] = useState<Record<string, string>>({});
 
-  const dragBoundaryIdx = React.useRef<number | null>(null);
-  const [splitDragIndex, setSplitDragIndex] = React.useState<number | null>(null);
+  const dragBoundaryIdx = useRef<number | null>(null);
+  const [splitDragIndex, setSplitDragIndex] = useState<number | null>(null);
 
-  const tierSignature = React.useMemo(
+  const tierSignature = useMemo(
     () => sorted.map((t) => `${t.id}:${t.amount}:${t.min_pax}-${t.max_pax}`).join("|"),
     [sorted],
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     tiersRef.current = tiers;
   }, [tiers]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setAmountDraftById(
       Object.fromEntries(
         sorted.map((t) => [t.id, (t.amount >= 0 ? t.amount / 100 : 0).toFixed(2)]),
@@ -135,7 +142,7 @@ export function PricingTierScaleEditor({
     setRowErrors({});
   }, [tierSignature, sorted]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!activeTier) return;
     setAmountInput((activeTier.amount / 100).toFixed(2));
     setAmountError(null);
@@ -199,7 +206,7 @@ export function PricingTierScaleEditor({
     if (next) onTiersChange(next);
   };
 
-  const applyBoundaryFromClientX = React.useCallback(
+  const applyBoundaryFromClientX = useCallback(
     (clientX: number, boundaryIndex: number) => {
       const el = trackRef.current;
       if (!el || maxPax < 2) return;
@@ -220,7 +227,7 @@ export function PricingTierScaleEditor({
     [maxPax, onTiersChange],
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     const onUp = () => {
       dragBoundaryIdx.current = null;
       setSplitDragIndex(null);
@@ -233,7 +240,7 @@ export function PricingTierScaleEditor({
     };
   }, []);
 
-  const onBoundaryPointerMove = React.useCallback(
+  const onBoundaryPointerMove = useCallback(
     (e: PointerEvent) => {
       const idx = dragBoundaryIdx.current;
       if (idx == null) return;
@@ -242,13 +249,13 @@ export function PricingTierScaleEditor({
     [applyBoundaryFromClientX],
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     const onMove = (e: PointerEvent) => onBoundaryPointerMove(e);
     window.addEventListener("pointermove", onMove);
     return () => window.removeEventListener("pointermove", onMove);
   }, [onBoundaryPointerMove]);
 
-  const startBoundaryDrag = (boundaryIndex: number, e: React.PointerEvent) => {
+  const startBoundaryDrag = (boundaryIndex: number, e: ReactPointerEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
     dragBoundaryIdx.current = boundaryIndex;
@@ -257,7 +264,7 @@ export function PricingTierScaleEditor({
     applyBoundaryFromClientX(e.clientX, boundaryIndex);
   };
 
-  const endBoundaryDrag = (e: React.PointerEvent) => {
+  const endBoundaryDrag = (e: ReactPointerEvent<HTMLButtonElement>) => {
     dragBoundaryIdx.current = null;
     setSplitDragIndex(null);
     (e.target as HTMLElement).releasePointerCapture?.(e.pointerId);

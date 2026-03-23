@@ -1,9 +1,9 @@
-import React from "react";
+import type { ReactNode } from "react";
 
 type FormStepLayoutProps = {
   title: string;
   description?: string;
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 export function FormStepLayout({ title, description, children }: FormStepLayoutProps) {

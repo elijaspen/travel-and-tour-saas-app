@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useCallback, useEffect } from "react";
+import { useCallback, useEffect } from "react";
+import type { ReactNode } from "react";
 import {
   Bold,
   Italic,
@@ -201,7 +202,7 @@ function ToolbarButton({
   onClick: () => void;
   isActive: boolean;
   "aria-label": string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <button

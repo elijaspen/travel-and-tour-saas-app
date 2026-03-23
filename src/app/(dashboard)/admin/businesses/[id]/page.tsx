@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import type { ReactNode } from "react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import {
@@ -34,7 +35,7 @@ export const metadata: Metadata = {
 }
 
 type DetailRowProps = {
-  icon: React.ReactNode
+  icon: ReactNode
   label: string
   value: string | null | undefined
   href?: string

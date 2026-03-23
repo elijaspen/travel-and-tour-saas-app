@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import type { ReactNode } from "react";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 
 export type DataTableColumn<T> = {
   id: string;
-  header: React.ReactNode;
+  header: ReactNode;
   /** Fixed width, e.g. "60px", "100px", "min-content" */
   width?: string;
   /** Use flex-1 for flexible width (only one column per table should use this typically) */
@@ -27,7 +27,7 @@ export type DataTableColumn<T> = {
   /** Additional class for body cells */
   cellClassName?: string;
   /** Render cell content */
-  cell: (row: T) => React.ReactNode;
+  cell: (row: T) => ReactNode;
 };
 
 export type DataTableDensity = "compact" | "default" | "relaxed";
@@ -50,7 +50,7 @@ export type DataTableProps<T> = {
   /** Called when selection changes (when selectable) */
   onSelectionChange?: (selectedIds: Set<string | number>) => void;
   /** Content when data is empty */
-  emptyState?: React.ReactNode;
+  emptyState?: ReactNode;
   /** Additional class for the wrapper */
   className?: string;
 };

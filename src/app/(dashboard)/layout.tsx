@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { requireRole } from "@/features/profile/profile.guard";
 import { ProfileRoles } from "@/features/profile/profile.types";
 import { DashboardSidebar } from "@/components/shared/dashboard-sidebar";
@@ -7,7 +8,7 @@ import { BusinessOnboardingModal } from "@/components/shared/business-onboarding
 export default async function DashboardLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   const { profile } = await requireRole([
     ProfileRoles.CUSTOMER,
