@@ -12,16 +12,13 @@ import { PageSectionHeader } from "@/components/shared/page-section-header";
 import { ListPageToolbar } from "@/components/shared/list-page-toolbar";
 import { Pagination } from "@/components/shared/pagination";
 import type { TourListItem } from "@/features/tours/tour.types";
-import {
-  agencyToursPath,
-  type AgencyToursListQuery,
-  type AgencyToursPublication,
-  type AgencyToursSort,
-  type AgencyToursTourTypeFilter,
-} from "@/features/tours/agency-tours-url";
+import { agencyToursConfig } from "@/features/tours/agency-tours-config";
+import { buildListUrl, type ListParams } from "@/features/shared/list-params";
 import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
 import { cn } from "@/lib/utils";
 import { ToursTable } from "./components/tours-table";
+
+const BASE_PATH = ROUTE_PATHS.AUTHED.AGENCY.TOURS;
 
 const selectClass = cn(
   "border-input bg-background h-10 rounded-md border px-3 text-sm",
@@ -34,56 +31,36 @@ type Props = {
   tours: TourListItem[];
   page: number;
   totalPages: number;
-  search: string;
-  publication: AgencyToursPublication;
-  tourType: AgencyToursTourTypeFilter;
-  sort: AgencyToursSort;
+  listParams: ListParams;
 };
 
-export function ToursClient({
-  tours,
-  page,
-  totalPages,
-  search,
-  publication,
-  tourType,
-  sort,
-}: Props) {
+export function ToursClient({ tours, page, totalPages, listParams }: Props) {
   const router = useRouter();
   const [selectedIds, setSelectedIds] = useState<Set<string | number>>(new Set());
-  const [searchDraft, setSearchDraft] = useState(search);
+  const [searchDraft, setSearchDraft] = useState(listParams.search);
 
-  const listQuery = useCallback(
-    (overrides: Partial<AgencyToursListQuery>): AgencyToursListQuery => ({
-      search: searchDraft.trim(),
-      page,
-      publication,
-      tourType,
-      sort,
-      ...overrides,
-    }),
-    [searchDraft, page, publication, tourType, sort]
+  const navigate = useCallback(
+    (overrides: Partial<ListParams>) => {
+      router.push(
+        buildListUrl(BASE_PATH, agencyToursConfig, { ...listParams, ...overrides }),
+      );
+    },
+    [router, listParams],
   );
 
   const scheduleUrlSearchUpdate = useDebouncedCallback(
     useCallback(
       (draft: string) => {
         const next = draft.trim();
-        if (next === search.trim()) return;
-        router.push(
-          agencyToursPath({
-            search: next,
-            page: 1,
-            publication,
-            tourType,
-            sort,
-          })
-        );
+        if (next === listParams.search) return;
+        navigate({ search: next, page: 1 });
       },
-      [router, search, publication, tourType, sort]
+      [listParams.search, navigate],
     ),
-    300
+    300,
   );
+
+  const [publicationFilter, tourTypeFilter] = agencyToursConfig.filters;
 
   return (
     <div className="flex flex-col gap-4">
@@ -107,53 +84,57 @@ export function ToursClient({
           placeholder="Search title or city…"
           className="w-[280px]"
           value={searchDraft}
-          onChange={(e) => {
-            const v = e.target.value;
-            setSearchDraft(v);
-            scheduleUrlSearchUpdate(v);
+          onChange={(event) => {
+            const value = event.target.value;
+            setSearchDraft(value);
+            scheduleUrlSearchUpdate(value);
           }}
         />
         <select
           className={cn(selectClass, "w-[200px]")}
-          aria-label="Filter by publication"
-          value={publication}
-          onChange={(e) => {
-            const v = e.target.value as AgencyToursPublication;
-            router.push(agencyToursPath(listQuery({ publication: v, page: 1 })));
-          }}
+          aria-label={publicationFilter.label}
+          value={listParams.filters[publicationFilter.paramKey]}
+          onChange={(e) =>
+            navigate({
+              filters: { ...listParams.filters, [publicationFilter.paramKey]: e.target.value },
+              page: 1,
+            })
+          }
         >
-          <option value="all">All tours</option>
-          <option value="published">Published</option>
-          <option value="unpublished">Unpublished</option>
+          {publicationFilter.options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
         </select>
         <select
           className={cn(selectClass, "w-[200px]")}
-          aria-label="Filter by schedule type"
-          value={tourType}
-          onChange={(e) => {
-            const v = e.target.value as AgencyToursTourTypeFilter;
-            router.push(agencyToursPath(listQuery({ tourType: v, page: 1 })));
-          }}
+          aria-label={tourTypeFilter.label}
+          value={listParams.filters[tourTypeFilter.paramKey]}
+          onChange={(e) =>
+            navigate({
+              filters: { ...listParams.filters, [tourTypeFilter.paramKey]: e.target.value },
+              page: 1,
+            })
+          }
         >
-          <option value="all">All schedule types</option>
-          <option value="on_demand">On demand</option>
-          <option value="fixed_schedule">Fixed schedule</option>
+          {tourTypeFilter.options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
         </select>
         <select
           className={cn(selectClass, "min-w-[220px] max-w-[260px]")}
           aria-label="Sort tours"
-          value={sort}
-          onChange={(e) => {
-            const v = e.target.value as AgencyToursSort;
-            router.push(agencyToursPath(listQuery({ sort: v, page: 1 })));
-          }}
+          value={listParams.sort}
+          onChange={(e) => navigate({ sort: e.target.value, page: 1 })}
         >
-          <option value="created_desc">Newest first</option>
-          <option value="created_asc">Oldest first</option>
-          <option value="title_asc">Title A–Z</option>
-          <option value="title_desc">Title Z–A</option>
-          <option value="duration_asc">Duration (short to long)</option>
-          <option value="duration_desc">Duration (long to short)</option>
+          {agencyToursConfig.sorts.map((sortOption) => (
+            <option key={sortOption.value} value={sortOption.value}>
+              {sortOption.label}
+            </option>
+          ))}
         </select>
       </ListPageToolbar>
 
@@ -166,9 +147,7 @@ export function ToursClient({
       <Pagination
         page={page}
         totalPages={totalPages}
-        onPageChange={(nextPage) =>
-          router.push(agencyToursPath(listQuery({ page: nextPage })))
-        }
+        onPageChange={(nextPage) => navigate({ page: nextPage })}
         variant="full"
       />
     </div>

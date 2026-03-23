@@ -25,8 +25,8 @@ import { BusinessesTabsFilter } from "./_components/tabs-filter"
 import { requireRole } from "@/features/profile/profile.guard"
 import { ProfileRoles } from "@/features/profile/profile.types"
 import { companyService } from "@/features/company/company.service"
-import { CompanyStatuses } from "@/features/company/company.types"
-import type { CompanyStatus } from "@/features/company/company.types"
+import { businessesListConfig } from "@/features/company/businesses-list-config"
+import { parseListParams, buildListUrl } from "@/features/shared/list-params"
 import { ROUTE_PATHS } from "@/config/routes"
 
 export const metadata: Metadata = {
@@ -34,42 +34,26 @@ export const metadata: Metadata = {
   description: "View and manage all registered businesses.",
 }
 
-const PAGE_SIZE = 20
-const VALID_STATUSES = Object.values(CompanyStatuses) as CompanyStatus[]
-
-function isValidStatus(value: string | undefined): value is CompanyStatus {
-  return VALID_STATUSES.includes(value as CompanyStatus)
-}
-
-function buildUrl(params: { status?: string; page?: number }) {
-  const search = new URLSearchParams()
-  if (params.status) search.set("status", params.status)
-  if (params.page && params.page > 1) search.set("page", String(params.page))
-  const qs = search.toString()
-  return qs ? `${ROUTE_PATHS.AUTHED.ADMIN.BUSINESSES}?${qs}` : ROUTE_PATHS.AUTHED.ADMIN.BUSINESSES
-}
+const BASE_PATH = ROUTE_PATHS.AUTHED.ADMIN.BUSINESSES
 
 export default async function BusinessesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; page?: string }>
+  searchParams: Promise<Record<string, string | undefined>>
 }) {
   await requireRole([ProfileRoles.ADMIN])
 
-  const { status: rawStatus, page: rawPage } = await searchParams
-  const activeStatus = isValidStatus(rawStatus) ? rawStatus : undefined
-  const page = Math.max(1, parseInt(rawPage ?? "1"))
+  const rawSearchParams = await searchParams
+  const listParams = parseListParams(businessesListConfig, rawSearchParams)
+  const activeStatus = listParams.filters.status === "all" ? undefined : listParams.filters.status
 
   const [{ data: counts }, { data: companies, total }] = await Promise.all([
     companyService.getStatusCounts(),
-    companyService.listWithOwnersPaginated({
-      page,
-      pageSize: PAGE_SIZE,
-      status: activeStatus,
-    }),
+    companyService.listWithOwnersPaginated(listParams),
   ])
 
-  const totalPages = Math.ceil((total ?? 0) / PAGE_SIZE)
+  const totalPages = Math.ceil((total ?? 0) / listParams.pageSize)
+  const { page } = listParams
 
   return (
     <div className="flex min-h-[calc(100vh-6rem)] flex-col gap-6">
@@ -212,7 +196,7 @@ export default async function BusinessesPage({
                   <div className="flex items-center gap-2">
                     {page > 1 ? (
                       <Button asChild variant="outline" size="sm" className="gap-1">
-                        <Link href={buildUrl({ status: activeStatus, page: page - 1 })}>
+                        <Link href={buildListUrl(BASE_PATH, businessesListConfig, { ...listParams, page: page - 1 })}>
                           <ChevronLeft className="h-4 w-4" />
                           Previous
                         </Link>
@@ -225,7 +209,7 @@ export default async function BusinessesPage({
                     )}
                     {page < totalPages ? (
                       <Button asChild variant="outline" size="sm" className="gap-1">
-                        <Link href={buildUrl({ status: activeStatus, page: page + 1 })}>
+                        <Link href={buildListUrl(BASE_PATH, businessesListConfig, { ...listParams, page: page + 1 })}>
                           Next
                           <ChevronRight className="h-4 w-4" />
                         </Link>

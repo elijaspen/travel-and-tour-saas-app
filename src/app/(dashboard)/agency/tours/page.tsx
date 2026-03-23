@@ -1,33 +1,21 @@
 import type { Metadata } from "next";
 
-import {
-  parsePublicationFilter,
-  parseSort,
-  parseTourTypeFilter,
-} from "@/features/tours/agency-tours-url";
-import { ToursClient } from "./client";
+import { parseListParams } from "@/features/shared/list-params";
+import { agencyToursConfig } from "@/features/tours/agency-tours-config";
+import { tourService } from "@/features/tours/tour.service";
 import { requireRole } from "@/features/profile/profile.guard";
 import { ProfileRoles } from "@/features/profile/profile.types";
-import { tourService } from "@/features/tours/tour.service";
+import { ToursClient } from "./client";
 
 export const metadata: Metadata = {
   title: "Tours Inventory",
   description: "Manage your agency tours and packages.",
 };
 
-const PER_PAGE = 5;
-
 export default async function ToursPage({
   searchParams,
 }: {
-  searchParams: Promise<{
-    search?: string;
-    q?: string;
-    page?: string;
-    status?: string;
-    tourType?: string;
-    sort?: string;
-  }>;
+  searchParams: Promise<Record<string, string | undefined>>;
 }) {
   const { profile } = await requireRole([
     ProfileRoles.BUSINESS_OWNER,
@@ -35,34 +23,22 @@ export default async function ToursPage({
     ProfileRoles.ADMIN,
   ]);
 
-  const raw = await searchParams;
-  const search = (raw.search ?? raw.q ?? "").trim();
-  const page = Math.max(1, parseInt(raw.page ?? "1", 10) || 1);
-  const publication = parsePublicationFilter(raw.status);
-  const tourType = parseTourTypeFilter(raw.tourType);
-  const sort = parseSort(raw.sort);
+  const rawSearchParams = await searchParams;
+  const listParams = parseListParams(agencyToursConfig, rawSearchParams);
 
   const { data: tours, total } = await tourService.listForAgencyPage({
+    ...listParams,
     profile,
-    page,
-    pageSize: PER_PAGE,
-    search,
-    publication,
-    tourType,
-    sort,
   });
 
-  const totalPages = Math.ceil((total ?? 0) / PER_PAGE);
+  const totalPages = Math.ceil((total ?? 0) / listParams.pageSize);
 
   return (
     <ToursClient
       tours={tours ?? []}
-      page={page}
+      page={listParams.page}
       totalPages={totalPages}
-      search={search}
-      publication={publication}
-      tourType={tourType}
-      sort={sort}
+      listParams={listParams}
     />
   );
 }
