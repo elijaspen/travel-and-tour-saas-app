@@ -15,7 +15,7 @@ import {
   normalizeToContiguousPartition,
   pricingScaleMaxPax,
   setAllTierCurrencies,
-} from "@/features/tours/pricing-tier-partition";
+} from "@/features/tours/utils/pricing-tier-partition";
 import { PricingTierScaleEditor } from "@/app/(dashboard)/agency/tours/components/pricing-tier-scale-editor";
 
 type PricingStepProps = {

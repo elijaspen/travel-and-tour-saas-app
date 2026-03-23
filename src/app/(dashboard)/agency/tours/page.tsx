@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import { parseListParams } from "@/features/shared/list-params";
-import { agencyToursConfig } from "@/features/tours/agency-tours-config";
+import { agencyToursConfig } from "@/features/tours/utils/agency-tours-config";
 import { tourService } from "@/features/tours/tour.service";
 import { requireRole } from "@/features/profile/profile.guard";
 import { ProfileRoles } from "@/features/profile/profile.types";

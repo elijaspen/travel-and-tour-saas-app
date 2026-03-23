@@ -36,7 +36,7 @@ import {
   resetToSinglePartitionBand,
   sortTiersByMinPax,
   updateTierAmount,
-} from "@/features/tours/pricing-tier-partition";
+} from "@/features/tours/utils/pricing-tier-partition";
 import {
   formatPriceFromMinorUnits,
   getCurrencySymbol,

@@ -2,7 +2,7 @@ import { createClient as createServerClient } from "@supabase/utils/server"
 import { createAdminClient } from "@supabase/utils/admin"
 import { supabaseService, type ServiceResult, type TableRow } from "@/features/shared/supabase-service"
 import { toQueryParams, type ListParams } from "@/features/shared/list-params"
-import { businessesListConfig } from "./businesses-list-config"
+import { businessesListConfig } from "./utils/businesses-list-config"
 import type { Company } from "./company.types"
 import type { Profile } from "@/features/profile/profile.types"
 import {

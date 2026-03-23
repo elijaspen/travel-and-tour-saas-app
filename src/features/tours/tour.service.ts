@@ -13,7 +13,7 @@ import {
   toQueryParams,
   type ListParams,
 } from "@/features/shared/list-params";
-import { agencyToursConfig } from "./agency-tours-config";
+import { agencyToursConfig } from "./utils/agency-tours-config";
 import { TOUR_PHOTOS_BUCKET } from "./tour.constants";
 import type { CreateTourFormPayload } from "./tour.validation";
 import type { TourListItem } from "./tour.types";

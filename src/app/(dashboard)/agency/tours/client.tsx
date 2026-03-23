@@ -12,7 +12,7 @@ import { PageSectionHeader } from "@/components/shared/page-section-header";
 import { ListPageToolbar } from "@/components/shared/list-page-toolbar";
 import { Pagination } from "@/components/shared/pagination";
 import type { TourListItem } from "@/features/tours/tour.types";
-import { agencyToursConfig } from "@/features/tours/agency-tours-config";
+import { agencyToursConfig } from "@/features/tours/utils/agency-tours-config";
 import { buildListUrl, type ListParams } from "@/features/shared/list-params";
 import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
 import { cn } from "@/lib/utils";

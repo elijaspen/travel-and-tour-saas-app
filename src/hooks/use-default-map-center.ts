@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import { DEFAULT_TOUR_MAP_PIN } from "@/features/tours/tour-map-defaults";
+import { DEFAULT_TOUR_MAP_PIN } from "@/features/tours/tour.constants";
 
 type MapCenter = {
   latitude: number;

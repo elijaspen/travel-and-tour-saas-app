@@ -5,7 +5,7 @@ import { isValidCurrencyCode } from "@/lib/geo/currencies";
 import {
   isContiguousPartition,
   pricingScaleMaxPax,
-} from "@/features/tours/pricing-tier-partition";
+} from "@/features/tours/utils/pricing-tier-partition";
 
 function stripHtml(html: string): string {
   return html.replace(/<[^>]*>/g, "");

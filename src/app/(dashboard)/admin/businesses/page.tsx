@@ -25,7 +25,7 @@ import { BusinessesTabsFilter } from "./_components/tabs-filter"
 import { requireRole } from "@/features/profile/profile.guard"
 import { ProfileRoles } from "@/features/profile/profile.types"
 import { companyService } from "@/features/company/company.service"
-import { businessesListConfig } from "@/features/company/businesses-list-config"
+import { businessesListConfig } from "@/features/company/utils/businesses-list-config"
 import { parseListParams, buildListUrl } from "@/features/shared/list-params"
 import { ROUTE_PATHS } from "@/config/routes"
 

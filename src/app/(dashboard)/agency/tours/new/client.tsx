@@ -24,7 +24,7 @@ import { createTourSchema } from "@/features/tours/tour.validation";
 import {
   isContiguousPartition,
   pricingScaleMaxPax,
-} from "@/features/tours/pricing-tier-partition";
+} from "@/features/tours/utils/pricing-tier-partition";
 import { CREATE_TOUR_STEPS } from "./create-tour-steps";
 import { isValidCountryCode } from "@/lib/geo/countries";
 
