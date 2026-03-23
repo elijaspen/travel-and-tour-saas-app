@@ -1,22 +1,26 @@
 import { createClient as createServerClient } from "@supabase/utils/server";
-import type { Database } from "@supabase/types/database";
 
 import { companyService } from "@/features/company/company.service";
 import type { Profile } from "@/features/profile/profile.types";
 import { ProfileRoles } from "@/features/profile/profile.types";
-import type { OffsetResult } from "@/features/shared/supabase-service";
-
-import type {
-  AgencyToursPublication,
-  AgencyToursSort,
-  AgencyToursTourTypeFilter,
-} from "./agency-tours-url";
+import {
+  supabaseService,
+  type OffsetResult,
+  type ServiceResult,
+  type TableRow,
+} from "@/features/shared/supabase-service";
+import {
+  toQueryParams,
+  type ListParams,
+} from "@/features/shared/list-params";
+import { agencyToursConfig } from "./agency-tours-config";
 import { TOUR_PHOTOS_BUCKET } from "./tour.constants";
 import type { CreateTourFormPayload } from "./tour.validation";
 import type { TourListItem } from "./tour.types";
-import type { ServiceResult } from "@/features/shared/supabase-service";
 
-type TourTypeEnum = Database["public"]["Enums"]["tour_type"];
+type TourRow = TableRow<"tours">;
+
+const toursBase = supabaseService("tours");
 
 const AGENCY_TOURS_SELECT = `
   id,
@@ -32,10 +36,6 @@ const AGENCY_TOURS_SELECT = `
   tour_prices(currency, amount, min_pax)
 `.trim();
 
-function safeSearchText(input: string) {
-  return input.trim().replace(/[%_,()]/g, "");
-}
-
 function slugFromTitle(title: string): string {
   const base = title
     .toLowerCase()
@@ -48,85 +48,37 @@ function slugFromTitle(title: string): string {
 }
 
 export const tourService = {
-  async listForAgencyPage(params: {
-    profile: Profile;
-    page?: number;
-    pageSize?: number;
-    search?: string;
-    publication?: AgencyToursPublication;
-    tourType?: AgencyToursTourTypeFilter;
-    sort?: AgencyToursSort;
-  }): Promise<OffsetResult<TourListItem>> {
-    const page = Math.max(1, params.page ?? 1);
-    const pageSize = params.pageSize ?? 20;
-    const from = (page - 1) * pageSize;
-    const to = from + pageSize - 1;
-    const publication = params.publication ?? "all";
-    const tourType = params.tourType ?? "all";
-    const sort = params.sort ?? "created_desc";
-
+  async listForAgencyPage(
+    params: ListParams & { profile: Profile },
+  ): Promise<OffsetResult<TourListItem>> {
     const { profile } = params;
 
     if (profile.role === ProfileRoles.AGENT) {
       return { data: [], total: 0, error: null };
     }
 
-    let ownerCompanyId: string | null = null;
+    const queryParams = toQueryParams<TourRow>(agencyToursConfig, params);
+
     if (profile.role === ProfileRoles.BUSINESS_OWNER) {
       const { data: company } = await companyService.getCompanyByOwner(profile.id);
       if (!company) return { data: [], total: 0, error: null };
-      ownerCompanyId = company.id;
+      queryParams.filters.push({
+        column: "company_id",
+        operator: "eq",
+        value: company.id,
+      });
     }
 
-    const db = await createServerClient();
-    let q = db
-      .from("tours")
-      .select(AGENCY_TOURS_SELECT, { count: "exact" })
-      .range(from, to);
+    const { data, total, error } = await toursBase.listOffset({
+      ...queryParams,
+      select: AGENCY_TOURS_SELECT,
+    });
 
-    if (ownerCompanyId) q = q.eq("company_id", ownerCompanyId);
-
-    if (publication === "published") q = q.eq("is_active", true);
-    if (publication === "unpublished") q = q.eq("is_active", false);
-
-    if (tourType !== "all") {
-      q = q.eq("tour_type", tourType as TourTypeEnum);
-    }
-
-    const word = safeSearchText(params.search ?? "");
-    if (word.length > 0) {
-      const pattern = `%${word}%`;
-      q = q.or(`title.ilike.${pattern},city.ilike.${pattern}`);
-    }
-
-    switch (sort) {
-      case "created_asc":
-        q = q.order("created_at", { ascending: true });
-        break;
-      case "title_asc":
-        q = q.order("title", { ascending: true });
-        break;
-      case "title_desc":
-        q = q.order("title", { ascending: false });
-        break;
-      case "duration_asc":
-        q = q.order("duration_days", { ascending: true, nullsFirst: false });
-        break;
-      case "duration_desc":
-        q = q.order("duration_days", { ascending: false, nullsFirst: false });
-        break;
-      case "created_desc":
-      default:
-        q = q.order("created_at", { ascending: false });
-        break;
-    }
-
-    const { data, error, count } = await q;
     if (error) return { data: [], total: null, error };
 
     return {
       data: (data ?? []) as unknown as TourListItem[],
-      total: count ?? 0,
+      total: total ?? 0,
       error: null,
     };
   },
@@ -179,25 +131,25 @@ export const tourService = {
     const tourId = tour.id;
 
     try {
-      const prices = payload.pricing_tiers.map((t) => ({
+      const prices = payload.pricing_tiers.map((tier) => ({
         tour_id: tourId,
-        currency: t.currency,
-        min_pax: t.min_pax,
-        max_pax: t.max_pax,
-        amount: t.amount,
+        currency: tier.currency,
+        min_pax: tier.min_pax,
+        max_pax: tier.max_pax,
+        amount: tier.amount,
       }));
       const { error: pErr } = await db.from("tour_prices").insert(prices);
       if (pErr) throw pErr;
 
       const days = payload.itinerary_days;
       if (days?.length) {
-        const rows = days.map((d) => ({
+        const rows = days.map((day) => ({
           tour_id: tourId,
-          day_number: d.day_number,
-          title: d.title,
-          description: d.description?.trim() ? d.description : null,
-          start_time: d.start_time?.trim() ? d.start_time : null,
-          image_url: d.image_url?.trim() ? d.image_url : null,
+          day_number: day.day_number,
+          title: day.title,
+          description: day.description?.trim() ? day.description : null,
+          start_time: day.start_time?.trim() ? day.start_time : null,
+          image_url: day.image_url?.trim() ? day.image_url : null,
         }));
         const { error: iErr } = await db.from("tour_itineraries").insert(rows);
         if (iErr) throw iErr;
@@ -205,11 +157,11 @@ export const tourService = {
 
       const blacks = payload.blackout_dates;
       if (blacks?.length) {
-        const rows = blacks.map((b) => ({
+        const rows = blacks.map((blackoutDate) => ({
           tour_id: tourId,
-          start_date: b.start_date,
-          end_date: b.end_date,
-          reason: b.reason?.trim() ? b.reason : null,
+          start_date: blackoutDate.start_date,
+          end_date: blackoutDate.end_date,
+          reason: blackoutDate.reason?.trim() ? blackoutDate.reason : null,
         }));
         const { error: bErr } = await db.from("blackout_dates").insert(rows);
         if (bErr) throw bErr;
@@ -236,9 +188,9 @@ export const tourService = {
       }
 
       return { data: { id: tourId }, error: null };
-    } catch (e) {
+    } catch (error) {
       await db.from("tours").delete().eq("id", tourId);
-      return { data: null, error: e };
+      return { data: null, error };
     }
   },
 };

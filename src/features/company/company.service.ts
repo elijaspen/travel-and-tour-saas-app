@@ -1,13 +1,17 @@
 import { createClient as createServerClient } from "@supabase/utils/server"
 import { createAdminClient } from "@supabase/utils/admin"
-import { supabaseService, ServiceResult } from "@/features/shared/supabase-service"
-import type { Company, CompanyStatus } from "./company.types"
+import { supabaseService, type ServiceResult, type TableRow } from "@/features/shared/supabase-service"
+import { toQueryParams, type ListParams } from "@/features/shared/list-params"
+import { businessesListConfig } from "./businesses-list-config"
+import type { Company } from "./company.types"
 import type { Profile } from "@/features/profile/profile.types"
 import {
   COMPANY_PERMIT_BUCKET,
   COMPANY_PERMIT_ALLOWED_MIME_TYPES,
   COMPANY_PERMIT_MAX_SIZE_BYTES,
 } from "./company.constants"
+
+type CompanyRow = TableRow<"companies">
 
 const base = supabaseService("companies")
 
@@ -58,18 +62,11 @@ export const companyService = {
     return { data: counts, error: null }
   },
 
-  async listWithOwnersPaginated(params?: {
-    page?: number
-    pageSize?: number
-    status?: CompanyStatus
-  }) {
+  async listWithOwnersPaginated(params: ListParams) {
+    const queryParams = toQueryParams<CompanyRow>(businessesListConfig, params)
     const result = await base.listOffset({
-      page: params?.page,
-      pageSize: params?.pageSize,
-      orderBy: "created_at",
-      ascending: false,
+      ...queryParams,
       select: COMPANY_WITH_OWNER_SELECT,
-      eq: params?.status ? { status: params.status } : undefined,
     })
     return {
       ...result,
