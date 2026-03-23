@@ -13,6 +13,30 @@ export type ServiceResult<T = unknown> = {
   error: unknown
 }
 export type OffsetResult<Row> = { data: Row[]; total: number | null; error: unknown }
+
+export type FilterOperator =
+  | "eq"
+  | "neq"
+  | "gt"
+  | "gte"
+  | "lt"
+  | "lte"
+  | "like"
+  | "ilike"
+  | "is"
+  | "in"
+
+export type QueryFilter<Row> = {
+  column: keyof Row & string
+  operator: FilterOperator
+  value: unknown
+}
+
+export type QuerySort<Row> = {
+  column: keyof Row & string
+  ascending?: boolean
+  nullsFirst?: boolean
+}
 type CursorResult<Row> = { data: Row[]; nextCursor?: string; error: unknown }
 type SelectParams = { select?: string }
 
@@ -36,29 +60,26 @@ export function supabaseService<T extends TableName>(table: T) {
       return { data: (data ?? null) as Row | null, error }
     },
 
-    async getById(
-      id: Row["id"],
-      params?: SelectParams,
-    ): Promise<ServiceResult<Row>> {
+    async getById(id: string, params?: SelectParams): Promise<ServiceResult<Row>> {
       const q = await from()
       const select = params?.select ?? "*"
       const { data, error } = await q.select(select).eq("id", id as string).single()
       return { data: (data ?? null) as Row | null, error }
     },
 
-    async update(id: Row["id"], payload: Update): Promise<ServiceResult<Row>> {
+    async update(id: string, payload: Update): Promise<ServiceResult<Row>> {
       const q = await from()
       const { data, error } = await q.update(payload as object).eq("id", id as string).select().single()
       return { data: (data ?? null) as Row | null, error }
     },
 
-    async patch(id: Row["id"], patch: Partial<Update>): Promise<ServiceResult<Row>> {
+    async patch(id: string, patch: Partial<Update>): Promise<ServiceResult<Row>> {
       const q = await from()
       const { data, error } = await q.update(patch as object).eq("id", id as string).select().single()
       return { data: (data ?? null) as Row | null, error }
     },
 
-    async remove(id: Row["id"]): Promise<ServiceResult<null>> {
+    async remove(id: string): Promise<ServiceResult<null>> {
       const q = await from()
       const { error } = await q.delete().eq("id", id as string)
       return { data: null, error }
@@ -67,27 +88,42 @@ export function supabaseService<T extends TableName>(table: T) {
     async listOffset(params?: {
       page?: number
       pageSize?: number
-      orderBy?: keyof Row
-      ascending?: boolean
       select?: string
-      eq?: Partial<Record<keyof Row, unknown>>
+      filters?: QueryFilter<Row>[]
+      sorts?: QuerySort<Row>[]
+      or?: string
     }): Promise<OffsetResult<Row>> {
       const q = await from()
       const page = params?.page ?? 1
       const pageSize = params?.pageSize ?? 20
       const rangeFrom = (page - 1) * pageSize
       const rangeTo = rangeFrom + pageSize - 1
-      const orderBy = (params?.orderBy as string) ?? "created_at"
-      const ascending = params?.ascending ?? false
       const select = params?.select ?? "*"
 
       let query = q.select(select, { count: "exact" })
-      for (const [col, val] of Object.entries(params?.eq ?? {})) {
-        if (val !== undefined) query = query.eq(col, val)
+
+      if (params?.filters?.length) {
+        for (const f of params.filters) {
+          query = query.filter(f.column, f.operator, f.value)
+        }
       }
-      const { data, error, count } = await query
-        .order(orderBy, { ascending })
-        .range(rangeFrom, rangeTo)
+
+      if (params?.or) {
+        query = query.or(params.or)
+      }
+
+      if (params?.sorts?.length) {
+        for (const s of params.sorts) {
+          query = query.order(s.column, {
+            ascending: s.ascending ?? true,
+            nullsFirst: s.nullsFirst ?? false,
+          })
+        }
+      } else {
+        query = query.order("id" as keyof Row & string, { ascending: false })
+      }
+
+      const { data, error, count } = await query.range(rangeFrom, rangeTo)
 
       return { data: (data ?? []) as unknown as Row[], total: count ?? null, error }
     },
@@ -95,22 +131,37 @@ export function supabaseService<T extends TableName>(table: T) {
     async listCursor(params?: {
       limit?: number
       cursor?: string
-      orderBy?: keyof Row
-      ascending?: boolean
       select?: string
-      eq?: Partial<Record<keyof Row, unknown>>
+      filters?: QueryFilter<Row>[]
+      sorts?: QuerySort<Row>[]
     }): Promise<CursorResult<Row>> {
       const q = await from()
       const limit = params?.limit ?? 20
-      const orderBy = (params?.orderBy as string) ?? "id"
-      const ascending = params?.ascending ?? false
       const select = params?.select ?? "*"
+      const firstSort = params?.sorts?.[0]
+      const orderBy = (firstSort?.column as string) ?? "id"
+      const ascending = firstSort?.ascending ?? false
 
       let query = q.select(select)
-      for (const [col, val] of Object.entries(params?.eq ?? {})) {
-        if (val !== undefined) query = query.eq(col, val)
+
+      if (params?.filters?.length) {
+        for (const f of params.filters) {
+          query = query.filter(f.column, f.operator, f.value)
+        }
       }
-      query = query.order(orderBy, { ascending }).limit(limit + 1)
+
+      if (params?.sorts?.length) {
+        for (const s of params.sorts) {
+          query = query.order(s.column, {
+            ascending: s.ascending ?? true,
+            nullsFirst: s.nullsFirst ?? false,
+          })
+        }
+      } else {
+        query = query.order("id" as keyof Row & string, { ascending: false })
+      }
+
+      query = query.limit(limit + 1)
 
       if (params?.cursor) {
         query = ascending

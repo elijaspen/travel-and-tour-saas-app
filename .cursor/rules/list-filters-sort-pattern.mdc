@@ -1,0 +1,131 @@
+---
+description: Pattern for list pages with filters, search, sort, and pagination
+globs: "**/*.service.ts,src/features/**/*-config.ts,src/features/shared/list-params.ts"
+alwaysApply: false
+---
+
+# List, Filter, Search, Sort Pattern
+
+Follow this pattern for any list page that has filters, search, sort, or pagination. The service defines available options from the database schema; the UI reads the config and manages URL state.
+
+## Architecture
+
+```mermaid
+flowchart LR
+  Config["*-config.ts\n(client-safe)"] --> Service["*.service.ts"]
+  Config --> Page["page.tsx"]
+  Config --> Client["client.tsx"]
+  listParams["list-params.ts"] --> Service
+  listParams --> Page
+  listParams --> Client
+```
+
+## 1. Create a List Config File
+
+Add `src/features/<feature>/<context>-config.ts` (e.g. `agency-tours-config.ts`, `businesses-list-config.ts`).
+
+- **Client-safe**: Import only `type ListConfig` from `@/features/shared/list-params`. No server or Supabase imports.
+- **Source of truth**: Filter/sort options and column names must match `database.ts` (tables, enums).
+- **paramKey**: URL query param name (e.g. `status`, `tourType`). Use same key in `filters` object.
+- **options**: Each option has `value`, `label`, and optional `filter` (column, operator, value). Use `value: "all"` with no `filter` for "show all".
+- **searchColumns**: Columns to search with `ilike` when `search` is non-empty.
+
+```typescript
+import type { ListConfig } from "@/features/shared/list-params"
+
+export const agencyToursConfig: ListConfig = {
+  filters: [
+    {
+      paramKey: "status",
+      label: "Publication",
+      options: [
+        { value: "all", label: "All tours" },
+        { value: "published", label: "Published", filter: { column: "is_active", operator: "eq", value: true } },
+        { value: "unpublished", label: "Unpublished", filter: { column: "is_active", operator: "eq", value: false } },
+      ],
+      default: "all",
+    },
+  ],
+  sorts: [
+    { value: "created_desc", label: "Newest first", sort: { column: "created_at", ascending: false } },
+    { value: "title_asc", label: "Title A–Z", sort: { column: "title", ascending: true } },
+  ],
+  defaultSort: "created_desc",
+  searchColumns: ["title", "city"],
+  pageSize: 20,
+}
+```
+
+## 2. Service List Method
+
+- Import config from the config file (not defined inline).
+- Accept `ListParams & { ...extra }` (e.g. `profile`).
+- Call `toQueryParams<TableRow>(config, params)` to get `{ page, pageSize, filters, sorts, or }`.
+- Add implicit filters (e.g. `company_id` by role) by pushing to `qp.filters`.
+- Pass result to `base.listOffset({ ...qp, select: "..." })`.
+- Never create per-feature parser or URL-builder functions; use shared utilities.
+
+```typescript
+import { toQueryParams, type ListParams } from "@/features/shared/list-params"
+import { agencyToursConfig } from "./agency-tours-config"
+
+const queryParams = toQueryParams<TourRow>(agencyToursConfig, params)
+if (ownerCompanyId) queryParams.filters.push({ column: "company_id", operator: "eq", value: ownerCompanyId })
+const { data, total, error } = await base.listOffset({ ...queryParams, select: AGENCY_SELECT })
+```
+
+## 3. Server Page (page.tsx)
+
+- Use `parseListParams(config, rawSearchParams)` with raw `searchParams`.
+- Pass `ListParams` to the service.
+- Import config from the **config file**, not the service.
+
+```typescript
+const rawSearchParams = await searchParams
+const listParams = parseListParams(agencyToursConfig, rawSearchParams)
+const { data, total } = await tourService.listForAgencyPage({ ...listParams, profile })
+```
+
+## 4. Client Component
+
+- Import config from the **config file** (keeps it client-safe; services use server-only code).
+- Use `buildListUrl(basePath, config, params)` for all navigation (filters, sort, pagination).
+- Render filter/sort controls by iterating `config.filters` and `config.sorts` — do not hardcode options.
+
+```typescript
+import { agencyToursConfig } from "@/features/tours/agency-tours-config"
+import { buildListUrl } from "@/features/shared/list-params"
+
+// Select options from config
+{agencyToursConfig.filters.map((f) => (
+  <select key={f.paramKey} value={listParams.filters[f.paramKey]}
+    onChange={(e) => navigate({ filters: { ...listParams.filters, [f.paramKey]: e.target.value }, page: 1 })}>
+    {f.options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+  </select>
+))}
+
+router.push(buildListUrl(BASE_PATH, agencyToursConfig, { ...listParams, page: nextPage }))
+```
+
+## Variable Naming
+
+Use full words for variables, not single letters or abbreviations. Improves readability for all devs.
+
+```typescript
+// ❌ BAD
+for (const f of config.filters) { ... }
+const qp = toQueryParams(...)
+options.map((o) => ...)
+
+// ✅ GOOD
+for (const filterDef of config.filters) { ... }
+const queryParams = toQueryParams(...)
+options.map((option) => ...)
+```
+
+## Don't
+
+- Put list config inside `*.service.ts` — clients would pull in server-only code.
+- Create `parseXFilter`, `parseYSort`, or `buildXUrl` per feature — use `parseListParams` and `buildListUrl`.
+- Hardcode filter/sort options in the UI — read from config.
+- Add per-feature `*-url.ts` files — `list-params.ts` handles all URL logic.

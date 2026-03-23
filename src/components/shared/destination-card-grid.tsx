@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
 
@@ -41,7 +42,7 @@ export function DestinationCard({ destination }: DestinationCardProps) {
 
 type DestinationCardGridProps = {
   destinations: DestinationPackage[];
-  emptyState?: React.ReactNode;
+  emptyState?: ReactNode;
 };
 
 export function DestinationCardGrid({ destinations, emptyState }: DestinationCardGridProps) {

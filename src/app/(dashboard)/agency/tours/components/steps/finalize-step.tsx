@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import { useState } from "react";
 import { Calendar, Plus, Trash2 } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
@@ -9,45 +9,41 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-
-import type {
-  CreateTourPayload,
-  BlackoutDatePayload,
-} from "@/features/tours/tour.validation";
+import type { BlackoutDateForm, CreateTourWizardState } from "@/features/tours/tour.types";
 
 type FinalizeStepProps = {
-  data: CreateTourPayload;
-  onUpdate: (updates: Partial<CreateTourPayload>) => void;
+  data: CreateTourWizardState;
+  onUpdate: (updates: Partial<CreateTourWizardState>) => void;
 };
 
-const defaultBlackout = (): BlackoutDatePayload => ({
+const defaultBlackout = (): BlackoutDateForm => ({
   id: crypto.randomUUID(),
-  startDate: "",
-  endDate: "",
+  start_date: "",
+  end_date: "",
   reason: "",
 });
 
 export function FinalizeStep({ data, onUpdate }: FinalizeStepProps) {
-  const blackouts = data.blackoutDates ?? [];
-  const [startDate, setStartDate] = React.useState("");
-  const [endDate, setEndDate] = React.useState("");
-  const [reason, setReason] = React.useState("");
+  const blackouts = data.blackout_dates ?? [];
+  const [start_date, setStartDate] = useState("");
+  const [end_date, setEndDate] = useState("");
+  const [reason, setReason] = useState("");
 
   const addBlackout = () => {
-    const b: BlackoutDatePayload = {
+    const b: BlackoutDateForm = {
       ...defaultBlackout(),
-      startDate,
-      endDate,
+      start_date,
+      end_date,
       reason,
     };
-    onUpdate({ blackoutDates: [...blackouts, b] });
+    onUpdate({ blackout_dates: [...blackouts, b] });
     setStartDate("");
     setEndDate("");
     setReason("");
   };
 
   const removeBlackout = (id: string) => {
-    onUpdate({ blackoutDates: blackouts.filter((b) => b.id !== id) });
+    onUpdate({ blackout_dates: blackouts.filter((b) => b.id !== id) });
   };
 
   return (
@@ -68,7 +64,7 @@ export function FinalizeStep({ data, onUpdate }: FinalizeStepProps) {
                 <Input
                   type="date"
                   className="pl-10"
-                  value={startDate}
+                  value={start_date}
                   onChange={(e) => setStartDate(e.target.value)}
                 />
               </div>
@@ -80,7 +76,7 @@ export function FinalizeStep({ data, onUpdate }: FinalizeStepProps) {
                 <Input
                   type="date"
                   className="pl-10"
-                  value={endDate}
+                  value={end_date}
                   onChange={(e) => setEndDate(e.target.value)}
                 />
               </div>
@@ -107,7 +103,7 @@ export function FinalizeStep({ data, onUpdate }: FinalizeStepProps) {
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
                     <div className="text-sm font-medium">
-                      {b.startDate} to {b.endDate}
+                      {b.start_date} to {b.end_date}
                     </div>
                     {b.reason && (
                       <div className="text-sm text-muted-foreground">{b.reason}</div>
@@ -137,21 +133,18 @@ export function FinalizeStep({ data, onUpdate }: FinalizeStepProps) {
             <div className="text-sm font-medium">
               Make tour active and visible to customers
             </div>
-            <div className="text-xs text-muted-foreground">
-              Active – Live and bookable
-            </div>
+            <div className="text-xs text-muted-foreground">Active – Live and bookable</div>
           </div>
           <Switch
-            checked={data.isActive ?? true}
-            onCheckedChange={(v) => onUpdate({ isActive: v })}
+            checked={data.is_active ?? true}
+            onCheckedChange={(v) => onUpdate({ is_active: v })}
             className="data-[state=checked]:bg-primary"
           />
         </div>
         <Card className="bg-accent border border-border rounded-lg p-4">
           <p className="text-sm text-accent-foreground">
-            Once published, your tour will be immediately visible to customers and
-            available for booking. You can change the status anytime from the tour
-            management dashboard.
+            Once published, your tour will be immediately visible to customers and available for
+            booking. You can change the status anytime from the tour management dashboard.
           </p>
         </Card>
       </div>

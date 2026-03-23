@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { BadgeCheck, Star, ArrowRight } from "lucide-react";
@@ -75,7 +76,7 @@ export function TravelPackageCard({ pkg }: TravelPackageCardProps) {
 
 type TravelPackagesGridProps = {
   packages: TravelPackage[];
-  emptyState?: React.ReactNode;
+  emptyState?: ReactNode;
 };
 
 export function TravelPackagesGrid({ packages, emptyState }: TravelPackagesGridProps) {

@@ -1,16 +1,17 @@
-import * as React from "react"
+import { forwardRef } from "react"
+import type { InputHTMLAttributes, ReactNode } from "react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 
-export interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface FormInputProps extends InputHTMLAttributes<HTMLInputElement> {
   id: string
   label: string
   error?: string
-  rightElement?: React.ReactNode
+  rightElement?: ReactNode
 }
 
-export const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
+export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
   ({ id, label, error, rightElement, className, ...props }, ref) => {
     const errorId = error ? `${id}-error` : undefined
     const ariaDescribedBy = [

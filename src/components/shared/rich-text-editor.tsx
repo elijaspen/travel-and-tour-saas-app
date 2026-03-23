@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useCallback, useEffect } from "react";
+import { useCallback, useEffect } from "react";
+import type { ReactNode } from "react";
 import {
   Bold,
   Italic,
@@ -39,6 +40,7 @@ type RichTextEditorProps = {
   minHeight?: string;
   className?: string;
   "aria-invalid"?: boolean;
+  "aria-required"?: boolean;
 };
 
 export function RichTextEditor({
@@ -51,6 +53,7 @@ export function RichTextEditor({
   minHeight = "280px",
   className,
   "aria-invalid": ariaInvalid,
+  "aria-required": ariaRequired,
 }: RichTextEditorProps) {
   const editor = useEditor({
     immediatelyRender: false,
@@ -63,6 +66,7 @@ export function RichTextEditor({
     editorProps: {
       attributes: {
         ...(ariaInvalid && { "aria-invalid": "true" as const }),
+        ...(ariaRequired && { "aria-required": "true" as const }),
         class: "text-sm text-foreground leading-relaxed min-w-0 outline-none",
       },
       handleDOMEvents: {
@@ -198,7 +202,7 @@ function ToolbarButton({
   onClick: () => void;
   isActive: boolean;
   "aria-label": string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <button

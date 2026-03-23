@@ -1,5 +1,5 @@
 // Form.test.tsx
-import React from "react";
+import type { ReactNode } from "react";
 import { render, screen } from "@testing-library/react";
 import { useForm } from "react-hook-form";
 import {
@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/form";
 
 // Helper component to wrap with FormProvider
-function TestForm({ children }: { children: React.ReactNode }) {
+function TestForm({ children }: { children: ReactNode }) {
   const methods = useForm({
     defaultValues: { username: "" },
   });
