@@ -9,6 +9,7 @@ import {
   type ServiceResult,
   type TableRow,
 } from "@/features/shared/supabase-service";
+import { buildStoragePath, uploadFile } from "@/features/shared/storage-service";
 import {
   toQueryParams,
   type ListParams,
@@ -169,19 +170,12 @@ export const tourService = {
 
       for (let i = 0; i < photoFiles.length; i++) {
         const file = photoFiles[i];
-        const extRaw = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
-        const ext = extRaw.replace(/[^a-z0-9]/g, "") || "jpg";
-        const safeExt = ext === "jpeg" ? "jpg" : ext;
-        const path = `${companyId}/${tourId}/${globalThis.crypto.randomUUID()}.${safeExt}`;
-        const { error: upErr } = await db.storage.from(TOUR_PHOTOS_BUCKET).upload(path, file, {
-          contentType: file.type,
-          upsert: false,
-        });
-        if (upErr) throw upErr;
-        const { data: pub } = db.storage.from(TOUR_PHOTOS_BUCKET).getPublicUrl(path);
+        const path = buildStoragePath(`${companyId}/${tourId}`, file);
+        const { data: up, error: upErr } = await uploadFile(file, TOUR_PHOTOS_BUCKET, path);
+        if (upErr || !up) throw upErr;
         const { error: phErr } = await db.from("tour_photos").insert({
           tour_id: tourId,
-          file_url: pub.publicUrl,
+          file_url: up.publicUrl,
           sort_order: i,
         });
         if (phErr) throw phErr;

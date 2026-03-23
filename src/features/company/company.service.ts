@@ -1,6 +1,7 @@
 import { createClient as createServerClient } from "@supabase/utils/server"
 import { createAdminClient } from "@supabase/utils/admin"
 import { supabaseService, type ServiceResult, type TableRow } from "@/features/shared/supabase-service"
+import { buildStoragePath, uploadFile } from "@/features/shared/storage-service"
 import { toQueryParams, type ListParams } from "@/features/shared/list-params"
 import { businessesListConfig } from "./utils/businesses-list-config"
 import type { Company } from "./company.types"
@@ -108,23 +109,8 @@ export const companyService = {
 
   async uploadPermit(file: File, ownerId: string): Promise<ServiceResult<{ path: string }>> {
     const validation = companyService.validatePermitFile(file)
-    if (!validation.ok) {
-      return { data: null, error: new Error(validation.error) }
-    }
-
-    const extension = file.name.split(".").pop()?.toLowerCase() || "bin"
-    const safeExtension = extension.replace(/[^a-z0-9]/g, "") || "bin"
-    const objectPath = `${ownerId}/${crypto.randomUUID()}.${safeExtension}`
-
-    const supabase = await createServerClient()
-    const { error } = await supabase.storage
-      .from(COMPANY_PERMIT_BUCKET)
-      .upload(objectPath, file, { upsert: false, contentType: file.type })
-
-    if (error) {
-      return { data: null, error }
-    }
-
-    return { data: { path: objectPath }, error: null }
+    if (!validation.ok) return { data: null, error: new Error(validation.error) }
+    const path = buildStoragePath(ownerId, file)
+    return uploadFile(file, COMPANY_PERMIT_BUCKET, path)
   },
 }
