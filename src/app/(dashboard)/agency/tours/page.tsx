@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 
 import {
   parsePublicationFilter,
   parseSort,
   parseTourTypeFilter,
-} from "./urls";
+} from "@/features/tours/agency-tours-url";
 import { ToursClient } from "./client";
 import { requireRole } from "@/features/profile/profile.guard";
 import { ProfileRoles } from "@/features/profile/profile.types";
@@ -16,7 +15,7 @@ export const metadata: Metadata = {
   description: "Manage your agency tours and packages.",
 };
 
-const PER_PAGE = 20;
+const PER_PAGE = 5;
 
 export default async function ToursPage({
   searchParams,
@@ -56,16 +55,14 @@ export default async function ToursPage({
   const totalPages = Math.ceil((total ?? 0) / PER_PAGE);
 
   return (
-    <Suspense fallback={<p className="text-sm text-muted-foreground">Loading…</p>}>
-      <ToursClient
-        tours={tours ?? []}
-        page={page}
-        totalPages={totalPages}
-        search={search}
-        publication={publication}
-        tourType={tourType}
-        sort={sort}
-      />
-    </Suspense>
+    <ToursClient
+      tours={tours ?? []}
+      page={page}
+      totalPages={totalPages}
+      search={search}
+      publication={publication}
+      tourType={tourType}
+      sort={sort}
+    />
   );
 }
