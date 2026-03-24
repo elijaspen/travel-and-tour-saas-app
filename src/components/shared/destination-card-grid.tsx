@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
 
@@ -15,7 +16,7 @@ type DestinationCardProps = {
 
 export function DestinationCard({ destination }: DestinationCardProps) {
   return (
-    <Card className="group gap-0 overflow-hidden rounded-[20px] border-0 bg-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+    <Card className="group gap-0 overflow-hidden rounded-[20px] border-0 bg-card shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
       <div className="relative aspect-[4/5] overflow-hidden rounded-[16px]">
         <Image
           src={destination.image}
@@ -41,14 +42,14 @@ export function DestinationCard({ destination }: DestinationCardProps) {
 
 type DestinationCardGridProps = {
   destinations: DestinationPackage[];
-  emptyState?: React.ReactNode;
+  emptyState?: ReactNode;
 };
 
 export function DestinationCardGrid({ destinations, emptyState }: DestinationCardGridProps) {
   if (!destinations.length) {
     return (
       emptyState ?? (
-        <p className="text-center text-sm text-slate-500">No Curated locations yet.</p>
+        <p className="text-center text-sm text-muted-foreground">No curated locations yet.</p>
       )
     );
   }

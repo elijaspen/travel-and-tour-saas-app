@@ -11,55 +11,48 @@ import {
   FormDescription,
   FormMessage,
 } from "@/components/ui/form";
-import "@testing-library/jest-dom";
 
-describe("Form Components", () => {
-  // A helper component to wrap our form fields in a real react-hook-form environment
-  const TestForm = ({ onSubmit = jest.fn() }) => {
-    const form = useForm({
-      defaultValues: {
-        username: "",
-      },
-    });
+// Helper component to wrap with FormProvider
+function TestForm({ children }: { children: React.ReactNode }) {
+  const methods = useForm({
+    defaultValues: { username: "" },
+  });
+  return <Form {...methods}>{children}</Form>;
+}
 
-    return (
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <FormField
-            control={form.control}
-            name="username"
-            rules={{ required: "Username is required" }}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Username</FormLabel>
-                <FormControl>
-                  <input data-testid="username-input" {...field} />
-                </FormControl>
-                <FormDescription>This is your public name.</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <button type="submit">Submit</button>
-        </form>
-      </Form>
+describe("Form components", () => {
+  it("renders FormItem with slot attribute", () => {
+    render(
+      <TestForm>
+        <FormItem>
+          <div>Item Content</div>
+        </FormItem>
+      </TestForm>,
     );
-  };
-
-  it("renders the label and description correctly", () => {
-    render(<TestForm />);
-
-    expect(screen.getByText(/username/i)).toBeInTheDocument();
-    expect(screen.getByText(/this is your public name/i)).toBeInTheDocument();
+    expect(screen.getByText("Item Content")).toHaveAttribute("data-slot", "form-item");
   });
 
-  it("links the label to the input via htmlFor", () => {
-    render(<TestForm />);
+  it("renders FormLabel linked to control", () => {
+    render(
+      <TestForm>
+        <FormField
+          name="username"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Username</FormLabel>
+              <FormControl>
+                <input {...field} />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+      </TestForm>,
+    );
 
-    const label = screen.getByText(/username/i);
-    const input = screen.getByTestId("username-input");
+    const label = screen.getByText("Username");
+    const input = screen.getByRole("textbox");
 
-    // Radix/shadcn generates unique IDs, check they match
+    expect(label).toHaveAttribute("data-slot", "form-label");
     expect(label).toHaveAttribute("for", input.id);
   });
 

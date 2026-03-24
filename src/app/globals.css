@@ -85,6 +85,8 @@
   /* --brand: oklch(0.55 0.18 240); */
   --brand: oklch(0.209 0 129.63);
   --brand-foreground: oklch(0.98 0 0);
+  /** Map location needle: blue accent (hue matches `.dark` `--brand`) for contrast on map tiles. */
+  --map-location-pin: oklch(0.52 0.14 240);
 }
 
 .dark {
@@ -121,6 +123,7 @@
   --sidebar-ring: oklch(0.556 0 0);
   --brand: oklch(0.6 0.18 240);
   --brand-foreground: oklch(0.98 0 0);
+  --map-location-pin: oklch(0.62 0.16 240);
 }
 
 @layer base {
@@ -130,4 +133,45 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/*
+ * Embedded Mapbox (location picker): compact attribution is set in React.
+ * Slightly tame default ctrl chrome; wordmark must stay visible (Mapbox terms).
+ */
+@layer components {
+  .workwanders-mapbox-embed .mapboxgl-ctrl-logo {
+    transform: scale(0.88);
+    transform-origin: bottom left;
+  }
+  .workwanders-mapbox-embed .mapboxgl-ctrl-bottom-right .mapboxgl-ctrl-attrib {
+    margin: 0 6px 6px 0;
+  }
+}
+
+/* Tiptap / ProseMirror editor styles */
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: oklch(0.556 0 0);
+  pointer-events: none;
+  height: 0;
+}
+.ProseMirror:focus {
+  outline: none;
+}
+.ProseMirror ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+}
+.ProseMirror ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+}
+.ProseMirror blockquote {
+  border-left: 4px solid oklch(0.922 0 0);
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: oklch(0.556 0 0);
+  font-style: italic;
 }

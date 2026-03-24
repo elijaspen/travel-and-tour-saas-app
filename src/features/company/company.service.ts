@@ -1,8 +1,18 @@
 import { createClient as createServerClient } from "@supabase/utils/server"
 import { createAdminClient } from "@supabase/utils/admin"
-import { supabaseService, ServiceResult } from "@/features/shared/supabase-service"
-import type { Company, CompanyStatus } from "./company.types"
+import { supabaseService, type ServiceResult, type TableRow } from "@/features/shared/supabase-service"
+import { buildStoragePath, uploadFile } from "@/features/shared/storage-service"
+import { toQueryParams, type ListParams } from "@/features/shared/list-params"
+import { businessesListConfig } from "./utils/businesses-list-config"
+import type { Company } from "./company.types"
 import type { Profile } from "@/features/profile/profile.types"
+import {
+  COMPANY_PERMIT_BUCKET,
+  COMPANY_PERMIT_ALLOWED_MIME_TYPES,
+  COMPANY_PERMIT_MAX_SIZE_BYTES,
+} from "./company.constants"
+
+type CompanyRow = TableRow<"companies">
 
 const base = supabaseService("companies")
 
@@ -53,18 +63,11 @@ export const companyService = {
     return { data: counts, error: null }
   },
 
-  async listWithOwnersPaginated(params?: {
-    page?: number
-    pageSize?: number
-    status?: CompanyStatus
-  }) {
+  async listWithOwnersPaginated(params: ListParams) {
+    const queryParams = toQueryParams<CompanyRow>(businessesListConfig, params)
     const result = await base.listOffset({
-      page: params?.page,
-      pageSize: params?.pageSize,
-      orderBy: "created_at",
-      ascending: false,
+      ...queryParams,
       select: COMPANY_WITH_OWNER_SELECT,
-      eq: params?.status ? { status: params.status } : undefined,
     })
     return {
       ...result,
@@ -83,5 +86,31 @@ export const companyService = {
     const admin = createAdminClient()
     const { data, error } = await admin.auth.admin.getUserById(userId)
     return { data: data?.user?.email ?? null, error }
+  },
+
+  async getPermitSignedUrl(path: string, expiresIn = 60 * 10): Promise<ServiceResult<string>> {
+    const supabase = await createServerClient()
+    const { data, error } = await supabase.storage
+      .from(COMPANY_PERMIT_BUCKET)
+      .createSignedUrl(path, expiresIn)
+
+    return { data: data?.signedUrl ?? null, error }
+  },
+
+  validatePermitFile(file: File): { ok: true } | { ok: false; error: string } {
+    if (!COMPANY_PERMIT_ALLOWED_MIME_TYPES.includes(file.type as (typeof COMPANY_PERMIT_ALLOWED_MIME_TYPES)[number])) {
+      return { ok: false, error: "Permit must be a PDF, PNG, or JPG file." }
+    }
+    if (file.size > COMPANY_PERMIT_MAX_SIZE_BYTES) {
+      return { ok: false, error: "Permit file must be 2MB or smaller." }
+    }
+    return { ok: true }
+  },
+
+  async uploadPermit(file: File, ownerId: string): Promise<ServiceResult<{ path: string }>> {
+    const validation = companyService.validatePermitFile(file)
+    if (!validation.ok) return { data: null, error: new Error(validation.error) }
+    const path = buildStoragePath(ownerId, file)
+    return uploadFile(file, COMPANY_PERMIT_BUCKET, path)
   },
 }

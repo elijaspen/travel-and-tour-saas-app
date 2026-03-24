@@ -1,0 +1,22 @@
+---
+description: Use npm for installs, scripts, and package-lock — not pnpm/yarn/bun
+alwaysApply: true
+---
+
+# Package manager: npm only
+
+Use **npm** for all package-related work in this repo.
+
+## Do
+
+- Install / add / remove deps: `npm install`, `npm install <pkg>`, `npm uninstall <pkg>`
+- Run scripts: `npm run <script>`
+- Use **package-lock.json** as the lockfile; do not introduce `pnpm-lock.yaml`, `yarn.lock`, or Bun lockfiles unless the project explicitly migrates
+
+## Do not
+
+- Suggest or run `pnpm`, `yarn`, or `bun` for installs, lockfiles, or scripts (`npx` is fine; it ships with npm)
+
+## CI and docs
+
+- Instructions, examples, and automation should use **npm** so they match local workflows.

@@ -18,7 +18,8 @@ CREATE TABLE public.companies (
   website_url text,
   status public.company_status NOT NULL DEFAULT 'pending',
   created_at timestamptz NOT NULL DEFAULT timezone('utc', now()),
-  updated_at timestamptz NOT NULL DEFAULT timezone('utc', now())
+  updated_at timestamptz NOT NULL DEFAULT timezone('utc', now()),
+  permit_url text
 );
 
 CREATE INDEX companies_owner_profile_id_idx ON public.companies (owner_profile_id);
