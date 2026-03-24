@@ -1,101 +1,98 @@
-// Tabs.test.tsx
-import React from "react";
+import * as React from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import "@testing-library/jest-dom";
 
-describe("Tabs components", () => {
-  it("renders Tabs with default orientation", () => {
-    render(
-      <Tabs defaultValue="tab1">
-        <TabsList>
-          <TabsTrigger value="tab1">Tab 1</TabsTrigger>
-          <TabsTrigger value="tab2">Tab 2</TabsTrigger>
-        </TabsList>
-        <TabsContent value="tab1">Content 1</TabsContent>
-        <TabsContent value="tab2">Content 2</TabsContent>
-      </Tabs>,
-    );
+describe("Tabs Component", () => {
+  const TestTabs = ({ orientation = "horizontal" as const, variant = "default" as const }) => (
+    <Tabs defaultValue="account" orientation={orientation} data-testid="tabs">
+      <TabsList variant={variant}>
+        <TabsTrigger value="account">Account</TabsTrigger>
+        <TabsTrigger value="password">Password</TabsTrigger>
+        <TabsTrigger value="settings" disabled>
+          Settings
+        </TabsTrigger>
+      </TabsList>
+      <TabsContent value="account">Account Content</TabsContent>
+      <TabsContent value="password">Password Content</TabsContent>
+      <TabsContent value="settings">Settings Content</TabsContent>
+    </Tabs>
+  );
 
-    const tabsRoot = screen.getByRole("tablist").parentElement;
-    expect(tabsRoot).toHaveAttribute("data-slot", "tabs");
-    expect(tabsRoot).toHaveAttribute("data-orientation", "horizontal");
+  it("renders correctly and shows default content", () => {
+    render(<TestTabs />);
+
+    // Initial state
+    expect(screen.getByText("Account Content")).toBeVisible();
+    expect(screen.queryByText("Password Content")).not.toBeInTheDocument();
+
+    // Check aria attributes on triggers
+    const accountTrigger = screen.getByRole("tab", { name: /account/i });
+    expect(accountTrigger).toHaveAttribute("aria-selected", "true");
   });
 
-  it("renders TabsList with default variant", () => {
-    render(
-      <Tabs defaultValue="tab1">
-        <TabsList>
-          <TabsTrigger value="tab1">Tab 1</TabsTrigger>
-        </TabsList>
-      </Tabs>,
-    );
-
-    const list = screen.getByRole("tablist");
-    expect(list).toHaveAttribute("data-slot", "tabs-list");
-    expect(list).toHaveAttribute("data-variant", "default");
-  });
-
-  it("renders TabsList with line variant", () => {
-    render(
-      <Tabs defaultValue="tab1">
-        <TabsList variant="line">
-          <TabsTrigger value="tab1">Tab 1</TabsTrigger>
-        </TabsList>
-      </Tabs>,
-    );
-
-    const list = screen.getByRole("tablist");
-    expect(list).toHaveAttribute("data-variant", "line");
-  });
-
-  it("activates correct tab and content", async () => {
+  it("switches content when a different tab is clicked", async () => {
     const user = userEvent.setup();
-    render(
-      <Tabs defaultValue="tab1">
-        <TabsList>
-          <TabsTrigger value="tab1">Tab 1</TabsTrigger>
-          <TabsTrigger value="tab2">Tab 2</TabsTrigger>
-        </TabsList>
-        <TabsContent value="tab1">Content 1</TabsContent>
-        <TabsContent value="tab2">Content 2</TabsContent>
-      </Tabs>,
-    );
+    render(<TestTabs />);
 
-    // Tab 1 active by default
-    expect(screen.getByText("Content 1")).toBeVisible();
-    expect(screen.queryByText("Content 2")).not.toBeVisible();
+    const passwordTrigger = screen.getByRole("tab", { name: /password/i });
 
-    // Switch to Tab 2
-    await user.click(screen.getByText("Tab 2"));
-    expect(screen.getByText("Content 2")).toBeVisible();
-    expect(screen.queryByText("Content 1")).not.toBeVisible();
+    await user.click(passwordTrigger);
+
+    // New content should be visible
+    expect(screen.getByText("Password Content")).toBeVisible();
+    // Old content should be removed or hidden (Radix removes it from DOM by default)
+    expect(screen.queryByText("Account Content")).not.toBeInTheDocument();
+    expect(passwordTrigger).toHaveAttribute("aria-selected", "true");
   });
 
-  it("TabsTrigger has slot attribute", () => {
-    render(
-      <Tabs defaultValue="tab1">
-        <TabsList>
-          <TabsTrigger value="tab1">Tab 1</TabsTrigger>
-        </TabsList>
-      </Tabs>,
-    );
+  it("does not switch tabs when a disabled trigger is clicked", async () => {
+    const user = userEvent.setup();
+    render(<TestTabs />);
 
-    const trigger = screen.getByRole("tab");
-    expect(trigger).toHaveAttribute("data-slot", "tabs-trigger");
+    const settingsTrigger = screen.getByRole("tab", { name: /settings/i });
+    expect(settingsTrigger).toBeDisabled();
+
+    await user.click(settingsTrigger);
+
+    // Content should still be the default
+    expect(screen.getByText("Account Content")).toBeVisible();
+    expect(screen.queryByText("Settings Content")).not.toBeInTheDocument();
   });
 
-  it("TabsContent has slot attribute", () => {
-    render(
-      <Tabs defaultValue="tab1">
-        <TabsList>
-          <TabsTrigger value="tab1">Tab 1</TabsTrigger>
-        </TabsList>
-        <TabsContent value="tab1">Content 1</TabsContent>
-      </Tabs>,
-    );
+  it("applies the correct data attributes for orientation", () => {
+    const { rerender } = render(<TestTabs data-testid="test-tab" orientation="horizontal" />);
+    expect(screen.getByTestId("tabs")).toHaveAttribute("data-orientation", "horizontal");
 
-    const content = screen.getByText("Content 1");
-    expect(content).toHaveAttribute("data-slot", "tabs-content");
+    rerender(<TestTabs orientation="vertical" />);
+    expect(screen.getByTestId("tabs")).toHaveAttribute("data-orientation", "vertical");
+  });
+
+  it("applies the variant classes correctly to TabsList", () => {
+    render(<TestTabs variant="line" />);
+    const list = screen.getByRole("tablist");
+
+    // Verify the data-variant attribute used in your CVA/styling
+    expect(list).toHaveAttribute("data-variant", "line");
+    expect(list).toHaveClass("bg-transparent"); // Class from 'line' variant
+  });
+
+  it("supports keyboard navigation", async () => {
+    const user = userEvent.setup();
+    render(<TestTabs />);
+
+    const accountTrigger = screen.getByRole("tab", { name: /account/i });
+
+    // Focus the first tab
+    accountTrigger.focus();
+    expect(accountTrigger).toHaveFocus();
+
+    // Press ArrowRight to move to the next tab
+    await user.keyboard("{ArrowRight}");
+
+    const passwordTrigger = screen.getByRole("tab", { name: /password/i });
+    expect(passwordTrigger).toHaveFocus();
+    expect(screen.getByText("Password Content")).toBeVisible();
   });
 });

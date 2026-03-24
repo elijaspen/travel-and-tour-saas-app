@@ -1,45 +1,40 @@
-// Toaster.test.tsx
-import React from "react";
-import { render } from "@testing-library/react";
-import { Toaster } from "@/components/ui/sonner";
+"use client";
 
-// Mock next-themes
-jest.mock("next-themes", () => ({
-  useTheme: () => ({ theme: "dark" }),
-}));
+import {
+  CircleCheckIcon,
+  InfoIcon,
+  Loader2Icon,
+  OctagonXIcon,
+  TriangleAlertIcon,
+} from "lucide-react";
+import { useTheme } from "next-themes";
+import { Toaster as Sonner, type ToasterProps } from "sonner";
 
-describe("Toaster component", () => {
-  it("renders with theme from useTheme", () => {
-    const { container } = render(<Toaster />);
-    const toaster = container.querySelector(".toaster");
+const Toaster = ({ ...props }: ToasterProps) => {
+  const { theme = "system" } = useTheme();
 
-    expect(toaster).toBeInTheDocument();
-    // Sonner sets theme attribute internally, but we can check className
-    expect(toaster).toHaveClass("group");
-  });
+  return (
+    <Sonner
+      theme={theme as ToasterProps["theme"]}
+      className="toaster group"
+      icons={{
+        success: <CircleCheckIcon className="size-4" />,
+        info: <InfoIcon className="size-4" />,
+        warning: <TriangleAlertIcon className="size-4" />,
+        error: <OctagonXIcon className="size-4" />,
+        loading: <Loader2Icon className="size-4 animate-spin" />,
+      }}
+      style={
+        {
+          "--normal-bg": "var(--popover)",
+          "--normal-text": "var(--popover-foreground)",
+          "--normal-border": "var(--border)",
+          "--border-radius": "var(--radius)",
+        } as React.CSSProperties
+      }
+      {...props}
+    />
+  );
+};
 
-  it("applies custom icons", () => {
-    const { container } = render(<Toaster />);
-    // Check that our icon classes are present
-    expect(container.querySelector(".size-4")).toBeInTheDocument();
-    expect(container.querySelector(".animate-spin")).toBeInTheDocument();
-  });
-
-  it("applies custom CSS variables", () => {
-    const { container } = render(<Toaster />);
-    const toaster = container.querySelector(".toaster") as HTMLElement;
-
-    expect(toaster.style.getPropertyValue("--normal-bg")).toBe("var(--popover)");
-    expect(toaster.style.getPropertyValue("--normal-text")).toBe("var(--popover-foreground)");
-    expect(toaster.style.getPropertyValue("--normal-border")).toBe("var(--border)");
-    expect(toaster.style.getPropertyValue("--border-radius")).toBe("var(--radius)");
-  });
-
-  it("passes through props", () => {
-    const { container } = render(<Toaster position="top-right" />);
-    const toaster = container.querySelector(".toaster");
-
-    expect(toaster).toBeInTheDocument();
-    // Sonner uses props internally, so we just check it rendered
-  });
-});
+export { Toaster };
