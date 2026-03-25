@@ -13,35 +13,18 @@ import { ItineraryStep } from "@/app/(dashboard)/agency/tours/components/steps/i
 import { LocationStep } from "@/app/(dashboard)/agency/tours/components/steps/location-step";
 import { PricingStep } from "@/app/(dashboard)/agency/tours/components/steps/pricing-step";
 import { PublishStep } from "@/app/(dashboard)/agency/tours/components/steps/publish-step";
-import { getTextFromHtml } from "@/components/shared/rich-text-editor";
 import { StepperProgress } from "@/components/shared/stepper-progress";
 import { createTourAction } from "@/features/tours/tour.actions";
 import {
   type CreateTourWizardState,
   defaultCreateTourWizardState,
 } from "@/features/tours/tour.types";
-import { createTourSchema } from "@/features/tours/tour.validation";
+import { createTourCommandSchema } from "@/features/tours/tour.validation";
 import {
-  isContiguousPartition,
-  pricingScaleMaxPax,
-} from "@/features/tours/utils/pricing-tier-partition";
+  getStepValidation,
+  wizardToJsonPayload,
+} from "@/features/tours/utils/tour-wizard";
 import { CREATE_TOUR_STEPS } from "./create-tour-steps";
-import { isValidCountryCode } from "@/lib/geo/countries";
-
-function wizardToJsonPayload(state: CreateTourWizardState) {
-  const { inclusion_entries, exclusion_entries, photos, ...apiFields } = state;
-  const orderedPhotos = [...(photos ?? [])].sort((a, b) => a.sort_order - b.sort_order);
-  return {
-    ...apiFields,
-    photos: orderedPhotos.map((p) => ({ id: p.id })),
-    inclusions: (inclusion_entries ?? [])
-      .map((e) => e.text.trim())
-      .filter((s) => s.length > 0),
-    exclusions: (exclusion_entries ?? [])
-      .map((e) => e.text.trim())
-      .filter((s) => s.length > 0),
-  };
-}
 
 export function CreateTourWizardClient() {
   const router = useRouter();
@@ -84,7 +67,7 @@ export function CreateTourWizardClient() {
     }
 
     const jsonPayload = wizardToJsonPayload({ ...formData, photos: orderedPhotos });
-    const parsed = createTourSchema.safeParse(jsonPayload);
+    const parsed = createTourCommandSchema.safeParse(jsonPayload);
     if (!parsed.success) {
       const first = parsed.error.issues[0];
       toast.error(first?.message ?? "Please fix the form errors.");
@@ -127,43 +110,7 @@ export function CreateTourWizardClient() {
     if (step <= completedCount + 1) setCurrentStep(step);
   };
 
-  const getStepValidation = () => {
-    if (currentStep === 1) {
-      const titleOk = (formData.title?.trim().length ?? 0) >= 2;
-      const descText = getTextFromHtml(formData.description ?? "");
-      const descOk = descText.trim().length >= 10;
-      const durationOk = (formData.duration_days ?? 0) >= 1;
-      const capacityOk = (formData.default_capacity ?? 0) >= 1;
-      const maxBookingsOk = (formData.max_simultaneous_bookings ?? 0) >= 1;
-      return {
-        canProceed:
-          titleOk && descOk && durationOk && capacityOk && maxBookingsOk,
-        errors: {
-          title: !titleOk && formData.title ? "Min 2 characters" : undefined,
-          description:
-            !descOk && formData.description ? "Min 10 characters" : undefined,
-        },
-      };
-    }
-    if (currentStep === 2) {
-      const cityOk = (formData.city?.trim().length ?? 0) >= 1;
-      const countryOk =
-        Boolean(formData.country_code) && isValidCountryCode(formData.country_code);
-      return {
-        canProceed: cityOk && countryOk,
-        errors: {},
-      };
-    }
-    if (currentStep === 4) {
-      const maxPax = pricingScaleMaxPax(formData.default_capacity);
-      const tiers = formData.pricing_tiers ?? [];
-      const canProceed = isContiguousPartition(tiers, maxPax);
-      return { canProceed, errors: {} };
-    }
-    return { canProceed: true, errors: {} };
-  };
-
-  const { canProceed } = getStepValidation();
+  const { canProceed, errors } = getStepValidation(currentStep, formData);
 
   return (
     <div className="flex flex-col">
@@ -197,12 +144,7 @@ export function CreateTourWizardClient() {
                 <BasicsStep
                   data={formData}
                   onUpdate={updateForm}
-                  errors={
-                    getStepValidation().errors as {
-                      title?: string;
-                      description?: string;
-                    }
-                  }
+                  errors={errors as { title?: string; description?: string }}
                 />
               )}
               {currentStep === 2 && (
