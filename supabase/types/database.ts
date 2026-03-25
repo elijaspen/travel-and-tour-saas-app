@@ -34,6 +34,38 @@ export type Database = {
   }
   public: {
     Tables: {
+      blackout_dates: {
+        Row: {
+          end_date: string
+          id: string
+          reason: string | null
+          start_date: string
+          tour_id: string
+        }
+        Insert: {
+          end_date: string
+          id?: string
+          reason?: string | null
+          start_date: string
+          tour_id: string
+        }
+        Update: {
+          end_date?: string
+          id?: string
+          reason?: string | null
+          start_date?: string
+          tour_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blackout_dates_tour_id_fkey"
+            columns: ["tour_id"]
+            isOneToOne: false
+            referencedRelation: "tours"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bookings: {
         Row: {
           created_at: string
@@ -85,6 +117,27 @@ export type Database = {
           },
         ]
       }
+      categories: {
+        Row: {
+          id: string
+          is_active: boolean
+          name: string
+          slug: string
+        }
+        Insert: {
+          id?: string
+          is_active?: boolean
+          name: string
+          slug: string
+        }
+        Update: {
+          id?: string
+          is_active?: boolean
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
       companies: {
         Row: {
           contact_email: string | null
@@ -95,6 +148,7 @@ export type Database = {
           location: string | null
           name: string
           owner_profile_id: string
+          permit_url: string | null
           status: Database["public"]["Enums"]["company_status"]
           updated_at: string
           website_url: string | null
@@ -108,6 +162,7 @@ export type Database = {
           location?: string | null
           name: string
           owner_profile_id: string
+          permit_url?: string | null
           status?: Database["public"]["Enums"]["company_status"]
           updated_at?: string
           website_url?: string | null
@@ -121,6 +176,7 @@ export type Database = {
           location?: string | null
           name?: string
           owner_profile_id?: string
+          permit_url?: string | null
           status?: Database["public"]["Enums"]["company_status"]
           updated_at?: string
           website_url?: string | null
@@ -223,53 +279,218 @@ export type Database = {
           },
         ]
       }
+      tour_categories: {
+        Row: {
+          category_id: string
+          created_at: string
+          tour_id: string
+        }
+        Insert: {
+          category_id: string
+          created_at?: string
+          tour_id: string
+        }
+        Update: {
+          category_id?: string
+          created_at?: string
+          tour_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tour_categories_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tour_categories_tour_id_fkey"
+            columns: ["tour_id"]
+            isOneToOne: false
+            referencedRelation: "tours"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tour_itineraries: {
+        Row: {
+          day_number: number
+          description: string | null
+          id: string
+          image_url: string | null
+          start_time: string | null
+          title: string
+          tour_id: string
+        }
+        Insert: {
+          day_number: number
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          start_time?: string | null
+          title: string
+          tour_id: string
+        }
+        Update: {
+          day_number?: number
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          start_time?: string | null
+          title?: string
+          tour_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tour_itineraries_tour_id_fkey"
+            columns: ["tour_id"]
+            isOneToOne: false
+            referencedRelation: "tours"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tour_photos: {
+        Row: {
+          file_url: string
+          id: string
+          sort_order: number
+          tour_id: string
+        }
+        Insert: {
+          file_url: string
+          id?: string
+          sort_order?: number
+          tour_id: string
+        }
+        Update: {
+          file_url?: string
+          id?: string
+          sort_order?: number
+          tour_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tour_photos_tour_id_fkey"
+            columns: ["tour_id"]
+            isOneToOne: false
+            referencedRelation: "tours"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tour_prices: {
+        Row: {
+          amount: number
+          currency: string
+          id: string
+          max_pax: number | null
+          min_pax: number
+          tour_id: string
+        }
+        Insert: {
+          amount: number
+          currency: string
+          id?: string
+          max_pax?: number | null
+          min_pax: number
+          tour_id: string
+        }
+        Update: {
+          amount?: number
+          currency?: string
+          id?: string
+          max_pax?: number | null
+          min_pax?: number
+          tour_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tour_prices_tour_id_fkey"
+            columns: ["tour_id"]
+            isOneToOne: false
+            referencedRelation: "tours"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tours: {
         Row: {
-          base_price: number
+          address_line: string | null
+          city: string | null
           company_id: string
+          country_code: string | null
           created_at: string
+          default_capacity: number | null
           description: string
           duration_days: number | null
-          exclusions: string | null
+          exclusions: string[]
           id: string
-          inclusions: string | null
+          inclusions: string[]
           is_active: boolean
-          itinerary: string | null
-          location: string | null
-          max_slots_per_date: number | null
+          latitude: number | null
+          longitude: number | null
+          max_simultaneous_bookings: number | null
+          place_id: string | null
+          postal_code: string | null
+          province_state: string | null
+          short_description: string | null
+          slug: string
+          tags: string[]
           title: string
+          tour_type: Database["public"]["Enums"]["tour_type"]
           updated_at: string
         }
         Insert: {
-          base_price: number
+          address_line?: string | null
+          city?: string | null
           company_id: string
+          country_code?: string | null
           created_at?: string
+          default_capacity?: number | null
           description: string
           duration_days?: number | null
-          exclusions?: string | null
+          exclusions?: string[]
           id?: string
-          inclusions?: string | null
+          inclusions?: string[]
           is_active?: boolean
-          itinerary?: string | null
-          location?: string | null
-          max_slots_per_date?: number | null
+          latitude?: number | null
+          longitude?: number | null
+          max_simultaneous_bookings?: number | null
+          place_id?: string | null
+          postal_code?: string | null
+          province_state?: string | null
+          short_description?: string | null
+          slug: string
+          tags?: string[]
           title: string
+          tour_type?: Database["public"]["Enums"]["tour_type"]
           updated_at?: string
         }
         Update: {
-          base_price?: number
+          address_line?: string | null
+          city?: string | null
           company_id?: string
+          country_code?: string | null
           created_at?: string
+          default_capacity?: number | null
           description?: string
           duration_days?: number | null
-          exclusions?: string | null
+          exclusions?: string[]
           id?: string
-          inclusions?: string | null
+          inclusions?: string[]
           is_active?: boolean
-          itinerary?: string | null
-          location?: string | null
-          max_slots_per_date?: number | null
+          latitude?: number | null
+          longitude?: number | null
+          max_simultaneous_bookings?: number | null
+          place_id?: string | null
+          postal_code?: string | null
+          province_state?: string | null
+          short_description?: string | null
+          slug?: string
+          tags?: string[]
           title?: string
+          tour_type?: Database["public"]["Enums"]["tour_type"]
           updated_at?: string
         }
         Relationships: [
@@ -287,7 +508,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_company_status_counts: {
+        Args: never
+        Returns: {
+          count: number
+          status: string
+        }[]
+      }
+      is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
       booking_status:
@@ -298,6 +526,7 @@ export type Database = {
         | "cancellation_requested"
       company_status: "pending" | "approved" | "declined" | "suspended"
       profile_status: "active" | "suspended"
+      tour_type: "on_demand" | "fixed_schedule"
       user_role: "customer" | "business_owner" | "agent" | "admin"
     }
     CompositeTypes: {
@@ -438,6 +667,7 @@ export const Constants = {
       ],
       company_status: ["pending", "approved", "declined", "suspended"],
       profile_status: ["active", "suspended"],
+      tour_type: ["on_demand", "fixed_schedule"],
       user_role: ["customer", "business_owner", "agent", "admin"],
     },
   },

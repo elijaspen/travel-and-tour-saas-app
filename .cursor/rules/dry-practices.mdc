@@ -1,0 +1,42 @@
+---
+description: Enforce DRY (Don't Repeat Yourself) practices across the platform
+alwaysApply: true
+---
+
+# DRY (Don't Repeat Yourself) Practices
+
+The platform should consistently follow the DRY principle: avoid duplicating logic, structures, and configuration. Prefer reuse, composition, and clear abstractions over copy-paste.
+
+## When Adding or Changing Code
+
+- **Look for existing functionality first**
+  - Search for similar functions, components, hooks, utilities, or queries before creating new ones.
+  - Prefer extending or reusing an existing abstraction instead of creating a near-duplicate.
+
+- **Extract shared logic**
+  - If the same (or very similar) logic appears **3 or more times**, extract it into a shared helper, hook, component, or utility.
+  - If complex logic appears **2 times** and is hard to reason about or test, consider extracting it as well.
+
+- **Avoid copy-paste between layers**
+  - Do not duplicate validation, parsing, or transformation logic across API handlers, services, and UI.
+  - Prefer shared schemas, mappers, and helpers that can be reused across layers when appropriate.
+
+## Acceptable Duplication
+
+- **Simple one-liners** (e.g. `const isEmpty = list.length === 0`) can be repeated when extracting would hurt clarity.
+- **Tests** may repeat setup/values when extracting helpers would make them harder to read, but prefer shared test factories for complex data.
+- **Performance-sensitive paths** may keep some local duplication when extra indirection measurably harms performance; document this choice in code comments.
+
+## Refactoring Existing Duplication
+
+- When you encounter duplicated logic:
+  - Prefer **small, focused abstractions** over large "god" helpers.
+  - Name new helpers and hooks based on **what they do**, not where they are used.
+  - Keep the public surface area minimal; avoid leaking internal details into shared utilities.
+
+## Code Review Guidelines
+
+- **Ask:** "Can this reuse an existing helper/component/hook instead of duplicating?"
+- **Check:** Are there similar functions, components, or blocks of logic in the codebase that could be unified?
+- **Balance:** Do not over-abstract. If an abstraction makes the code harder to understand than the duplication, prefer clarity.
+

@@ -126,7 +126,7 @@ export default function ResetPasswordPage() {
       <Card className="w-full max-w-md border-0 shadow-xl">
         <CardHeader className="pb-2 text-center">
           <CardTitle className="text-2xl font-bold">Set a new password</CardTitle>
-          <CardDescription className="text-slate-500">
+          <CardDescription>
             Choose a strong password you haven&apos;t used before on this site.
           </CardDescription>
         </CardHeader>
@@ -136,7 +136,7 @@ export default function ResetPasswordPage() {
               <p
                 className={`rounded-md px-3 py-2 text-sm ${
                   serverResult.success
-                    ? "bg-emerald-50 text-emerald-800"
+                    ? "bg-brand/10 text-brand"
                     : "bg-destructive/10 text-destructive"
                 }`}
               >
@@ -181,7 +181,7 @@ export default function ResetPasswordPage() {
               Update password
             </Button>
 
-            <p className="mt-4 text-center text-sm text-slate-500">
+            <p className="mt-4 text-center text-sm text-muted-foreground">
               Remembered your password?{" "}
               <Link
                 href={ROUTE_PATHS.PUBLIC.AUTH.LOGIN}

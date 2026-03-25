@@ -18,7 +18,8 @@ CREATE TABLE public.companies (
   website_url text,
   status public.company_status NOT NULL DEFAULT 'pending',
   created_at timestamptz NOT NULL DEFAULT timezone('utc', now()),
-  updated_at timestamptz NOT NULL DEFAULT timezone('utc', now())
+  updated_at timestamptz NOT NULL DEFAULT timezone('utc', now()),
+  permit_url text
 );
 
 CREATE INDEX companies_owner_profile_id_idx ON public.companies (owner_profile_id);
@@ -27,4 +28,15 @@ CREATE TRIGGER trigger_companies_set_updated_at
   BEFORE UPDATE ON public.companies
   FOR EACH ROW
   EXECUTE FUNCTION public.trigger_set_updated_at();
+
+CREATE OR REPLACE FUNCTION public.get_company_status_counts()
+RETURNS TABLE(status text, count bigint)
+LANGUAGE sql
+STABLE
+SECURITY INVOKER
+AS $$
+  SELECT c.status::text, count(*)
+  FROM public.companies c
+  GROUP BY c.status;
+$$;
 

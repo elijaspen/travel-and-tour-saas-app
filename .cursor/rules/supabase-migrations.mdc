@@ -1,0 +1,72 @@
+---
+description: Declarative schema workflow for all Supabase database changes
+alwaysApply: true
+---
+
+# Supabase Declarative Schema & Migrations
+
+## Directory Structure
+
+- `supabase/schemas/*.sql` — source of truth; declare the desired final state of all DB entities (DDL only)
+- `supabase/migrations/` — auto-generated only; never hand-edit (except for known caveats)
+- `src/types/database.ts` — auto-generated; never hand-edit
+- New schema files must be registered in `schema_paths` in `supabase/config.toml`
+- Schema files run in lexicographic order — name files to enforce dependency order (e.g. `01_employees.sql` before `02_managers.sql`)
+
+## Workflow
+
+Always follow this order when making schema changes:
+
+```bash
+# 1. Edit supabase/schemas/*.sql (DDL only)
+
+# 2. Stop local environment before diffing
+supabase stop
+
+# 3. Generate migration
+pnpm run create <descriptive_name>
+# → runs: supabase db diff -f <name>
+# → creates: supabase/migrations/<timestamp>_<name>.sql
+
+# 4. Review the generated migration file carefully (watch for data loss)
+
+# 5. Apply locally and regenerate TypeScript types
+pnpm run migrate
+# → runs: supabase db push --local --include-all && pnpm run types
+
+# 6. Deploy to production
+pnpm run migrate:production
+# → runs: supabase db push --include-all
+```
+
+## Rollback
+
+1. Revert the relevant `supabase/schemas/*.sql` files to the desired state
+2. Run `pnpm run create <rollback_name>` to generate a down migration
+3. Review carefully — rollback SQL is often destructive
+
+## What Goes Where
+
+| Entity | Location |
+|---|---|
+| `CREATE TABLE`, `ALTER TABLE`, `CREATE INDEX`, `CREATE FUNCTION`, `CREATE VIEW`, RLS policies | `supabase/schemas/` |
+| `storage.buckets` rows and `storage.objects` RLS policies | `supabase/schemas/rls.sql` (or alongside other RLS) — if these exist only in old migrations, `db diff` may spuriously emit `DROP POLICY` |
+| `INSERT`, `UPDATE`, `DELETE` (seed data) | `supabase/seeders/` |
+| Entities `migra` cannot diff (see caveats) | `supabase/migrations/` directly |
+
+## Known Caveats — Use Manual Migration Files for These
+
+`migra` cannot diff the following; add them directly as versioned migration files:
+
+- **DML**: `INSERT`, `UPDATE`, `DELETE`
+- **View ownership**: grants, `SECURITY INVOKER`, materialized views, altering column type on a view
+- **RLS**: `ALTER POLICY` statements, column privileges
+- **Other**: schema privileges, comments, partitions, `ALTER PUBLICATION ... ADD TABLE`, `CREATE DOMAIN`, duplicate grants from default privileges
+
+## Hard Rules
+
+- Never edit migration files directly (except for known caveats above)
+- Never manually edit `src/types/database.ts`
+- Always append new columns to the end of table definitions (prevents messy diffs on views/enums)
+- Always run `supabase stop` before generating a diff
+- Always add new schema files to `schema_paths` in `supabase/config.toml` before diffing

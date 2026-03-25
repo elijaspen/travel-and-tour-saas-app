@@ -11,11 +11,20 @@ type SidebarNavLinkProps = {
   label: string;
   icon: ReactNode;
   comingSoon?: boolean;
+  /** When true, only highlight on exact path match (e.g. /admin not /admin/businesses) */
+  exact?: boolean;
 };
 
-export function SidebarNavLink({ href, label, icon, comingSoon }: SidebarNavLinkProps) {
+function isLinkActive(pathname: string, href: string, exact?: boolean): boolean {
+  const isExactMatch = pathname === href;
+  const isSubRouteMatch =
+    !exact && href !== "/" && pathname.startsWith(`${href}/`);
+  return isExactMatch || isSubRouteMatch;
+}
+
+export function SidebarNavLink({ href, label, icon, comingSoon, exact }: SidebarNavLinkProps) {
   const pathname = usePathname();
-  const isActive = !comingSoon && (pathname === href || (href !== "/" && pathname.startsWith(href)));
+  const isActive = !comingSoon && isLinkActive(pathname, href, exact);
 
   const baseClass = cn(
     "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",

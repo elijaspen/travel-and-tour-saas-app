@@ -127,7 +127,7 @@ function BaseSignupForm({ role }: BaseSignupFormProps) {
 
       <Button
         type="submit"
-        className="w-full bg-brand text-brand-foreground hover:bg-brand/90"
+        className="w-full bg-zinc-900 text-white hover:bg-zinc-800"
         disabled={isPending || serverResult.success}
       >
         {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

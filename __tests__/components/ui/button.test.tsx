@@ -22,7 +22,7 @@ describe("Button component", () => {
     render(
       <Button asChild>
         <a href="/test">Link Button</a>
-      </Button>
+      </Button>,
     );
     expect(screen.getByRole("link", { name: /link button/i })).toBeInTheDocument();
   });

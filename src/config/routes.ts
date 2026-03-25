@@ -33,6 +33,8 @@ export const ROUTE_PATHS = {
     AGENCY: {
       ROOT: "/agency",
       TOURS: "/agency/tours",
+      TOUR_CREATE: "/agency/tours/new",
+      TOUR_EDIT: (id: string) => `/agency/tours/${id}/edit`,
       BOOKINGS: "/agency/bookings",
       REVIEWS: "/agency/reviews",
       SETTINGS: "/agency/settings",
@@ -42,6 +44,8 @@ export const ROUTE_PATHS = {
 
     ADMIN: {
       ROOT: "/admin",
+      BUSINESSES: "/admin/businesses",
+      BUSINESS_DETAIL: (id: string) => `/admin/businesses/${id}`,
     },
   },
 } as const;

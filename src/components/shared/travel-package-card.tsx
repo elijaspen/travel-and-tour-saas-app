@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { BadgeCheck, Star, ArrowRight } from "lucide-react";
@@ -26,7 +27,7 @@ type TravelPackageCardProps = {
 
 export function TravelPackageCard({ pkg }: TravelPackageCardProps) {
   return (
-    <Card className="group overflow-hidden border-0 bg-white shadow-md transition-all hover:-translate-y-1 hover:shadow-xl">
+    <Card className="group overflow-hidden border-0 bg-card shadow-md transition-all hover:-translate-y-1 hover:shadow-xl">
       <div className="relative h-56 overflow-hidden">
         <Image
           src={pkg.image}
@@ -36,29 +37,29 @@ export function TravelPackageCard({ pkg }: TravelPackageCardProps) {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
         <div className="absolute bottom-3 left-3">
-          <span className="rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-slate-800 backdrop-blur-sm">
+          <span className="rounded-full bg-background/90 px-3 py-1 text-xs font-semibold text-foreground backdrop-blur-sm">
             {pkg.duration}
           </span>
         </div>
       </div>
       <CardContent className="p-5">
-        <h3 className="mb-1 text-lg font-bold text-slate-900 group-hover:text-brand">{pkg.title}</h3>
+        <h3 className="mb-1 text-lg font-bold text-foreground group-hover:text-brand">{pkg.title}</h3>
         <div className="mb-3 flex items-center gap-1.5">
-          <span className="text-sm text-slate-500">{pkg.agency}</span>
+          <span className="text-sm text-muted-foreground">{pkg.agency}</span>
           <BadgeCheck className="h-4 w-4 text-brand" />
           <Badge variant="secondary" className="ml-auto text-xs">
             Verified
           </Badge>
         </div>
-        <div className="flex items-center gap-1 text-sm text-slate-500">
+        <div className="flex items-center gap-1 text-sm text-muted-foreground">
           <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-          <span className="font-medium text-slate-700">{pkg.rating}</span>
+          <span className="font-medium text-foreground/90">{pkg.rating}</span>
           <span>({pkg.reviews} reviews)</span>
         </div>
         <Separator className="my-4" />
         <div className="flex items-center justify-between">
           <div>
-            <span className="text-xs text-slate-400">Starting from</span>
+            <span className="text-xs text-muted-foreground">Starting from</span>
             <p className="text-xl font-bold text-brand">{pkg.price}</p>
           </div>
           <Button size="sm" className="bg-brand text-brand-foreground hover:bg-brand/90" asChild>
@@ -75,14 +76,14 @@ export function TravelPackageCard({ pkg }: TravelPackageCardProps) {
 
 type TravelPackagesGridProps = {
   packages: TravelPackage[];
-  emptyState?: React.ReactNode;
+  emptyState?: ReactNode;
 };
 
 export function TravelPackagesGrid({ packages, emptyState }: TravelPackagesGridProps) {
   if (!packages.length) {
     return (
       emptyState ?? (
-        <p className="text-center text-sm text-slate-500">No travel packages available right now. Please check back soon.</p>
+        <p className="text-center text-sm text-muted-foreground">No travel packages available right now. Please check back soon.</p>
       )
     );
   }

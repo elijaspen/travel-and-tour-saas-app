@@ -22,6 +22,7 @@ import { StatCard } from "@/components/shared/stat-card";
 import { ROUTE_PATHS } from "@/config/routes";
 import { requireRole } from "@/features/profile/profile.guard";
 import { ProfileRoles } from "@/features/profile/profile.types";
+import { companyService } from "@/features/company/company.service";
 import {
   FileCheck,
   ShieldCheck,
@@ -43,15 +44,16 @@ export const metadata: Metadata = {
 export default async function AdminPage() {
   await requireRole([ProfileRoles.ADMIN]);
 
-
-  // TODO: fetch real metrics 
-  const applicationsCount = 0;
+  // TODO: fetch real metrics for users, bookings, and revenue
   const moderationCount = 0;
   const totalUsers = 0;
-  const totalBusinesses = 0;
   const totalBookings = 0;
   const platformRevenue = "$0";
   const recentActivity: never[] = [];
+
+  const { data: counts } = await companyService.getStatusCounts();
+  const pendingCount = counts?.pending ?? 0;
+  const totalBusinesses = counts?.total ?? 0;
 
   return (
     <div className="flex flex-col gap-6">
@@ -92,32 +94,45 @@ export default async function AdminPage() {
           Flags &amp; alerts
         </h2>
         <div className="grid gap-4 md:grid-cols-2">
-          <Card>
+          <Card className="h-full">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-base">
-                Pending business applications
+                Pending businesses
               </CardTitle>
-              <Badge variant={applicationsCount > 0 ? "destructive" : "secondary"}>
-                {applicationsCount}
+              <Badge variant={pendingCount > 0 ? "destructive" : "secondary"}>
+                {pendingCount}
               </Badge>
             </CardHeader>
             <CardContent>
-              <EmptyState
-                icon={<FileCheck className="h-10 w-10" />}
-                title="No pending applications"
-                description="Incoming company onboarding requests will appear here."
-                action={
-                  <Button asChild variant="outline" size="sm">
-                    <Link href={ROUTE_PATHS.AUTHED.ADMIN.ROOT}>
-                      View applications
+              {pendingCount > 0 ? (
+                <div className="flex flex-col gap-2">
+                  <p className="text-sm text-muted-foreground">
+                    {pendingCount} business{pendingCount === 1 ? "" : "es"} waiting for review.
+                  </p>
+                  <Button asChild variant="outline" size="sm" className="w-fit">
+                    <Link href={`${ROUTE_PATHS.AUTHED.ADMIN.BUSINESSES}?status=pending`}>
+                      Review pending
                     </Link>
                   </Button>
-                }
-              />
+                </div>
+              ) : (
+                <EmptyState
+                  icon={<FileCheck className="h-10 w-10" />}
+                  title="No pending businesses"
+                  description="Businesses awaiting approval will appear here."
+                  action={
+                    <Button asChild variant="outline" size="sm">
+                      <Link href={ROUTE_PATHS.AUTHED.ADMIN.BUSINESSES}>
+                        View all businesses
+                      </Link>
+                    </Button>
+                  }
+                />
+              )}
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="h-full">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-base">Moderation queue</CardTitle>
               <Badge variant={moderationCount > 0 ? "destructive" : "secondary"}>
@@ -147,7 +162,7 @@ export default async function AdminPage() {
           Quick access
         </h2>
         <div className="grid gap-4 md:grid-cols-3">
-          <Card>
+          <Card className="h-full">
             <CardContent className="flex flex-col items-center justify-center gap-3 py-8">
               <UsersRound className="h-8 w-8 text-muted-foreground" />
               <div className="text-center">
@@ -164,7 +179,7 @@ export default async function AdminPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="h-full">
             <CardContent className="flex flex-col items-center justify-center gap-3 py-8">
               <Settings className="h-8 w-8 text-muted-foreground" />
               <div className="text-center">
@@ -181,7 +196,7 @@ export default async function AdminPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="h-full">
             <CardContent className="flex flex-col items-center justify-center gap-3 py-8">
               <TrendingUp className="h-8 w-8 text-muted-foreground" />
               <div className="text-center">
