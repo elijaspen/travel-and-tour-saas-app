@@ -16,8 +16,8 @@ import {
 } from "@/features/shared/list-params";
 import { agencyToursConfig } from "./utils/agency-tours-config";
 import { TOUR_PHOTOS_BUCKET } from "./tour.constants";
-import type { CreateTourFormPayload } from "./tour.validation";
-import type { TourListItem } from "./tour.types";
+import type { CreateTourCommand, UpdateTourCommand } from "./tour.validation";
+import type { TourListItem, TourWithDetails } from "./tour.types";
 
 type TourRow = TableRow<"tours">;
 
@@ -86,37 +86,19 @@ export const tourService = {
 
   async createWithChildren(params: {
     companyId: string;
-    payload: CreateTourFormPayload;
+    command: CreateTourCommand;
     photoFiles: File[];
   }): Promise<ServiceResult<{ id: string }>> {
     const db = await createServerClient();
-    const { companyId, payload, photoFiles } = params;
-    const photoMeta = payload.photos ?? [];
-    if (photoMeta.length !== photoFiles.length) {
+    const { companyId, command, photoFiles } = params;
+    if (command.new_photo_slots !== photoFiles.length) {
       return { data: null, error: new Error("Photos and files must match.") };
     }
 
     const tourInsert = {
       company_id: companyId,
-      slug: slugFromTitle(payload.title),
-      title: payload.title,
-      short_description: payload.short_description ?? null,
-      description: payload.description,
-      duration_days: payload.duration_days ?? null,
-      default_capacity: payload.default_capacity ?? null,
-      max_simultaneous_bookings: payload.max_simultaneous_bookings ?? null,
-      tour_type: payload.tour_type ?? "on_demand",
-      address_line: payload.address_line ?? null,
-      city: payload.city ?? null,
-      province_state: payload.province_state ?? null,
-      country_code: payload.country_code ?? null,
-      postal_code: payload.postal_code ?? null,
-      latitude: payload.latitude ?? null,
-      longitude: payload.longitude ?? null,
-      place_id: payload.place_id ?? null,
-      inclusions: payload.inclusions ?? [],
-      exclusions: payload.exclusions ?? [],
-      is_active: payload.is_active ?? true,
+      slug: slugFromTitle(command.tour.title),
+      ...command.tour,
     };
 
     const { data: tour, error: tourErr } = await db
@@ -132,37 +114,28 @@ export const tourService = {
     const tourId = tour.id;
 
     try {
-      const prices = payload.pricing_tiers.map((tier) => ({
+      const prices = command.pricing_tiers.map((tier) => ({
         tour_id: tourId,
-        currency: tier.currency,
-        min_pax: tier.min_pax,
-        max_pax: tier.max_pax,
-        amount: tier.amount,
+        ...tier,
       }));
       const { error: pErr } = await db.from("tour_prices").insert(prices);
       if (pErr) throw pErr;
 
-      const days = payload.itinerary_days;
+      const days = command.itinerary_days;
       if (days?.length) {
-        const rows = days.map((day) => ({
+        const rows = days.map((itineraryDay) => ({
           tour_id: tourId,
-          day_number: day.day_number,
-          title: day.title,
-          description: day.description?.trim() ? day.description : null,
-          start_time: day.start_time?.trim() ? day.start_time : null,
-          image_url: day.image_url?.trim() ? day.image_url : null,
+          ...itineraryDay,
         }));
         const { error: iErr } = await db.from("tour_itineraries").insert(rows);
         if (iErr) throw iErr;
       }
 
-      const blacks = payload.blackout_dates;
+      const blacks = command.blackout_dates;
       if (blacks?.length) {
         const rows = blacks.map((blackoutDate) => ({
           tour_id: tourId,
-          start_date: blackoutDate.start_date,
-          end_date: blackoutDate.end_date,
-          reason: blackoutDate.reason?.trim() ? blackoutDate.reason : null,
+          ...blackoutDate,
         }));
         const { error: bErr } = await db.from("blackout_dates").insert(rows);
         if (bErr) throw bErr;
@@ -187,4 +160,136 @@ export const tourService = {
       return { data: null, error };
     }
   },
+
+  async getTourWithDetails(tourId: string): Promise<ServiceResult<TourWithDetails>> {
+    const db = await createServerClient();
+    const { data, error } = await db
+      .from("tours")
+      .select("*, tour_prices(*), tour_itineraries(*), tour_photos(*), blackout_dates(*)")
+      .eq("id", tourId)
+      .single();
+
+    if (error || !data) {
+      return { data: null, error: error ?? new Error("Tour not found.") };
+    }
+    return { data: data as unknown as TourWithDetails, error: null };
+  },
+
+  async updateWithChildren(params: {
+    tourId: string;
+    companyId: string;
+    command: UpdateTourCommand;
+    newPhotoFiles: File[];
+  }): Promise<ServiceResult<{ id: string }>> {
+    const db = await createServerClient();
+    const { tourId, companyId, command, newPhotoFiles } = params;
+    if (command.new_photo_slots !== newPhotoFiles.length) {
+      return { data: null, error: new Error("Photos and files must match.") };
+    }
+
+    const { error: tourErr } = await db
+      .from("tours")
+      .update(command.tour)
+      .eq("id", tourId);
+
+    if (tourErr) return { data: null, error: tourErr };
+
+    try {
+      // Replace pricing tiers
+      await db.from("tour_prices").delete().eq("tour_id", tourId);
+      const prices = command.pricing_tiers.map((tier) => ({
+        tour_id: tourId,
+        ...tier,
+      }));
+      const { error: pErr } = await db.from("tour_prices").insert(prices);
+      if (pErr) throw pErr;
+
+      await db.from("tour_itineraries").delete().eq("tour_id", tourId);
+      const days = command.itinerary_days;
+      if (days?.length) {
+        const rows = days.map((itineraryDay) => ({
+          tour_id: tourId,
+          ...itineraryDay,
+        }));
+        const { error: iErr } = await db.from("tour_itineraries").insert(rows);
+        if (iErr) throw iErr;
+      }
+
+      await db.from("blackout_dates").delete().eq("tour_id", tourId);
+      const blacks = command.blackout_dates;
+      if (blacks?.length) {
+        const rows = blacks.map((blackoutDate) => ({
+          tour_id: tourId,
+          ...blackoutDate,
+        }));
+        const { error: bErr } = await db.from("blackout_dates").insert(rows);
+        if (bErr) throw bErr;
+      }
+
+      // Manage photos: delete removed, keep existing with updated sort, upload new
+      const { data: existingPhotos } = await db
+        .from("tour_photos")
+        .select("id, file_url")
+        .eq("tour_id", tourId);
+
+      const keptSet = new Set(command.kept_photo_db_ids);
+      const toDelete = (existingPhotos ?? []).filter((p) => !keptSet.has(p.id));
+
+      for (const photo of toDelete) {
+        const storagePath = extractStoragePath(photo.file_url, TOUR_PHOTOS_BUCKET);
+        if (storagePath) {
+          await db.storage.from(TOUR_PHOTOS_BUCKET).remove([storagePath]);
+        }
+        await db.from("tour_photos").delete().eq("id", photo.id);
+      }
+
+      // Update sort_order for kept photos and upload new ones
+      const photoMeta = command.photos;
+      let newFileIndex = 0;
+      for (let i = 0; i < photoMeta.length; i++) {
+        const meta = photoMeta[i];
+        if (meta.id) {
+          await db
+            .from("tour_photos")
+            .update({ sort_order: i })
+            .eq("id", meta.id);
+        } else {
+          const file = newPhotoFiles[newFileIndex++];
+          if (!file) continue;
+          const path = buildStoragePath(`${companyId}/${tourId}`, file);
+          const { data: up, error: upErr } = await uploadFile(file, TOUR_PHOTOS_BUCKET, path);
+          if (upErr || !up) throw upErr;
+          const { error: phErr } = await db.from("tour_photos").insert({
+            tour_id: tourId,
+            file_url: up.publicUrl,
+            sort_order: i,
+          });
+          if (phErr) throw phErr;
+        }
+      }
+
+      return { data: { id: tourId }, error: null };
+    } catch (error) {
+      return { data: null, error };
+    }
+  },
+
+  async toggleActive(tourId: string, isActive: boolean): Promise<ServiceResult<{ id: string }>> {
+    const db = await createServerClient();
+    const { error } = await db
+      .from("tours")
+      .update({ is_active: isActive })
+      .eq("id", tourId);
+
+    if (error) return { data: null, error };
+    return { data: { id: tourId }, error: null };
+  },
 };
+
+/** Extracts the storage path from a Supabase public URL for a given bucket. */
+function extractStoragePath(publicUrl: string, bucket: string): string | null {
+  const marker = `/storage/v1/object/public/${bucket}/`;
+  const idx = publicUrl.indexOf(marker);
+  if (idx === -1) return null;
+  return publicUrl.slice(idx + marker.length);
+}
