@@ -2,7 +2,7 @@
 
 import { Check, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { PageSectionHeader } from "@/components/shared/page-section-header";
@@ -14,24 +14,32 @@ import { LocationStep } from "@/app/(dashboard)/agency/tours/components/steps/lo
 import { PricingStep } from "@/app/(dashboard)/agency/tours/components/steps/pricing-step";
 import { PublishStep } from "@/app/(dashboard)/agency/tours/components/steps/publish-step";
 import { StepperProgress } from "@/components/shared/stepper-progress";
-import { createTourAction } from "@/features/tours/tour.actions";
-import {
-  type CreateTourWizardState,
-  defaultCreateTourWizardState,
+import { updateTourAction } from "@/features/tours/tour.actions";
+import type {
+  CreateTourWizardState,
+  TourWithDetails,
 } from "@/features/tours/tour.types";
-import { createTourCommandSchema } from "@/features/tours/tour.validation";
+import { updateTourCommandSchema } from "@/features/tours/tour.validation";
 import {
   getStepValidation,
+  tourToWizardState,
   wizardToJsonPayload,
 } from "@/features/tours/utils/tour-wizard";
-import { CREATE_TOUR_STEPS } from "./create-tour-steps";
+import { CREATE_TOUR_STEPS } from "../../new/create-tour-steps";
 
-export function CreateTourWizardClient() {
+type Props = {
+  tourId: string;
+  tour: TourWithDetails;
+};
+
+export function EditTourWizardClient({ tourId, tour }: Props) {
   const router = useRouter();
   const wizardTopAnchorRef = useRef<HTMLDivElement>(null);
   const skipInitialScrollRef = useRef(true);
   const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState<CreateTourWizardState>(defaultCreateTourWizardState);
+
+  const initialState = useMemo(() => tourToWizardState(tour), [tour]);
+  const [formData, setFormData] = useState<CreateTourWizardState>(initialState);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -57,17 +65,15 @@ export function CreateTourWizardClient() {
 
   const handleSubmit = async () => {
     const orderedPhotos = [...(formData.photos ?? [])].sort((a, b) => a.sort_order - b.sort_order);
-    if (orderedPhotos.length > 0) {
-      for (const p of orderedPhotos) {
-        if (!p.file) {
-          toast.error("Each photo must have a file. Re-upload images if needed.");
-          return;
-        }
+    for (const p of orderedPhotos) {
+      if (!p.file && !p.id) {
+        toast.error("Each new photo must have a file. Re-upload images if needed.");
+        return;
       }
     }
 
     const jsonPayload = wizardToJsonPayload({ ...formData, photos: orderedPhotos });
-    const parsed = createTourCommandSchema.safeParse(jsonPayload);
+    const parsed = updateTourCommandSchema.safeParse(jsonPayload);
     if (!parsed.success) {
       const first = parsed.error.issues[0];
       toast.error(first?.message ?? "Please fix the form errors.");
@@ -81,17 +87,17 @@ export function CreateTourWizardClient() {
       for (const p of orderedPhotos) {
         if (p.file) fd.append("photo", p.file);
       }
-      const result = await createTourAction(fd);
+      const result = await updateTourAction(tourId, fd);
       if (!result.success) {
         const msg =
           result.message ??
           (result.fieldErrors
             ? Object.values(result.fieldErrors).flat().join(" ")
-            : "Could not create tour.");
+            : "Could not update tour.");
         toast.error(msg);
         return;
       }
-      toast.success("Tour created successfully!");
+      toast.success("Tour updated successfully!");
       router.push(ROUTE_PATHS.AUTHED.AGENCY.TOURS);
     } finally {
       setIsSubmitting(false);
@@ -126,7 +132,7 @@ export function CreateTourWizardClient() {
                 href: ROUTE_PATHS.AUTHED.AGENCY.TOURS,
                 label: "Tours",
               }}
-              centerTitle="Create Tour"
+              centerTitle="Edit Tour"
             />
             <div className="shrink-0 py-2 sm:py-3">
               <StepperProgress
@@ -185,7 +191,7 @@ export function CreateTourWizardClient() {
             {isLastStep ? (
               <>
                 <Check className="w-4 h-4" />
-                Create Tour
+                Save Changes
               </>
             ) : (
               <>

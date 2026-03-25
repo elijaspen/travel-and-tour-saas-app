@@ -47,6 +47,8 @@ export function BasicsStep({ data, onUpdate, errors }: BasicsStepProps) {
     return null;
   };
 
+  const photoKey = (p: TourPhotoDraft) => p.id ?? p.tempId ?? "";
+
   const addFiles = useCallback(
     (files: FileList | null) => {
       if (!files?.length) return;
@@ -59,7 +61,7 @@ export function BasicsStep({ data, onUpdate, errors }: BasicsStepProps) {
           continue;
         }
         newPhotos.push({
-          id: crypto.randomUUID(),
+          tempId: crypto.randomUUID(),
           file_url: URL.createObjectURL(file),
           file,
           sort_order: photos.length + newPhotos.length,
@@ -72,10 +74,10 @@ export function BasicsStep({ data, onUpdate, errors }: BasicsStepProps) {
     [photos, onUpdate],
   );
 
-  const removePhoto = (id: string) => {
-    const item = photos.find((p) => p.id === id);
+  const removePhoto = (key: string) => {
+    const item = photos.find((p) => photoKey(p) === key);
     if (item?.file_url?.startsWith("blob:")) URL.revokeObjectURL(item.file_url);
-    onUpdate({ photos: withSortOrder(photos.filter((p) => p.id !== id)) });
+    onUpdate({ photos: withSortOrder(photos.filter((p) => photoKey(p) !== key)) });
   };
 
   const movePhoto = (fromIndex: number, toIndex: number) => {
@@ -305,7 +307,7 @@ export function BasicsStep({ data, onUpdate, errors }: BasicsStepProps) {
               )}
             >
               {(data.inclusion_entries ?? []).map((entry) => (
-                <div key={entry.id} className="flex items-center gap-3">
+                <div key={entry.tempId} className="flex items-center gap-3">
                   <div
                     className="w-5 h-5 shrink-0 rounded-full bg-green-500/15 flex items-center justify-center dark:bg-green-400/20"
                     aria-hidden
@@ -317,7 +319,7 @@ export function BasicsStep({ data, onUpdate, errors }: BasicsStepProps) {
                     onChange={(e) =>
                       onUpdate({
                         inclusion_entries: (data.inclusion_entries ?? []).map((row) =>
-                          row.id === entry.id ? { ...row, text: e.target.value } : row,
+                          row.tempId === entry.tempId ? { ...row, text: e.target.value } : row,
                         ),
                       })
                     }
@@ -332,7 +334,7 @@ export function BasicsStep({ data, onUpdate, errors }: BasicsStepProps) {
                     onClick={() =>
                       onUpdate({
                         inclusion_entries: (data.inclusion_entries ?? []).filter(
-                          (row) => row.id !== entry.id,
+                          (row) => row.tempId !== entry.tempId,
                         ),
                       })
                     }
@@ -349,7 +351,7 @@ export function BasicsStep({ data, onUpdate, errors }: BasicsStepProps) {
                   onUpdate({
                     inclusion_entries: [
                       ...(data.inclusion_entries ?? []),
-                      { id: crypto.randomUUID(), text: "" },
+                      { tempId: crypto.randomUUID(), text: "" },
                     ],
                   })
                 }
@@ -370,7 +372,7 @@ export function BasicsStep({ data, onUpdate, errors }: BasicsStepProps) {
               )}
             >
               {(data.exclusion_entries ?? []).map((entry) => (
-                <div key={entry.id} className="flex items-center gap-3">
+                <div key={entry.tempId} className="flex items-center gap-3">
                   <div
                     className="w-5 h-5 rounded-full bg-destructive/15 flex items-center justify-center shrink-0"
                     aria-hidden
@@ -382,7 +384,7 @@ export function BasicsStep({ data, onUpdate, errors }: BasicsStepProps) {
                     onChange={(e) =>
                       onUpdate({
                         exclusion_entries: (data.exclusion_entries ?? []).map((row) =>
-                          row.id === entry.id ? { ...row, text: e.target.value } : row,
+                          row.tempId === entry.tempId ? { ...row, text: e.target.value } : row,
                         ),
                       })
                     }
@@ -397,7 +399,7 @@ export function BasicsStep({ data, onUpdate, errors }: BasicsStepProps) {
                     onClick={() =>
                       onUpdate({
                         exclusion_entries: (data.exclusion_entries ?? []).filter(
-                          (row) => row.id !== entry.id,
+                          (row) => row.tempId !== entry.tempId,
                         ),
                       })
                     }
@@ -414,7 +416,7 @@ export function BasicsStep({ data, onUpdate, errors }: BasicsStepProps) {
                   onUpdate({
                     exclusion_entries: [
                       ...(data.exclusion_entries ?? []),
-                      { id: crypto.randomUUID(), text: "" },
+                      { tempId: crypto.randomUUID(), text: "" },
                     ],
                   })
                 }
@@ -467,7 +469,7 @@ export function BasicsStep({ data, onUpdate, errors }: BasicsStepProps) {
           <div className="mt-4 flex flex-wrap gap-3">
             {photos.map((photo, index) => (
               <div
-                key={photo.id}
+                key={photoKey(photo)}
                 draggable
                 onDragStart={(e) => handlePreviewDragStart(e, index)}
                 onDragEnd={handlePreviewDragEnd}
@@ -503,7 +505,7 @@ export function BasicsStep({ data, onUpdate, errors }: BasicsStepProps) {
                   onPointerDown={(e) => e.stopPropagation()}
                   onClick={(e) => {
                     e.stopPropagation();
-                    removePhoto(photo.id);
+                    removePhoto(photoKey(photo));
                   }}
                   aria-label="Remove photo"
                 >

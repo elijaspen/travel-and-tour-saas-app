@@ -1,14 +1,18 @@
 "use server";
 
 import { z } from "zod";
+import { revalidatePath } from "next/cache";
 import { createClient as createServerClient } from "@supabase/utils/server";
 
 import { companyService } from "@/features/company/company.service";
 import type { ActionResult } from "@/features/shared/types";
-import { createTourSchema } from "@/features/tours/tour.validation";
+import {
+  createTourCommandSchema,
+  updateTourCommandSchema,
+} from "@/features/tours/tour.validation";
 import { tourService } from "@/features/tours/tour.service";
 
-export async function createTourAction(formData: FormData): Promise<ActionResult<{ id: string }>> {
+async function getAuthenticatedCompany() {
   const supabase = await createServerClient();
   const {
     data: { user },
@@ -16,41 +20,53 @@ export async function createTourAction(formData: FormData): Promise<ActionResult
   } = await supabase.auth.getUser();
 
   if (userError || !user) {
-    return { success: false, message: "You must be logged in." };
+    return { ok: false as const, error: "You must be logged in." };
   }
 
   const { data: company } = await companyService.getCompanyByOwner(user.id);
   if (!company) {
-    return {
-      success: false,
-      message: "Only business owners with a company can create tours.",
-    };
+    return { ok: false as const, error: "Only business owners with a company can manage tours." };
   }
 
+  return { ok: true as const, userId: user.id, companyId: company.id };
+}
+
+function parseFormDataPayload(formData: FormData) {
   const rawJson = formData.get("payload");
   if (typeof rawJson !== "string") {
-    return { success: false, message: "Invalid form data." };
+    return { ok: false as const, error: "Invalid form data." };
   }
 
   let parsedJson: unknown;
   try {
     parsedJson = JSON.parse(rawJson);
   } catch {
-    return { success: false, message: "Invalid JSON payload." };
-  }
-
-  const validated = createTourSchema.safeParse(parsedJson);
-  if (!validated.success) {
-    return { success: false, fieldErrors: z.flattenError(validated.error).fieldErrors };
+    return { ok: false as const, error: "Invalid JSON payload." };
   }
 
   const files = formData
     .getAll("photo")
     .filter((f): f is File => f instanceof File && f.size > 0);
 
+  return { ok: true as const, parsed: parsedJson, files };
+}
+
+export async function createTourAction(formData: FormData): Promise<ActionResult<{ id: string }>> {
+  const auth = await getAuthenticatedCompany();
+  if (!auth.ok) return { success: false, message: auth.error };
+
+  const payload = parseFormDataPayload(formData);
+  if (!payload.ok) return { success: false, message: payload.error };
+  const { parsed, files } = payload;
+
+  const validated = createTourCommandSchema.safeParse(parsed);
+  if (!validated.success) {
+    return { success: false, fieldErrors: z.flattenError(validated.error).fieldErrors };
+  }
+
   const { data, error } = await tourService.createWithChildren({
-    companyId: company.id,
-    payload: validated.data,
+    companyId: auth.companyId,
+    command: validated.data,
     photoFiles: files,
   });
 
@@ -60,5 +76,64 @@ export async function createTourAction(formData: FormData): Promise<ActionResult
     return { success: false, message };
   }
 
+  return { success: true, data };
+}
+
+export async function updateTourAction(
+  tourId: string,
+  formData: FormData,
+): Promise<ActionResult<{ id: string }>> {
+  const auth = await getAuthenticatedCompany();
+  if (!auth.ok) return { success: false, message: auth.error };
+
+  const { data: existing } = await tourService.getTourWithDetails(tourId);
+  if (!existing || existing.company_id !== auth.companyId) {
+    return { success: false, message: "Tour not found or you do not have permission." };
+  }
+
+  const payload = parseFormDataPayload(formData);
+  if (!payload.ok) return { success: false, message: payload.error };
+  const { parsed, files } = payload;
+
+  const validated = updateTourCommandSchema.safeParse(parsed);
+  if (!validated.success) {
+    return { success: false, fieldErrors: z.flattenError(validated.error).fieldErrors };
+  }
+
+  const { data, error } = await tourService.updateWithChildren({
+    tourId,
+    companyId: auth.companyId,
+    command: validated.data,
+    newPhotoFiles: files,
+  });
+
+  if (error || !data) {
+    const message =
+      error instanceof Error ? error.message : "Could not update tour. Please try again.";
+    return { success: false, message };
+  }
+
+  return { success: true, data };
+}
+
+export async function toggleTourActiveAction(tourId: string): Promise<ActionResult<{ id: string }>> {
+  const auth = await getAuthenticatedCompany();
+  if (!auth.ok) return { success: false, message: auth.error };
+
+  const { data: existing } = await tourService.getTourWithDetails(tourId);
+  if (!existing || existing.company_id !== auth.companyId) {
+    return { success: false, message: "Tour not found or you do not have permission." };
+  }
+
+  const newActive = !existing.is_active;
+  const { data, error } = await tourService.toggleActive(tourId, newActive);
+
+  if (error || !data) {
+    const message =
+      error instanceof Error ? error.message : "Could not update tour status.";
+    return { success: false, message };
+  }
+
+  revalidatePath("/agency/tours");
   return { success: true, data };
 }
