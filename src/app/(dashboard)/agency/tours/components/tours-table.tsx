@@ -2,11 +2,16 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useTransition } from "react";
 import { MapPin } from "lucide-react";
+import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { DataTable, type DataTableColumn } from "@/components/shared/data-table";
+import { ROUTE_PATHS } from "@/config/routes";
+import { toggleTourActiveAction } from "@/features/tours/tour.actions";
 import type { TourListItem } from "@/features/tours/tour.types";
 import { cn } from "@/lib/utils";
 import { getCurrencySymbol } from "@/lib/geo/currencies";
@@ -142,33 +147,41 @@ const columns: DataTableColumn<TourListItem>[] = [
     id: "published",
     header: "Published",
     width: "120px",
-    cell: (row) => (
-      <div
-        className={cn(
-          "inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-          row.is_active ? "bg-primary" : "bg-muted"
-        )}
-      >
-        <span
-          className={cn(
-            "pointer-events-none inline-block h-5 w-5 rounded-full bg-background shadow-lg transition-transform",
-            row.is_active ? "translate-x-6" : "translate-x-0.5"
-          )}
-        />
-      </div>
-    ),
+    cell: (row) => <TourActiveToggle tourId={row.id} isActive={row.is_active} />,
   },
   {
     id: "actions",
     header: "Actions",
     width: "120px",
-    cell: () => (
+    cell: (row) => (
       <Button variant="outline" size="sm" asChild>
-        <Link href="#">Manage</Link>
+        <Link href={ROUTE_PATHS.AUTHED.AGENCY.TOUR_EDIT(row.id)}>Manage</Link>
       </Button>
     ),
   },
 ];
+
+function TourActiveToggle({ tourId, isActive }: { tourId: string; isActive: boolean }) {
+  const [isPending, startTransition] = useTransition();
+
+  const handleToggle = () => {
+    startTransition(async () => {
+      const result = await toggleTourActiveAction(tourId);
+      if (!result.success) {
+        toast.error(result.message ?? "Could not update tour status.");
+      }
+    });
+  };
+
+  return (
+    <Switch
+      checked={isActive}
+      onCheckedChange={handleToggle}
+      disabled={isPending}
+      aria-label={isActive ? "Deactivate tour" : "Activate tour"}
+    />
+  );
+}
 
 type Props = {
   tours: TourListItem[];
