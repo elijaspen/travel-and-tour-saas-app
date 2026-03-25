@@ -13,8 +13,7 @@ import { FormStepLayout } from "@/components/shared/form-step-layout";
 import { cn } from "@/lib/utils";
 import type { BlackoutDateForm, CreateTourWizardState } from "@/features/tours/tour.types";
 
-/** Toggle when blackout dates UI is ready to ship again. */
-const SHOW_BLACKOUT_DATES_FORM = false;
+const SHOW_BLACKOUT_DATES_FORM = true;
 
 type PublishStepProps = {
   data: CreateTourWizardState;
