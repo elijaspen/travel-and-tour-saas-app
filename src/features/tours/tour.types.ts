@@ -2,12 +2,16 @@ import type { Database, Enums } from "@supabase/types/database";
 
 import type {
   BlackoutDateForm,
+  CreateTourCommand,
+  CreateTourFormInput,
   CreateTourFormPayload,
   ItineraryDayForm,
   PricingTierForm,
+  UpdateTourCommand,
 } from "./tour.validation";
 
 type T = Database["public"]["Tables"];
+type TourPhotoRow = T["tour_photos"]["Row"];
 
 export type TourRow = T["tours"]["Row"];
 export type TourInsert = T["tours"]["Insert"];
@@ -39,17 +43,14 @@ export type TourLocationValue = Partial<
   >
 >;
 
-/** Gallery row before upload; `file_url` holds blob URL for preview. */
-export type TourPhotoDraft = {
-  id: string;
-  sort_order: number;
-  file_url: string;
+export type TourPhotoDraft = Omit<TourPhotoRow, "id" | "tour_id"> & {
+  id?: string;
+  tempId?: string;
   file?: File;
 };
 
-/** One line in the inclusions / exclusions editors (stable `id` for React keys). */
 export type TourListEntryDraft = {
-  id: string;
+  tempId: string;
   text: string;
 };
 
@@ -94,12 +95,14 @@ export function defaultCreateTourWizardState(): CreateTourWizardState {
 
 export type {
   BlackoutDateForm,
+  CreateTourCommand,
+  CreateTourFormInput,
   CreateTourFormPayload,
   ItineraryDayForm,
   PricingTierForm,
+  UpdateTourCommand,
 };
 
-/** One tour plus the related rows loaded for `/agency/tours` (matches the select in `tour.service`). */
 export type TourListItem = Pick<
   T["tours"]["Row"],
   | "id"
@@ -114,4 +117,11 @@ export type TourListItem = Pick<
   tour_photos: Pick<T["tour_photos"]["Row"], "file_url" | "sort_order">[] | null;
   tour_categories: { categories: Pick<T["categories"]["Row"], "name"> | null }[] | null;
   tour_prices: Pick<T["tour_prices"]["Row"], "currency" | "amount" | "min_pax">[] | null;
+};
+
+export type TourWithDetails = TourRow & {
+  tour_prices: T["tour_prices"]["Row"][];
+  tour_itineraries: T["tour_itineraries"]["Row"][];
+  tour_photos: T["tour_photos"]["Row"][];
+  blackout_dates: T["blackout_dates"]["Row"][];
 };
