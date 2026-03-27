@@ -273,9 +273,6 @@ export default function ExplorePageClient() {
 
       <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         <ExploreBreadcrumbs items={breadcrumbItems} />
-        {/* <div className="text-sm text-slate-500">
-          Home / Search / Indonesia / <span className="font-medium text-slate-900">Bali</span>
-        </div> */}
 
         <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-[280px_minmax(0,1fr)]">
           <ExploreFiltersSidebar
