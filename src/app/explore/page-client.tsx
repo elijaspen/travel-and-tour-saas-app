@@ -11,6 +11,8 @@ import { ExploreSearchBar } from "@/components/shared/explore-search-bar";
 import { ExplorePackagesGrid } from "@/components/shared/explore-packages-grid";
 import { Pagination } from "@/components/shared/pagination";
 import { ExploreBreadcrumbs } from "@/components/shared/explore-breadcrumbs";
+import { OfferPromoSection } from "@/components/shared/offer-banner";
+import Footer from "@/components/footer/footer";
 
 const MOCK_PACKAGES = [
   {
@@ -306,6 +308,19 @@ export default function ExplorePageClient() {
           </section>
         </div>
       </main>
+      <OfferPromoSection
+        variant="explore"
+        offer={{
+          id: 1,
+          image: "https://images.unsplash.com/photo-1610641818989-c2051b5e2cfd",
+          badge: "Limited Time Offer",
+          title: "Get 20% off your first booking",
+          description:
+            "Sign up today and receive an exclusive discount on your next adventure. Don't miss out on exploring the world for less.",
+          buttonText: "Subscribe",
+        }}
+      />
+      <Footer />
     </div>
   );
 }
