@@ -18,6 +18,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import {
+  MapboxGeocodingQueryParam,
+  mapboxPlacesForwardUrl,
+  mapboxPlacesReverseUrl,
+} from "@/lib/geo/mapbox-geocoding";
 
 function MapLoadingPlaceholder() {
   return (
@@ -65,9 +70,11 @@ async function reverseGeocode(
   lat: number,
   token: string,
 ): Promise<TourLocationValue> {
-  const res = await fetch(
-    `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${token}&limit=1`,
-  );
+  const usp = new URLSearchParams({
+    [MapboxGeocodingQueryParam.ACCESS_TOKEN]: token,
+    [MapboxGeocodingQueryParam.LIMIT]: "1",
+  });
+  const res = await fetch(mapboxPlacesReverseUrl(lng, lat, usp));
   const data: { features?: GeocodingFeature[] } = await res.json();
   const feature = data.features?.[0];
   if (!feature) {
@@ -130,9 +137,11 @@ export function MapboxLocationPicker({
       return;
     }
     setIsSearching(true);
-    fetch(
-      `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(q)}.json?access_token=${MAPBOX_TOKEN}&limit=5`,
-    )
+    const usp = new URLSearchParams({
+      [MapboxGeocodingQueryParam.ACCESS_TOKEN]: MAPBOX_TOKEN,
+      [MapboxGeocodingQueryParam.LIMIT]: "5",
+    });
+    fetch(mapboxPlacesForwardUrl(q, usp))
       .then((res) => res.json())
       .then((data: { features?: GeocodingFeature[] }) => {
         setSuggestions(data.features ?? []);
@@ -148,9 +157,11 @@ export function MapboxLocationPicker({
       return;
     }
     setIsMapSearching(true);
-    fetch(
-      `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(q)}.json?access_token=${MAPBOX_TOKEN}&limit=5`,
-    )
+    const usp = new URLSearchParams({
+      [MapboxGeocodingQueryParam.ACCESS_TOKEN]: MAPBOX_TOKEN,
+      [MapboxGeocodingQueryParam.LIMIT]: "5",
+    });
+    fetch(mapboxPlacesForwardUrl(q, usp))
       .then((res) => res.json())
       .then((data: { features?: GeocodingFeature[] }) => {
         setMapSuggestions(data.features ?? []);
