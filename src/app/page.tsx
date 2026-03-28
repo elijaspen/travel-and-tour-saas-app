@@ -146,7 +146,11 @@ export default function Home() {
           </div>
 
           <div className="absolute inset-x-0 bottom-0 z-20 translate-y-1/2 px-4 sm:px-6 lg:px-8">
-          <PackageSearchBar withDates={false} withGuests={false} />
+            <PackageSearchBar
+              withDates={false}
+              withGuests={false}
+              className="max-w-3xl"
+            />
           </div>
         </section>
 
