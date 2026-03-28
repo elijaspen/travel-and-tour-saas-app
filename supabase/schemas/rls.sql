@@ -130,6 +130,21 @@ CREATE POLICY "Company owners and admins manage tours"
     OR public.is_admin()
   );
 
+-- Discoverable listings: active tours from approved companies (marketplace / explore).
+CREATE POLICY "Public read active tours from approved companies"
+  ON public.tours
+  FOR SELECT
+  TO anon, authenticated
+  USING (
+    is_active = true
+    AND EXISTS (
+      SELECT 1
+      FROM public.companies c
+      WHERE c.id = tours.company_id
+        AND c.status = 'approved'::public.company_status
+    )
+  );
+
 -- ============================================================
 -- tour_photos
 -- ============================================================
