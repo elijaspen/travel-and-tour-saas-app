@@ -184,7 +184,7 @@ export default function Home() {
         <TrustBadgesSection />
 
         {/* Banner Offers */}
-        <OfferPromoSection offer={BANNER_OFFERS} />
+        <OfferPromoSection offer={BANNER_OFFERS} variant="landing" />
 
       </main>
 
