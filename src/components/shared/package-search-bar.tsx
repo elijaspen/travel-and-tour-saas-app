@@ -1,30 +1,65 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import type { ReactNode } from "react";
+import { useMemo, useRef, useState } from "react";
+import type { FormEvent, ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
 import type { DateRange } from "react-day-picker";
 
-import { MapPin, CalendarIcon, Search, Users } from "lucide-react";
+import { CalendarIcon, Search, Users } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
+import { Input } from "@/components/ui/input";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-
+import {
+  UnifiedTourExploreSearch,
+  UnifiedTourExploreSearchVariant,
+} from "@/components/shared/unified-tour-explore-search";
+import {
+  PackageSearchBarCopy,
+  UnifiedSelectionKind,
+} from "@/features/tours/utils/explore-search.constants";
+import {
+  explorePathWithQuery,
+  selectionToExploreQuery,
+} from "@/features/tours/utils/explore-search-params";
+import { ROUTE_PATHS } from "@/config/routes";
 import { cn } from "@/lib/utils";
 
 type PackageSearchBarProps = {
   className?: string;
+  /** When false, hides the date range field. @default true */
+  withDates?: boolean;
+  /** When false, hides the guests field. @default true */
+  withGuests?: boolean;
 };
 
-export function PackageSearchBar({ className }: PackageSearchBarProps) {
+export function PackageSearchBar({
+  className,
+  withDates = true,
+  withGuests = true,
+}: PackageSearchBarProps) {
+  const router = useRouter();
+  const searchKeywordRef = useRef("");
   const [dateRange, setDateRange] =
     useState<DateRange | undefined>();
+
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const path = explorePathWithQuery(
+      ROUTE_PATHS.PUBLIC.MARKETING.EXPLORE,
+      selectionToExploreQuery({
+        kind: UnifiedSelectionKind.KEYWORD,
+        q: searchKeywordRef.current,
+      }),
+    );
+    router.push(path);
+  }
 
   return (
     <form
@@ -32,35 +67,45 @@ export function PackageSearchBar({ className }: PackageSearchBarProps) {
         "mx-auto w-full max-w-6xl rounded-2xl bg-white p-4 shadow-[0_10px_30px_rgba(0,0,0,0.12)]",
         className,
       )}
+      onSubmit={handleSubmit}
     >
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
-        <div className="flex flex-1 flex-col overflow-hidden rounded-xl bg-white lg:flex-row">
+        <div className="flex min-w-0 w-full flex-1 flex-col overflow-hidden rounded-xl bg-white lg:flex-row">
+          <div className="flex min-w-0 flex-1 items-center gap-4 px-5 py-4">
+            <UnifiedTourExploreSearch
+              label={PackageSearchBarCopy.whereToLabel}
+              placeholder={PackageSearchBarCopy.destinationPlaceholder}
+              variant={UnifiedTourExploreSearchVariant.HERO}
+              onQueryChange={(q) => {
+                searchKeywordRef.current = q;
+              }}
+            />
+          </div>
 
-          <SearchField
-            icon={<MapPin className="h-5 w-5 text-slate-400" />}
-            label="WHERE TO?"
-            name="destination"
-            placeholder="Search destinations"
-          />
+          {withDates ? (
+            <>
+              <Divider />
+              <DateRangeField
+                icon={<CalendarIcon className="h-5 w-5 text-slate-400" />}
+                label="DATE"
+                placeholder="Add dates"
+                dateRange={dateRange}
+                onDateRangeChange={setDateRange}
+              />
+            </>
+          ) : null}
 
-          <Divider />
-
-          <DateRangeField
-            icon={<CalendarIcon className="h-5 w-5 text-slate-400" />}
-            label="DATE"
-            placeholder="Add dates"
-            dateRange={dateRange}
-            onDateRangeChange={setDateRange}
-          />
-
-          <Divider />
-
-          <SearchField
-            icon={<Users className="h-5 w-5 text-slate-400" />}
-            label="GUESTS"
-            name="guests"
-            placeholder="Add guests"
-          />
+          {withGuests ? (
+            <>
+              <Divider />
+              <SearchField
+                icon={<Users className="h-5 w-5 text-slate-400" />}
+                label="GUESTS"
+                name="guests"
+                placeholder="Add guests"
+              />
+            </>
+          ) : null}
         </div>
 
         <Button
@@ -90,10 +135,10 @@ function SearchField({
   placeholder,
 }: SearchFieldProps) {
   return (
-    <div className="flex flex-1 items-center gap-4 px-5 py-4">
+    <div className="flex min-w-0 flex-1 items-center gap-4 px-5 py-4">
       <div className="shrink-0">{icon}</div>
 
-      <div className="flex flex-1 flex-col text-left">
+      <div className="flex min-w-0 flex-1 flex-col text-left">
         <label
           htmlFor={name}
           className="text-xs font-bold uppercase tracking-[0.08em] text-slate-900"
@@ -141,10 +186,10 @@ function DateRangeField({
   }, [dateRange, placeholder]);
 
   return (
-    <div className="flex flex-1 items-center gap-4 px-5 py-4">
+    <div className="flex min-w-0 flex-1 items-center gap-4 px-5 py-4">
       <div className="shrink-0">{icon}</div>
 
-      <div className="flex flex-1 flex-col text-left">
+      <div className="flex min-w-0 flex-1 flex-col text-left">
         <span className="text-xs font-bold uppercase tracking-[0.08em] text-slate-900">
           {label}
         </span>
@@ -183,6 +228,6 @@ function DateRangeField({
 
 function Divider() {
   return (
-    <div className="mx-2 h-px bg-slate-200 lg:mx-0 lg:my-4 lg:h-auto lg:w-px" />
+    <div className="mx-2 h-px shrink-0 bg-slate-200 lg:mx-0 lg:my-4 lg:h-auto lg:w-px" />
   );
 }
