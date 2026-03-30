@@ -113,9 +113,10 @@ describe("Dialog Component", () => {
     await user.click(screen.getByText(/open dialog/i));
 
     // Click on the overlay (identified by data-slot)
-    const overlay = screen.getByTestId("test-dialog-overlay"); // Note: You'd need to add data-testid if data-slot isn't enough
-    // Alternatively, click the body/backdrop
-    await user.click(document.body);
+    const overlay = document.querySelector('[data-slot="dialog-overlay"]');
+    if (overlay) {
+      await user.click(overlay as Element);
+    }
 
     await waitFor(() => {
       expect(screen.queryByText("Dialog Title")).not.toBeInTheDocument();

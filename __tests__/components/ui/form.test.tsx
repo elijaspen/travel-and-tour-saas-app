@@ -13,11 +13,36 @@ import {
 } from "@/components/ui/form";
 
 // Helper component to wrap with FormProvider
-function TestForm({ children }: { children: React.ReactNode }) {
+function TestForm({ children }: { children?: React.ReactNode }) {
   const methods = useForm({
     defaultValues: { username: "" },
+    mode: "onChange",
   });
-  return <Form {...methods}>{children}</Form>;
+  return (
+    <Form {...methods}>
+      {children || (
+        <FormField
+          name="username"
+          rules={{ required: "Username is required" }}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Username</FormLabel>
+              <FormControl>
+                <input {...field} data-testid="username-input" />
+              </FormControl>
+              <FormDescription>This is your public name</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      )}
+      {!children && (
+        <button type="submit" onClick={methods.handleSubmit(() => {})}>
+          Submit
+        </button>
+      )}
+    </Form>
+  );
 }
 
 describe("Form components", () => {
@@ -29,7 +54,8 @@ describe("Form components", () => {
         </FormItem>
       </TestForm>,
     );
-    expect(screen.getByText("Item Content")).toHaveAttribute("data-slot", "form-item");
+    const itemContent = screen.getByText("Item Content");
+    expect(itemContent.parentElement).toHaveAttribute("data-slot", "form-item");
   });
 
   it("renders FormLabel linked to control", () => {
@@ -52,8 +78,10 @@ describe("Form components", () => {
     const label = screen.getByText("Username");
     const input = screen.getByRole("textbox");
 
-    expect(label).toHaveAttribute("data-slot", "form-label");
-    expect(label).toHaveAttribute("for", input.id);
+    expect(label.closest('[data-slot="form-label"]')).toBeInTheDocument();
+    // The label should have htmlFor pointing to the input ID
+    const labelElement = label.closest('label');
+    expect(labelElement).toHaveAttribute("for", input.id);
   });
 
   it("displays validation error message on invalid submission", async () => {
@@ -88,15 +116,15 @@ describe("Form components", () => {
 
   it("applies error styles to the label when there is an error", async () => {
     const user = userEvent.setup();
-    render(<TestForm data-error={true} />);
+    render(<TestForm />);
 
-    // await user.click(screen.getByRole("button", { name: /submit/i }));
+    await user.click(screen.getByRole("button", { name: /submit/i }));
 
-    const label = screen.getByText(/username/i);
-    // The component uses data-error attribute for styling
-    expect(label).toHaveAttribute("data-error", "true");
-    // It should also have the destructive text class
-    expect(label).toHaveClass("data-[error=true]:text-destructive");
+    await waitFor(() => {
+      const labelWrapper = screen.getAllByText(/username/i)[0].closest('[data-slot="form-label"]');
+      expect(labelWrapper).toHaveAttribute("data-error", "true");
+      expect(labelWrapper).toHaveClass("data-[error=true]:text-destructive");
+    });
   });
 
   it("sets correct aria-describedby for accessibility", () => {
