@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
 import { requireRole } from "@/features/profile/profile.guard";
 import { ProfileRoles } from "@/features/profile/profile.types";
-import { DashboardSidebar } from "@/components/shared/dashboard-sidebar";
+import { DashboardSidebar } from "@/components/shared/layout/dashboard-sidebar";
 import { companyService } from "@/features/company/company.service";
-import { BusinessOnboardingModal } from "@/components/shared/business-onboarding-modal";
+import { BusinessOnboardingModal } from "@/components/shared/layout/business-onboarding-modal";
 
 export default async function DashboardLayout({
   children,

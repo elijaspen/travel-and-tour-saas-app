@@ -15,7 +15,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { FormStepLayout } from "@/components/shared/form-step-layout";
+import { FormStepLayout } from "@/components/shared/forms/form-step-layout";
 import { cn } from "@/lib/utils";
 import type { CreateTourWizardState, ItineraryDayForm } from "@/features/tours/tour.types";
 

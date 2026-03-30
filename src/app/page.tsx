@@ -1,15 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { AppLogo } from "@/components/shared/app-logo";
+import { AppLogo } from "@/components/shared/layout/app-logo";
 import { Button } from "@/components/ui/button";
 import { ROUTE_PATHS } from "@/config/routes";
-import { TravelPackagesGrid } from "@/components/shared/travel-package-card";
-import { PackageSearchBar } from "@/components/shared/package-search-bar";
-import { DestinationCardGrid } from "@/components/shared/destination-card-grid";
-import { TrustBadgesSection } from "@/components/shared/trust-badges-grid";
-import { OfferPromoSection } from "@/components/shared/offer-banner";
-import Footer from "@/components/footer/footer";
+import { TravelPackagesGrid } from "@/components/shared/marketing/travel-package-card";
+import { PackageSearchBar } from "@/components/shared/search/package-search-bar";
+import { DestinationCardGrid } from "@/components/shared/marketing/destination-card-grid";
+import { TrustBadgesSection } from "@/components/shared/marketing/trust-badges-grid";
+import { OfferPromoSection } from "@/components/shared/marketing/offer-banner";
+import Footer from "@/components/shared/footer/footer";
 
 
 // TODO: Replace with actual data from the database.

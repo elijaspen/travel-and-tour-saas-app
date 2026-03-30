@@ -1,5 +1,5 @@
 import { FileText, MapPin, CalendarDays, DollarSign, Send } from "lucide-react";
-import type { StepConfig } from "@/components/shared/stepper-progress";
+import type { StepConfig } from "@/components/shared/forms/stepper-progress";
 
 export const CREATE_TOUR_STEPS: StepConfig[] = [
   { number: 1, label: "Details", icon: FileText },

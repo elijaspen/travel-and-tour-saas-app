@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, type SelectOption } from "@/components/ui/select";
-import { MapboxLocationPicker } from "@/components/shared/mapbox-location-picker";
+import { MapboxLocationPicker } from "@/components/shared/maps/mapbox-location-picker";
 import type { CreateTourWizardState, TourType } from "@/features/tours/tour.types";
 import { COUNTRY_SELECT_OPTIONS } from "@/lib/geo/countries";
 

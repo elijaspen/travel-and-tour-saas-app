@@ -3,22 +3,22 @@
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
-import { ExploreFiltersSidebar } from "@/components/shared/explore-filters-sidebar";
+import { ExploreFiltersSidebar } from "@/components/shared/explore/explore-filters-sidebar";
 import {
   ExploreResultsHeader,
   type ExploreSortValue,
-} from "@/components/shared/explore-results-header";
-import { ExploreSearchBar } from "@/components/shared/explore-search-bar";
+} from "@/components/shared/explore/explore-results-header";
+import { ExploreSearchBar } from "@/components/shared/search/explore-search-bar";
 import { ExploreBrowseCopy } from "@/features/tours/utils/explore-search.constants";
 import {
   parseExploreSearchQuery,
   exploreQueryLabel,
 } from "@/features/tours/utils/explore-search-params";
-import { ExplorePackagesGrid } from "@/components/shared/explore-packages-grid";
-import { Pagination } from "@/components/shared/pagination";
-import { ExploreBreadcrumbs } from "@/components/shared/explore-breadcrumbs";
-import { OfferPromoSection } from "@/components/shared/offer-banner";
-import Footer from "@/components/footer/footer";
+import { ExplorePackagesGrid } from "@/components/shared/explore/explore-packages-grid";
+import { Pagination } from "@/components/shared/data-display/pagination";
+import { ExploreBreadcrumbs } from "@/components/shared/explore/explore-breadcrumbs";
+import { OfferPromoSection } from "@/components/shared/marketing/offer-banner";
+import Footer from "@/components/shared/footer/footer";
 
 const MOCK_PACKAGES = [
   {

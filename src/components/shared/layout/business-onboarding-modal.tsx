@@ -26,7 +26,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { AppLogo } from "@/components/shared/app-logo"
+import { AppLogo } from "@/components/shared/layout/app-logo"
 import { createCompanyAction } from "@/features/company/company.actions"
 import {
   companyOnboardingSchema,

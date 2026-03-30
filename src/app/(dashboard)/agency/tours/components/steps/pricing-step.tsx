@@ -4,7 +4,7 @@ import { useEffect } from "react";
 
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
-import { FormStepLayout } from "@/components/shared/form-step-layout";
+import { FormStepLayout } from "@/components/shared/forms/form-step-layout";
 import type { CreateTourWizardState } from "@/features/tours/tour.types";
 import {
   CURRENCY_SELECT_OPTIONS,

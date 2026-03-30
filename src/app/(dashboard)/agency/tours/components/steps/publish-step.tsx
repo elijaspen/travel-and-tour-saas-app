@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent } from "@/components/ui/card";
-import { FormStepLayout } from "@/components/shared/form-step-layout";
+import { FormStepLayout } from "@/components/shared/forms/form-step-layout";
 import { cn } from "@/lib/utils";
 import type { BlackoutDateForm, CreateTourWizardState } from "@/features/tours/tour.types";
 

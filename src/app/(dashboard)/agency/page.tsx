@@ -18,8 +18,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { PageHeader } from "@/components/shared/page-header";
-import { StatCard } from "@/components/shared/stat-card";
+import { PageHeader } from "@/components/shared/layout/page-header";
+import { StatCard } from "@/components/shared/data-display/stat-card";
 import { ROUTE_PATHS } from "@/config/routes";
 import { requireRole } from "@/features/profile/profile.guard";
 import { ProfileRoles } from "@/features/profile/profile.types";

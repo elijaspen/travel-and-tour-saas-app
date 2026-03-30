@@ -17,7 +17,7 @@ type Offer = {
 
 type OfferPromoSectionProps = {
   offer: Offer;
-  variant?: "default" | "explore";
+  variant?: "default" | "explore" | "landing";
 };
 
 export function OfferPromoSection({ offer, variant = "default" }: OfferPromoSectionProps) {
