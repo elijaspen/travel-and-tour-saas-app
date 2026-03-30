@@ -125,3 +125,10 @@ export type TourWithDetails = TourRow & {
   tour_photos: T["tour_photos"]["Row"][];
   blackout_dates: T["blackout_dates"]["Row"][];
 };
+
+export type TourSuggestion = {
+  id: string;
+  title: string;
+  city: string | null;
+  country_code: string | null;
+};

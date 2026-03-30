@@ -1,55 +1,109 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import type { ReactNode } from "react";
+import { useMemo, useRef, useState } from "react";
+import type { FormEvent, ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
 import type { DateRange } from "react-day-picker";
-import { CalendarIcon, MapPin, Search, Users } from "lucide-react";
+import { CalendarIcon, Search, Users } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
+import {
+  UnifiedTourExploreSearch,
+  UnifiedTourExploreSearchVariant,
+} from "@/components/shared/unified-tour-explore-search";
+import {
+  ExploreSearchBarCopy,
+  UnifiedSelectionKind,
+} from "@/features/tours/utils/explore-search.constants";
+import {
+  explorePathWithQuery,
+  selectionToExploreQuery,
+} from "@/features/tours/utils/explore-search-params";
+import { ROUTE_PATHS } from "@/config/routes";
 import { cn } from "@/lib/utils";
 
 interface ExploreSearchBarProps {
   className?: string;
+  /** When false, hides the date range field. @default true */
+  withDates?: boolean;
+  /** When false, hides the guests field. @default true */
+  withGuests?: boolean;
+  /** Initial text for the destination / keyword field (e.g. from `?q=`). */
+  defaultSearchValue?: string;
 }
 
-export function ExploreSearchBar({ className }: ExploreSearchBarProps) {
-  const [dateRange, setDateRange] = useState<DateRange | undefined>({
-    from: new Date(2026, 9, 12),
-    to: new Date(2026, 9, 19),
-  });
+export function ExploreSearchBar({
+  className,
+  withDates = true,
+  withGuests = true,
+  defaultSearchValue = "",
+}: ExploreSearchBarProps) {
+  const router = useRouter();
+  const searchKeywordRef = useRef("");
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(() =>
+    withDates
+      ? { from: new Date(2026, 9, 12), to: new Date(2026, 9, 19) }
+      : undefined,
+  );
+
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const path = explorePathWithQuery(
+      ROUTE_PATHS.PUBLIC.MARKETING.EXPLORE,
+      selectionToExploreQuery({
+        kind: UnifiedSelectionKind.KEYWORD,
+        q: searchKeywordRef.current,
+      }),
+    );
+    router.push(path);
+  }
 
   return (
-    <form className={cn("flex flex-col gap-4 lg:flex-row lg:items-center", className)}>
-      <div className="flex flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white lg:flex-row">
-        <SearchField
-          icon={<MapPin className="h-4 w-4 text-slate-400" />}
-          label="Location"
-          name="destination"
-          defaultValue="Bali, Indonesia"
-        />
+    <form
+      className={cn("flex flex-col gap-4 lg:flex-row lg:items-center", className)}
+      onSubmit={handleSubmit}
+    >
+      <div className="flex min-w-0 w-full flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white lg:flex-row">
+        <div className="flex min-w-0 flex-1 items-center gap-3 px-4 py-3">
+          <UnifiedTourExploreSearch
+            label={ExploreSearchBarCopy.locationLabel}
+            placeholder={ExploreSearchBarCopy.destinationPlaceholder}
+            variant={UnifiedTourExploreSearchVariant.COMPACT}
+            defaultValue={defaultSearchValue}
+            onQueryChange={(q) => {
+              searchKeywordRef.current = q;
+            }}
+          />
+        </div>
 
-        <Divider />
+        {withDates ? (
+          <>
+            <Divider />
+            <DateRangeField
+              icon={<CalendarIcon className="h-4 w-4 text-slate-400" />}
+              label="Dates"
+              placeholder="Add dates"
+              dateRange={dateRange}
+              onDateRangeChange={setDateRange}
+            />
+          </>
+        ) : null}
 
-        <DateRangeField
-          icon={<CalendarIcon className="h-4 w-4 text-slate-400" />}
-          label="Dates"
-          placeholder="Add dates"
-          dateRange={dateRange}
-          onDateRangeChange={setDateRange}
-        />
-
-        <Divider />
-
-        <SearchField
-          icon={<Users className="h-4 w-4 text-slate-400" />}
-          label="Guests"
-          name="guests"
-          defaultValue="2 Adults, 1 Room"
-        />
+        {withGuests ? (
+          <>
+            <Divider />
+            <SearchField
+              icon={<Users className="h-4 w-4 text-slate-400" />}
+              label="Guests"
+              name="guests"
+              defaultValue="2 Adults, 1 Room"
+            />
+          </>
+        ) : null}
       </div>
 
       <Button
@@ -72,10 +126,10 @@ interface SearchFieldProps {
 
 function SearchField({ icon, label, name, defaultValue }: SearchFieldProps) {
   return (
-    <div className="flex flex-1 items-center gap-3 px-4 py-3">
+    <div className="flex min-w-0 flex-1 items-center gap-3 px-4 py-3">
       <div className="shrink-0">{icon}</div>
 
-      <div className="flex flex-1 flex-col text-left">
+      <div className="flex min-w-0 flex-1 flex-col text-left">
         <label
           htmlFor={name}
           className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500"
@@ -120,10 +174,10 @@ function DateRangeField({
   }, [dateRange, placeholder]);
 
   return (
-    <div className="flex flex-1 items-center gap-3 px-4 py-3">
+    <div className="flex min-w-0 flex-1 items-center gap-3 px-4 py-3">
       <div className="shrink-0">{icon}</div>
 
-      <div className="flex flex-1 flex-col text-left">
+      <div className="flex min-w-0 flex-1 flex-col text-left">
         <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">
           {label}
         </span>
@@ -159,5 +213,7 @@ function DateRangeField({
 }
 
 function Divider() {
-  return <div className="mx-4 h-px bg-slate-200 lg:mx-0 lg:my-3 lg:h-auto lg:w-px" />;
+  return (
+    <div className="mx-4 h-px shrink-0 bg-slate-200 lg:mx-0 lg:my-3 lg:h-auto lg:w-px" />
+  );
 }

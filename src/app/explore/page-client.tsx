@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 import { ExploreFiltersSidebar } from "@/components/shared/explore-filters-sidebar";
 import {
@@ -8,6 +9,11 @@ import {
   type ExploreSortValue,
 } from "@/components/shared/explore-results-header";
 import { ExploreSearchBar } from "@/components/shared/explore-search-bar";
+import { ExploreBrowseCopy } from "@/features/tours/utils/explore-search.constants";
+import {
+  parseExploreSearchQuery,
+  exploreQueryLabel,
+} from "@/features/tours/utils/explore-search-params";
 import { ExplorePackagesGrid } from "@/components/shared/explore-packages-grid";
 import { Pagination } from "@/components/shared/pagination";
 import { ExploreBreadcrumbs } from "@/components/shared/explore-breadcrumbs";
@@ -196,11 +202,27 @@ export default function ExplorePageClient() {
   const [selectedProviders, setSelectedProviders] = useState<string[]>([]);
   const [selectedRatings, setSelectedRatings] = useState<string[]>([]);
 
-  const queryLabel = "Bali";
-  const breadcrumbItems = ["Home", "Search", "Indonesia", "Bali"];
+  const searchParams = useSearchParams();
+  const exploreQuery = parseExploreSearchQuery(Object.fromEntries(searchParams.entries()));
+  const queryLabel = exploreQueryLabel(exploreQuery);
+
+  const breadcrumbItems = [
+    ExploreBrowseCopy.home,
+    ExploreBrowseCopy.search,
+    ...(exploreQuery.place ? [exploreQuery.place] : []),
+  ];
 
   const filteredAndSortedPackages = useMemo(() => {
     let results = [...MOCK_PACKAGES];
+
+    const keyword = exploreQuery.q?.trim().toLowerCase();
+    if (keyword) {
+      results = results.filter((pkg) =>
+        [pkg.title, pkg.location, pkg.provider].some((field) =>
+          field.toLowerCase().includes(keyword),
+        ),
+      );
+    }
 
     if (selectedDurations.length) {
       results = results.filter((pkg) =>
@@ -233,15 +255,16 @@ export default function ExplorePageClient() {
     }
 
     return results;
-  }, [selectedDurations, selectedProviders, selectedRatings, sortBy]);
+  }, [exploreQuery.q, selectedDurations, selectedProviders, selectedRatings, sortBy]);
 
   const totalPages = Math.max(1, Math.ceil(filteredAndSortedPackages.length / ITEMS_PER_PAGE));
+  const safePage = Math.max(1, Math.min(page, totalPages));
 
   const visiblePackages = useMemo(() => {
-    const start = (page - 1) * ITEMS_PER_PAGE;
+    const start = (safePage - 1) * ITEMS_PER_PAGE;
     const end = start + ITEMS_PER_PAGE;
     return filteredAndSortedPackages.slice(start, end);
-  }, [filteredAndSortedPackages, page]);
+  }, [filteredAndSortedPackages, safePage]);
 
   const handleDurationToggle = (value: string) => {
     setPage(1);
@@ -263,13 +286,16 @@ export default function ExplorePageClient() {
     setSortBy(value);
   };
 
-  const safePage = Math.min(page, totalPages);
-
   return (
     <div className="min-h-screen bg-[#fafafa]">
       <div className="border-b bg-white">
         <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-          <ExploreSearchBar />
+          <ExploreSearchBar
+            key={searchParams.toString()}
+            defaultSearchValue={exploreQuery.q ?? ""}
+            withDates={false}
+            withGuests={false}
+          />
         </div>
       </div>
 
@@ -299,7 +325,7 @@ export default function ExplorePageClient() {
             </div>
 
             <Pagination
-              page={page}
+              page={safePage}
               totalPages={totalPages}
               onPageChange={setPage}
               variant="full"

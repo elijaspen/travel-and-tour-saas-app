@@ -15,9 +15,14 @@ import {
   type ListParams,
 } from "@/features/shared/list-params";
 import { agencyToursConfig } from "./utils/agency-tours-config";
+import {
+  ExploreSearchLimits,
+  TourExploreSearchColumn,
+  TourExploreSuggestionSelect,
+} from "./utils/explore-search.constants";
 import { TOUR_PHOTOS_BUCKET } from "./tour.constants";
 import type { CreateTourCommand, UpdateTourCommand } from "./tour.validation";
-import type { TourListItem, TourWithDetails } from "./tour.types";
+import type { TourListItem, TourSuggestion, TourWithDetails } from "./tour.types";
 
 type TourRow = TableRow<"tours">;
 
@@ -283,6 +288,26 @@ export const tourService = {
 
     if (error) return { data: null, error };
     return { data: { id: tourId }, error: null };
+  },
+
+  async searchPublicTourSuggestions(params: {
+    q: string;
+    limit?: number;
+  }): Promise<TourSuggestion[]> {
+    const q = params.q.trim();
+    if (q.length < ExploreSearchLimits.minQueryLengthDb) return [];
+
+    const db = await createServerClient();
+    const kw = `%${q}%`;
+    const orClause = `${TourExploreSearchColumn.TITLE}.ilike.${kw},${TourExploreSearchColumn.CITY}.ilike.${kw}`;
+    const { data } = await db
+      .from("tours")
+      .select(TourExploreSuggestionSelect)
+      .eq("is_active", true)
+      .or(orClause)
+      .limit(params.limit ?? ExploreSearchLimits.tourSearchDefaultLimit);
+
+    return (data ?? []) as TourSuggestion[];
   },
 };
 
