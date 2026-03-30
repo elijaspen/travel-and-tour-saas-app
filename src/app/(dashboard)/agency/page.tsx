@@ -21,8 +21,8 @@ import {
 import { PageHeader } from "@/components/shared/layout/page-header";
 import { StatCard } from "@/components/shared/data-display/stat-card";
 import { ROUTE_PATHS } from "@/config/routes";
-import { requireRole } from "@/features/profile/profile.guard";
-import { ProfileRoles } from "@/features/profile/profile.types";
+import { requireRole } from "@/modules/profile/profile.guard";
+import { ProfileRoles } from "@/modules/profile/profile.types";
 import { cn } from "@/lib/utils";
 import {
   BarChart2,

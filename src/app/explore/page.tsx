@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 
 import { CenteredPageLoading } from "@/components/shared/layout/centered-page-loading";
 
-import ExplorePageClient from "./page-client";
+import ExplorePageClient from "@/app/explore/page-client";
 
 export const metadata: Metadata = {
   title: "Explore",

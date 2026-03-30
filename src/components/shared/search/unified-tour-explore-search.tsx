@@ -25,7 +25,7 @@ import {
   selectionToExploreQuery,
   explorePathWithQuery,
   type UnifiedSearchSelection,
-} from "@/features/tours/utils/explore-search-params";
+} from "@/modules/tours/utils/explore-search-params";
 import {
   ExploreSearchLimits,
   ExploreSearchUiCopy,
@@ -34,9 +34,9 @@ import {
   UnifiedSelectionKind,
   UnifiedTourExploreSearchVariant,
   type UnifiedTourExploreSearchVariantValue,
-} from "@/features/tours/utils/explore-search.constants";
-import { searchPublicTourSuggestionsAction } from "@/features/tours/tour.public-actions";
-import type { TourSuggestion } from "@/features/tours/tour.types";
+} from "@/modules/tours/utils/explore-search.constants";
+import { searchPublicTourSuggestionsAction } from "@/modules/tours/tour.public-actions";
+import type { TourSuggestion } from "@/modules/tours/tour.types";
 import { ROUTE_PATHS } from "@/config/routes";
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN ?? "";

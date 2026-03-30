@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
-import type { CompanyStatus } from "@/features/company/company.types"
+import type { CompanyStatus } from "@/modules/company/company.types"
 
 const STATUS_CONFIG: Record<
   CompanyStatus,

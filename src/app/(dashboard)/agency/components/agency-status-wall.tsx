@@ -1,6 +1,6 @@
 import { Clock, XCircle, ShieldOff } from "lucide-react";
 
-import { CompanyStatuses, type CompanyStatus } from "@/features/company/company.types";
+import { CompanyStatuses, type CompanyStatus } from "@/modules/company/company.types";
 import { Card, CardContent } from "@/components/ui/card";
 
 const STATUS_WALLS: Record<

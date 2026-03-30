@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
 
-import { SidebarNavLink } from "./sidebar-nav-link";
+import { SidebarNavLink } from "@/components/shared/layout/sidebar-nav-link";
 import type { NavGroup } from "@/config/navigation";
 
 type SidebarNavGroupProps = {

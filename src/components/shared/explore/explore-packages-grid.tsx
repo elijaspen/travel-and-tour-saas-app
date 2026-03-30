@@ -1,4 +1,4 @@
-import { ExplorePackageCard, type ExplorePackage } from "./explore-package-card";
+import { ExplorePackageCard, type ExplorePackage } from "@/components/shared/explore/explore-package-card";
 
 interface ExplorePackagesGridProps {
   packages: ExplorePackage[];

@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 
-import { profileService } from "@/features/profile/profile.service"
-import type { ActionResult } from "@/features/shared/types"
-import { Profile, ProfileRoles } from "@/features/profile/profile.types"
-import { SignupPayload, signupPayloadSchema } from "@/features/profile/profile.validation"
+import { profileService } from "@/modules/profile/profile.service"
+import type { ActionResult } from "@/modules/shared/types"
+import { Profile, ProfileRoles } from "@/modules/profile/profile.types"
+import { SignupPayload, signupPayloadSchema } from "@/modules/profile/profile.validation"
 
 export async function POST(req: NextRequest) {
   let parsedBody: SignupPayload

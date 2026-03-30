@@ -7,9 +7,9 @@ import { Button } from "@/components/ui/button";
 import { SidebarNavGroup } from "@/components/shared/layout/sidebar-nav-group";
 import { SidebarNavLink } from "@/components/shared/layout/sidebar-nav-link";
 import { getNavConfig, isNavGroup } from "@/config/navigation";
-import { logoutAction } from "@/features/profile/profile.actions";
-import { getRoleLabel, getUserInitials } from "@/features/profile/profile.utils";
-import type { Profile } from "@/features/profile/profile.types";
+import { logoutAction } from "@/modules/profile/profile.actions";
+import { getRoleLabel, getUserInitials } from "@/modules/profile/profile.utils";
+import type { Profile } from "@/modules/profile/profile.types";
 
 type DashboardSidebarProps = {
   profile: Profile;

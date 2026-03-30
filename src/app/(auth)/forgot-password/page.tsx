@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import { ROUTE_PATHS } from "@/config/routes";
 import { siteConfig } from "@/config/site";
-import { ForgotPasswordForm } from "./components/forgot-password-form";
+import { ForgotPasswordForm } from "@/app/(auth)/forgot-password/components/forgot-password-form";
 
 export const metadata: Metadata = {
   title: "Forgot Password",

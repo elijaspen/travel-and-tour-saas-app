@@ -9,8 +9,8 @@ import { PageHeader } from "@/components/shared/layout/page-header";
 import { EmptyState } from "@/components/shared/data-display/empty-state";
 import { StatCard } from "@/components/shared/data-display/stat-card";
 import { ROUTE_PATHS } from "@/config/routes";
-import { requireRole } from "@/features/profile/profile.guard";
-import { ProfileRoles } from "@/features/profile/profile.types";
+import { requireRole } from "@/modules/profile/profile.guard";
+import { ProfileRoles } from "@/modules/profile/profile.types";
 import {
   MapPin,
   Calendar,
