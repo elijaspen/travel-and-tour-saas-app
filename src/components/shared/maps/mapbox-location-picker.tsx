@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import { MapPin, Search } from "lucide-react";
 
 import { useDefaultMapCenter } from "@/hooks/use-default-map-center";
-import type { TourLocationValue } from "@/features/tours/tour.types";
+import type { TourLocationValue } from "@/modules/tours/tour.types";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

@@ -17,18 +17,11 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import UnderlineExtension from "@tiptap/extension-underline";
+import { stripHtml } from "@/lib/html";
 import { cn } from "@/lib/utils";
 
 const DEFAULT_MIN_LENGTH = 10;
 const DEFAULT_MAX_LENGTH = 10_000;
-
-function stripHtml(html: string): string {
-  if (typeof document === "undefined") {
-    return html.replace(/<[^>]*>/g, "");
-  }
-  const doc = new DOMParser().parseFromString(html, "text/html");
-  return doc.body.textContent ?? "";
-}
 
 type RichTextEditorProps = {
   value: string;
@@ -218,9 +211,4 @@ function ToolbarButton({
       {children}
     </button>
   );
-}
-
-/** Strip HTML for validation - use when validating description has min chars */
-export function getTextFromHtml(html: string): string {
-  return stripHtml(html);
 }

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Facebook, Instagram, Twitter, Linkedin } from "lucide-react";
-import FooterColumn from "./footer-column";
+import FooterColumn from "@/components/shared/footer/footer-column";
 
 const footerLinks = {
   company: [

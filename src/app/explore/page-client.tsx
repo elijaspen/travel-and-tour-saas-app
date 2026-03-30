@@ -9,11 +9,11 @@ import {
   type ExploreSortValue,
 } from "@/components/shared/explore/explore-results-header";
 import { ExploreSearchBar } from "@/components/shared/search/explore-search-bar";
-import { ExploreBrowseCopy } from "@/features/tours/utils/explore-search.constants";
+import { ExploreBrowseCopy } from "@/modules/tours/utils/explore-search.constants";
 import {
   parseExploreSearchQuery,
   exploreQueryLabel,
-} from "@/features/tours/utils/explore-search-params";
+} from "@/modules/tours/utils/explore-search-params";
 import { ExplorePackagesGrid } from "@/components/shared/explore/explore-packages-grid";
 import { Pagination } from "@/components/shared/data-display/pagination";
 import { ExploreBreadcrumbs } from "@/components/shared/explore/explore-breadcrumbs";

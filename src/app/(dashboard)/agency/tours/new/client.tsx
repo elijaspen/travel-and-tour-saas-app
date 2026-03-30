@@ -8,23 +8,23 @@ import { toast } from "sonner";
 import { PageSectionHeader } from "@/components/shared/layout/page-section-header";
 import { Button } from "@/components/ui/button";
 import { ROUTE_PATHS } from "@/config/routes";
-import { BasicsStep } from "@/app/(dashboard)/agency/tours/components/steps/basics-step";
-import { ItineraryStep } from "@/app/(dashboard)/agency/tours/components/steps/itinerary-step";
-import { LocationStep } from "@/app/(dashboard)/agency/tours/components/steps/location-step";
-import { PricingStep } from "@/app/(dashboard)/agency/tours/components/steps/pricing-step";
-import { PublishStep } from "@/app/(dashboard)/agency/tours/components/steps/publish-step";
+import { BasicsStep } from "@/components/features/tours/steps/basics-step";
+import { ItineraryStep } from "@/components/features/tours/steps/itinerary-step";
+import { LocationStep } from "@/components/features/tours/steps/location-step";
+import { PricingStep } from "@/components/features/tours/steps/pricing-step";
+import { PublishStep } from "@/components/features/tours/steps/publish-step";
 import { StepperProgress } from "@/components/shared/forms/stepper-progress";
-import { createTourAction } from "@/features/tours/tour.actions";
+import { createTourAction } from "@/modules/tours/tour.actions";
 import {
   type CreateTourWizardState,
   defaultCreateTourWizardState,
-} from "@/features/tours/tour.types";
-import { createTourCommandSchema } from "@/features/tours/tour.validation";
+} from "@/modules/tours/tour.types";
+import { createTourCommandSchema } from "@/modules/tours/tour.validation";
 import {
   getStepValidation,
   wizardToJsonPayload,
-} from "@/features/tours/utils/tour-wizard";
-import { CREATE_TOUR_STEPS } from "./create-tour-steps";
+} from "@/modules/tours/utils/tour-wizard";
+import { CREATE_TOUR_STEPS } from "@/components/features/tours/create-tour-steps";
 
 export function CreateTourWizardClient() {
   const router = useRouter();

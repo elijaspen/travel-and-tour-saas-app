@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 
-import { parseListParams } from "@/features/shared/list-params";
-import { agencyToursConfig } from "@/features/tours/utils/agency-tours-config";
-import { tourService } from "@/features/tours/tour.service";
-import { requireRole } from "@/features/profile/profile.guard";
-import { ProfileRoles } from "@/features/profile/profile.types";
-import { ToursClient } from "./client";
+import { parseListParams } from "@/modules/shared/list-params";
+import { agencyToursConfig } from "@/modules/tours/utils/agency-tours-config";
+import { tourService } from "@/modules/tours/tour.service";
+import { requireRole } from "@/modules/profile/profile.guard";
+import { ProfileRoles } from "@/modules/profile/profile.types";
+import { ToursClient } from "@/app/(dashboard)/agency/tours/client";
 
 export const metadata: Metadata = {
   title: "Tours Inventory",

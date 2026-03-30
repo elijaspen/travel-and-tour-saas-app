@@ -18,11 +18,11 @@ import {
 import {
   ExploreSearchBarCopy,
   UnifiedSelectionKind,
-} from "@/features/tours/utils/explore-search.constants";
+} from "@/modules/tours/utils/explore-search.constants";
 import {
   explorePathWithQuery,
   selectionToExploreQuery,
-} from "@/features/tours/utils/explore-search-params";
+} from "@/modules/tours/utils/explore-search-params";
 import { ROUTE_PATHS } from "@/config/routes";
 import { cn } from "@/lib/utils";
 

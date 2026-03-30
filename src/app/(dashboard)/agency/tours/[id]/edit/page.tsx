@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { requireRole } from "@/features/profile/profile.guard";
-import { ProfileRoles } from "@/features/profile/profile.types";
-import { companyService } from "@/features/company/company.service";
-import { tourService } from "@/features/tours/tour.service";
+import { requireRole } from "@/modules/profile/profile.guard";
+import { ProfileRoles } from "@/modules/profile/profile.types";
+import { companyService } from "@/modules/company/company.service";
+import { tourService } from "@/modules/tours/tour.service";
 import { EditTourWizardClient } from "@/app/(dashboard)/agency/tours/[id]/edit/client";
 
 export const metadata: Metadata = {
