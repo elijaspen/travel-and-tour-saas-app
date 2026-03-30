@@ -1,0 +1,42 @@
+---
+description: Enforce concise, non-verbose, and straightforward code solutions
+alwaysApply: true
+---
+
+# Concise & Straightforward Solutions
+
+Write the simplest code that solves the problem. Avoid over-engineering, unnecessary abstractions, and excessive boilerplate.
+
+## Code
+
+```tsx
+// ❌ BAD
+const handleClick = useCallback(() => {
+  setIsOpen((prevState) => !prevState);
+}, []);
+
+// ✅ GOOD
+const handleClick = () => setIsOpen(!isOpen);
+```
+
+```ts
+// ❌ BAD
+function getUserName(user: User): string {
+  if (user && user.name) {
+    return user.name;
+  }
+  return 'Anonymous';
+}
+
+// ✅ GOOD
+const getUserName = (user: User) => user.name ?? 'Anonymous';
+```
+
+## Rules
+
+- **No unnecessary wrappers** — don't wrap code in extra functions, components, or layers unless there's a clear reuse reason
+- **No redundant state** — derive values from existing state instead of syncing duplicates
+- **No over-abstraction** — don't create helpers for logic that's only used once
+- **Prefer inline over extracted** — keep logic close to where it's used unless reuse justifies extraction
+- **Flat over nested** — prefer early returns and guard clauses over deep nesting
+- **No ceremony** — skip unnecessary variable declarations, intermediate assignments, and scaffolding

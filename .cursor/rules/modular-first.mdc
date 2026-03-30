@@ -1,0 +1,47 @@
+---
+description: Modular design, reusable units, and separation of concerns aligned with server modules and UI layers
+alwaysApply: true
+---
+
+# Modular First & Separation of Concerns
+
+Structure code so **each layer has one job**, boundaries are clear, and shared logic lives in **reusable, testable units**. Follow `docs/architecture.md` for where files belong (`modules/`, `lib/`, `components/`, `app/`).
+
+## Layer boundaries
+
+- **UI** (`components/`, `app/` routes): presentation, composition, and wiring — not raw Supabase or heavy business rules.
+- **Server Actions** (`*.actions.ts`): validate input, orchestrate, call services, return `ActionResult`.
+- **Services** (`*.service.ts`): data access and domain workflows used by actions and RSC.
+- **Validation** (`*.validation.ts` / Zod): shared at action and API boundaries — define once, reuse.
+- **Pure helpers** (`lib/`, feature `utils/`): parsing, mappers, URL/list params — no React, no I/O unless that helper’s sole purpose is I/O.
+
+Do not mix these concerns in one file when the codebase already splits them for that domain.
+
+## Reuse & scale
+
+- **Prefer small, named functions** over long inline blocks when the behavior has a clear name or will be tested or reused.
+- **Colocate by domain** under `src/modules/<domain>/`; push truly cross-domain logic to `src/lib` or `src/hooks` only when it is shared.
+- **Design for callers**: export stable, narrow APIs (what inputs / outputs) so new screens and actions can compose the same service or helper without copy-paste.
+
+## Balance (do not over-modularize)
+
+- Per **concise-solutions** and **dry-practices**: do not split a trivial flow into many files or wrappers “for patterns’ sake.”
+- Inline is fine when logic is **one-off** and **short**; extract when duplication, complexity, or testing pressure appears.
+
+```typescript
+// ❌ BAD: service logic and Zod parsing buried inside a giant component
+function TourForm() {
+  const save = async () => {
+    const supabase = createClient()
+    // 40 lines of validation + inserts ...
+  }
+}
+
+// ✅ GOOD: form calls an action; action uses schema + service (see architecture.md)
+```
+
+## Checklist
+
+- Does this change belong in the right layer (UI vs action vs service vs pure util)?
+- Can validation or mapping be **one shared module** instead of duplicating in UI and server?
+- If adding a reusable helper, is the name **behavior-based** and the API **minimal**?

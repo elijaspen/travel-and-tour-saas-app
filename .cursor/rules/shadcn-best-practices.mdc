@@ -54,7 +54,7 @@ shadcn/ui is **not a black‑box library** – once installed, the code lives in
 ## 5. Forms: separate schema, state, and UI
 
 - **Keep validation schemas (zod) out of the UI files where possible.**
-  - Define schemas close to the domain (`src/features/.../schema.ts`) and import them into form components.
+  - Define schemas close to the domain (`src/modules/.../<domain>.validation.ts` or colocated schema) and import them into form components.
 - **Use the shadcn + `react-hook-form` patterns.**
   - Prefer the provided `Form`, `FormField`, `FormItem`, `FormLabel`, `FormControl`, and `FormMessage` building blocks.
 - **Avoid duplicating form field structures.**
