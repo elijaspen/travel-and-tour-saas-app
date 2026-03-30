@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
-import { PageSectionHeader } from "@/components/shared/page-section-header";
+import { PageSectionHeader } from "@/components/shared/layout/page-section-header";
 import { Button } from "@/components/ui/button";
 import { ROUTE_PATHS } from "@/config/routes";
 import { BasicsStep } from "@/app/(dashboard)/agency/tours/components/steps/basics-step";
@@ -13,7 +13,7 @@ import { ItineraryStep } from "@/app/(dashboard)/agency/tours/components/steps/i
 import { LocationStep } from "@/app/(dashboard)/agency/tours/components/steps/location-step";
 import { PricingStep } from "@/app/(dashboard)/agency/tours/components/steps/pricing-step";
 import { PublishStep } from "@/app/(dashboard)/agency/tours/components/steps/publish-step";
-import { StepperProgress } from "@/components/shared/stepper-progress";
+import { StepperProgress } from "@/components/shared/forms/stepper-progress";
 import { createTourAction } from "@/features/tours/tour.actions";
 import {
   type CreateTourWizardState,

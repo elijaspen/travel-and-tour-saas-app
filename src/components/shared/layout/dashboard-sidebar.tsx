@@ -2,10 +2,10 @@
 
 import { LogOut } from "lucide-react";
 
-import { AppLogo } from "@/components/shared/app-logo";
+import { AppLogo } from "@/components/shared/layout/app-logo";
 import { Button } from "@/components/ui/button";
-import { SidebarNavGroup } from "@/components/shared/sidebar-nav-group";
-import { SidebarNavLink } from "@/components/shared/sidebar-nav-link";
+import { SidebarNavGroup } from "@/components/shared/layout/sidebar-nav-group";
+import { SidebarNavLink } from "@/components/shared/layout/sidebar-nav-link";
 import { getNavConfig, isNavGroup } from "@/config/navigation";
 import { logoutAction } from "@/features/profile/profile.actions";
 import { getRoleLabel, getUserInitials } from "@/features/profile/profile.utils";

@@ -4,7 +4,7 @@ import { requireRole } from "@/features/profile/profile.guard";
 import { ProfileRoles } from "@/features/profile/profile.types";
 import { companyService } from "@/features/company/company.service";
 import { CompanyStatuses } from "@/features/company/company.types";
-import { AgencyStatusWall } from "@/components/features/agency/agency-status-wall";
+import { AgencyStatusWall } from "@/app/(dashboard)/agency/components/agency-status-wall";
 
 export default async function AgencyLayout({
   children,

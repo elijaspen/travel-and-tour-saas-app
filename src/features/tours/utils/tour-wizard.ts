@@ -1,4 +1,4 @@
-import { getTextFromHtml } from "@/components/shared/rich-text-editor";
+import { getTextFromHtml } from "@/components/shared/forms/rich-text-editor";
 import { isValidCountryCode } from "@/lib/geo/countries";
 import type {
   CreateTourWizardState,

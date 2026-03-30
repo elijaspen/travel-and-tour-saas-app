@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { DataTable, type DataTableColumn } from "@/components/shared/data-table";
+import { DataTable, type DataTableColumn } from "@/components/shared/data-display/data-table";
 import { ROUTE_PATHS } from "@/config/routes";
 import { toggleTourActiveAction } from "@/features/tours/tour.actions";
 import type { TourListItem } from "@/features/tours/tour.types";

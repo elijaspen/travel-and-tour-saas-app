@@ -17,10 +17,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { PageHeader } from "@/components/shared/page-header"
-import { StatCard } from "@/components/shared/stat-card"
-import { EmptyState } from "@/components/shared/empty-state"
-import { CompanyStatusBadge } from "@/components/shared/company-status-badge"
+import { PageHeader } from "@/components/shared/layout/page-header"
+import { StatCard } from "@/components/shared/data-display/stat-card"
+import { EmptyState } from "@/components/shared/data-display/empty-state"
+import { CompanyStatusBadge } from "@/components/shared/data-display/company-status-badge"
 import { BusinessesTabsFilter } from "./_components/tabs-filter"
 import { requireRole } from "@/features/profile/profile.guard"
 import { ProfileRoles } from "@/features/profile/profile.types"

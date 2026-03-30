@@ -3,8 +3,8 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
-import { FormStepLayout } from "@/components/shared/form-step-layout";
-import { MapboxLocationPicker } from "@/components/shared/mapbox-location-picker";
+import { FormStepLayout } from "@/components/shared/forms/form-step-layout";
+import { MapboxLocationPicker } from "@/components/shared/maps/mapbox-location-picker";
 import type { CreateTourWizardState } from "@/features/tours/tour.types";
 import { COUNTRY_SELECT_OPTIONS } from "@/lib/geo/countries";
 

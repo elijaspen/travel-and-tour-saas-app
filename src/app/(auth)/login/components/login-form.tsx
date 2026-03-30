@@ -12,9 +12,9 @@ import { ROUTE_PATHS } from "@/config/routes";
 import { loginAction } from "@/features/profile/profile.actions";
 import { profileLoginSchema, type LoginPayload } from "@/features/profile/profile.validation";
 import type { ActionResult } from "@/features/shared/types";
-import { SocialAuth } from "@/components/common/social-auth";
+import { SocialAuth } from "@/components/shared/forms/social-auth";
 
-import { FormInput } from "@/components/common/form-input";
+import { FormInput } from "@/components/shared/forms/form-input";
 
 export function LoginForm() {
   const [serverResult, setServerResult] = useState<ActionResult>({ success: false });
