@@ -1,257 +1,86 @@
 # Travel & Tour SaaS App
 
-A full-stack SaaS platform for travel and tour businesses, built with modern web technologies.
+Full-stack travel-and-tour platform (WorkWanders): Next.js, Supabase, and shadcn-style UI.
 
-## Tech Stack
+## Documentation
 
-- **Framework**: [Next.js](https://nextjs.org/) 16 with App Router
-- **Language**: TypeScript with strict mode
-- **Styling**: Tailwind CSS 4 with CSS variables
-- **UI Components**: [shadcn/ui](https://ui.shadcn.com/) (New York style)
-- **Backend & Auth**: [Supabase](https://supabase.com/) (PostgreSQL + Auth + Storage)
-- **Icons**: [Lucide React](https://lucide.dev/)
-- **Testing**: Jest (unit tests) + Playwright (E2E tests)
-- **Linting**: ESLint with Next.js config
+| Doc | Purpose |
+| --- | ------- |
+| [**Architecture**](docs/architecture.md) | **Canonical** folder layout, layers (`app` / `components` / `modules`), patterns, and tech stack. |
+| [**Plan**](docs/plan.md) | Product phases and checklists. |
 
-## Project Structure
+For structure and conventions, prefer **architecture.md** over this README so details stay in one place.
 
-```
-.
-├── src/
-│   ├── app/                    # Next.js App Router
-│   │   ├── (auth)/             # Auth route group
-│   │   │   ├── login/          # Login page
-│   │   │   └── signup/         # Signup page
-│   │   ├── (dashboard)/        # Dashboard route group
-│   │   │   ├── dashboard/      # Dashboard page
-│   │   │   └── layout.tsx      # Dashboard layout
-│   │   ├── api/                # API routes
-│   │   ├── globals.css         # Global styles
-│   │   ├── layout.tsx          # Root layout
-│   │   └── page.tsx            # Home page
-│   ├── components/
-│   │   ├── providers/          # Context providers
-│   │   ├── shared/             # Shared components
-│   │   └── ui/                 # shadcn/ui components
-│   ├── config/
-│   │   └── site.ts             # Site configuration
-│   ├── hooks/                  # Custom React hooks
-│   ├── lib/
-│   │   ├── supabase/           # Supabase client/config
-│   │   └── utils.ts            # Utility functions (cn, etc.)
-│   ├── types/
-│   │   ├── database.ts         # Database types
-│   │   └── index.ts            # Shared types
-│   └── middleware.ts           # Next.js middleware
-├── __tests__/                  # Unit/integration tests
-│   ├── components/             # Component tests
-│   └── lib/                    # Utility tests
-├── e2e/                        # Playwright E2E tests
-├── public/                     # Static assets
-├── components.json             # shadcn/ui configuration
-├── jest.config.ts              # Jest configuration
-├── playwright.config.ts        # Playwright configuration
-└── next.config.ts              # Next.js configuration
-```
+## Tech stack (summary)
 
-## Getting Started
+- **Next.js 16** (App Router), React 19, Server Actions, Tailwind CSS 4  
+- **Supabase** — Postgres, Auth, Storage (RLS)  
+- **Forms** — react-hook-form, Zod 4  
+- **UI** — shadcn-style primitives under `src/components/ui`  
+- **Deploy** — Cloudflare Workers via OpenNext (see architecture doc)
 
-### Prerequisites
+## Repository layout (high level)
 
-- Node.js 18+ (recommended: use latest LTS)
-- npm or yarn
-- A Supabase project (free tier works fine)
+- `src/app/` — routes, layouts, API routes  
+- `src/components/ui` — primitives · `src/components/shared` — cross-cutting UI · `src/components/features/<domain>` — domain-specific UI  
+- `src/modules/<domain>` — server logic (`*.service.ts`, `*.actions.ts`, `*.validation.ts`, …) · `src/modules/shared` — shared server helpers  
+- `src/config`, `src/lib`, `src/hooks` — routes/navigation, pure utils, shared hooks  
+- `supabase/` — schemas, migrations, generated `types/`, clients under `supabase/utils` (import `@supabase/utils/...`)  
 
-### Environment Setup
+**Full tree and naming rules:** [docs/architecture.md §2](docs/architecture.md).
 
-1. Copy the example environment file:
+## Prerequisites
+
+- **Node.js 22** (recommended; use the active LTS line — see [nodejs.org](https://nodejs.org/) for current releases)  
+- **npm** (this repo uses `package-lock.json`)  
+- A Supabase project for local/remote development  
+
+## Getting started
+
+1. **Environment**
 
    ```bash
    cp .env.example .env.local
    ```
 
-2. Fill in your Supabase credentials in `.env.local`:
+   Set at least: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_APP_URL` (e.g. `http://localhost:3000`).
 
-   ```env
-   NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
-   NEXT_PUBLIC_APP_URL=http://localhost:3000
+2. **Install & run**
+
+   ```bash
+   npm install
+   npm run dev
    ```
 
-   Get these values from your [Supabase dashboard](https://supabase.com/dashboard) under Project Settings > API.
+3. **Database** — follow the workflow in [docs/architecture.md](docs/architecture.md) and [`.cursor/rules/supabase-migrations.mdc`](.cursor/rules/supabase-migrations.mdc) (`migrate`, `types`, etc.).
 
-### Installation
+## Scripts
 
-```bash
-npm install
-```
+| Script | Description |
+| ------ | ----------- |
+| `npm run dev` | Development server |
+| `npm run build` / `npm run start` | Production build / server |
+| `npm run lint` / `npm run typecheck` | ESLint / TypeScript |
+| `npm test` / `npm run test:e2e` | Jest / Playwright |
+| `npm run migrate` | Local DB push + regenerate types |
+| `npm run types` | Regenerate `supabase/types/database.ts` |
 
-### Running the App
-
-```bash
-# Development server (http://localhost:3000)
-npm run dev
-
-# Production build
-npm run build
-
-# Start production server
-npm run start
-```
-
-## Code Style Guidelines
-
-### TypeScript
-
-- Use strict TypeScript with explicit types
-- Prefer `interface` over `type` for object shapes
-- Use `type` for unions, tuples, and utility types
-- Export types from `src/types/index.ts`
-
-### Components
-
-- Use functional components with hooks
-- Follow shadcn/ui patterns for UI components
-- Use `cn()` utility for conditional class merging
-- Use `@/` path alias for imports (e.g., `@/components/ui/button`)
-- Props interface should be named `{ComponentName}Props`
-
-### File Naming
-
-- Components: PascalCase (e.g., `Button.tsx`)
-- Utilities/Hooks: camelCase (e.g., `useAuth.ts`)
-- Test files: `{name}.test.ts` or `{name}.spec.ts`
-
-### Styling
-
-- Use Tailwind CSS utility classes
-- Use CSS variables for theming (defined in `globals.css`)
-- Follow the shadcn/ui design system
-- Use `lucide-react` for icons
-
-### Example Component Pattern
-
-```tsx
-import * as React from "react"
-import { cn } from "@/lib/utils"
-
-interface MyComponentProps {
-  className?: string
-  children: React.ReactNode
-}
-
-export function MyComponent({ className, children }: MyComponentProps) {
-  return <div className={cn("base-classes", className)}>{children}</div>
-}
-```
+See `package.json` for Cloudflare/OpenNext and other scripts.
 
 ## Testing
 
-### Unit Tests (Jest)
+- **Unit:** `__tests__/` — `npm test`  
+- **E2E:** `e2e/` — `npm run test:e2e`  
 
-```bash
-# Run all unit tests
-npm test
+## Supabase
 
-# Run tests in watch mode
-npm run test:watch
+- **Generated types:** `supabase/types/database.ts` (do not hand-edit; use `npm run types`)  
+- **Clients:** `@supabase/utils/server`, `@supabase/utils/client`, etc. (see `tsconfig` paths)  
 
-# Run tests with coverage report
-npm run test:coverage
-```
+## shadcn-style UI
 
-Unit tests are located in `__tests__/` and use:
-
-- **Jest** as the test runner
-- **React Testing Library** for component testing
-- **jsdom** environment for DOM simulation
-
-### E2E Tests (Playwright)
-
-```bash
-# Run all E2E tests (headless)
-npm run test:e2e
-
-# Run E2E tests with UI mode
-npm run test:e2e:ui
-```
-
-E2E tests are located in `e2e/` and test full user flows.
-
-### Creating a Test Case
-
-#### Unit Test Example
-
-Create a file in `__tests__/components/MyComponent.test.tsx`:
-
-```tsx
-import { render, screen } from "@testing-library/react"
-import { MyComponent } from "@/components/MyComponent"
-
-describe("MyComponent", () => {
-  it("renders correctly", () => {
-    render(<MyComponent>Test Content</MyComponent>)
-    expect(screen.getByText("Test Content")).toBeInTheDocument()
-  })
-
-  it("applies custom className", () => {
-    render(<MyComponent className='custom-class'>Test</MyComponent>)
-    expect(screen.getByText("Test")).toHaveClass("custom-class")
-  })
-})
-```
-
-#### E2E Test Example
-
-Create a file in `e2e/my-feature.spec.ts`:
-
-```tsx
-import { test, expect } from "@playwright/test"
-
-test.describe("My Feature", () => {
-  test("should perform action", async ({ page }) => {
-    await page.goto("/my-page")
-    await page.getByRole("button", { name: /click me/i }).click()
-    await expect(page.getByText("Success")).toBeVisible()
-  })
-})
-```
-
-## Available Scripts
-
-| Script                  | Description                  |
-| ----------------------- | ---------------------------- |
-| `npm run dev`           | Start development server     |
-| `npm run build`         | Build for production         |
-| `npm run start`         | Start production server      |
-| `npm run lint`          | Run ESLint                   |
-| `npm run typecheck`     | Run TypeScript type checking |
-| `npm test`              | Run Jest unit tests          |
-| `npm run test:watch`    | Run Jest in watch mode       |
-| `npm run test:coverage` | Run Jest with coverage       |
-| `npm run test:e2e`      | Run Playwright E2E tests     |
-| `npm run test:e2e:ui`   | Run Playwright with UI       |
-
-## Adding UI Components
-
-This project uses shadcn/ui. To add new components:
-
-```bash
-npx shadcn add button
-npx shadcn add card
-# etc.
-```
-
-Components are installed to `src/components/ui/`.
-
-## Supabase Integration
-
-- Authentication is handled via `@supabase/ssr` for server-side rendering support
-- Database types are in `src/types/database.ts`
-- Supabase client utilities are in `src/lib/supabase/`
+Add primitives with the shadcn CLI; components live in `src/components/ui`. See [architecture doc](docs/architecture.md) and [`.cursor/rules/shadcn-best-practices.mdc`](.cursor/rules/shadcn-best-practices.mdc).
 
 ## License
 
 [MIT](LICENSE)
-
-NOTE: this will be updated upon changes on the features.
