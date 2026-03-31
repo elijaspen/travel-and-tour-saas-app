@@ -45,9 +45,9 @@ export async function signUpAction(
   }
 
   const { data, error } = await profileService.signUp({
-    email: parsed.data.email,
     password: parsed.data.password,
     profile: {
+      email: parsed.data.email,
       full_name: parsed.data.fullName,
       role,
     },

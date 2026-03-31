@@ -8,7 +8,6 @@ import { User } from "@supabase/supabase-js"
 import type { Profile, ProfileInsert, ProfileUpdate } from "@/modules/profile/profile.types"
 
 type SignUpInput = {
-  email: string
   password: string
   profile: Omit<ProfileInsert, "id">
 }
@@ -41,7 +40,7 @@ export const profileService = {
     const supabase = await createServerClient()
 
     const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-      email: input.email,
+      email: input.profile.email,
       password: input.password,
       options: {
         emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/verify-email`,

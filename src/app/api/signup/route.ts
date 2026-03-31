@@ -34,9 +34,9 @@ export async function POST(req: NextRequest) {
       const { payload } = parsedBody
 
       const { data, error } = await profileService.signUp({
-        email: payload.email,
         password: payload.password,
         profile: {
+          email: payload.email,
           full_name: payload.fullName,
           role: ProfileRoles.CUSTOMER,
         },
@@ -60,9 +60,9 @@ export async function POST(req: NextRequest) {
     const { payload } = parsedBody
 
     const { data, error } = await profileService.signUp({
-      email: payload.email,
       password: payload.password,
       profile: {
+        email: payload.email,
         full_name: payload.fullName,
         role: ProfileRoles.BUSINESS_OWNER,
       },
