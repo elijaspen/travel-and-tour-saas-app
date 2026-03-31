@@ -8,10 +8,10 @@ import { Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { profileUpdateSchema, type ProfileUpdatePayload } from "@/features/profile/profile.validation";
-import type { ActionResult } from "@/features/shared/types";
-import { updateProfileAction } from "@/features/profile/profile.actions";
-import type { Profile } from "@/features/profile/profile.types";
+import { profileUpdateSchema, type ProfileUpdatePayload } from "@/modules/profile/profile.validation";
+import type { ActionResult } from "@/modules/shared/types";
+import { updateProfileAction } from "@/modules/profile/profile.actions";
+import type { Profile } from "@/modules/profile/profile.types";
 
 interface ProfileFormProps {
   initialProfile: Profile;

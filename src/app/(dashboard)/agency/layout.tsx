@@ -1,10 +1,10 @@
 import type { ReactNode } from "react";
 
-import { requireRole } from "@/features/profile/profile.guard";
-import { ProfileRoles } from "@/features/profile/profile.types";
-import { companyService } from "@/features/company/company.service";
-import { CompanyStatuses } from "@/features/company/company.types";
-import { AgencyStatusWall } from "@/components/features/agency/agency-status-wall";
+import { requireRole } from "@/modules/profile/profile.guard";
+import { ProfileRoles } from "@/modules/profile/profile.types";
+import { companyService } from "@/modules/company/company.service";
+import { CompanyStatuses } from "@/modules/company/company.types";
+import { AgencyStatusWall } from "@/app/(dashboard)/agency/components/agency-status-wall";
 
 export default async function AgencyLayout({
   children,

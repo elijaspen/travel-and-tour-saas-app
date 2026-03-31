@@ -1,6 +1,6 @@
 ---
 description: Pattern for list pages with filters, search, sort, and pagination
-globs: "**/*.service.ts,src/features/**/*-config.ts,src/features/shared/list-params.ts"
+globs: "**/*.service.ts,src/modules/**/*-config.ts,src/modules/shared/list-params.ts"
 alwaysApply: false
 ---
 
@@ -22,16 +22,16 @@ flowchart LR
 
 ## 1. Create a List Config File
 
-Add `src/features/<feature>/<context>-config.ts` (e.g. `agency-tours-config.ts`, `businesses-list-config.ts`).
+Add `src/modules/<domain>/<context>-config.ts` (e.g. `agency-tours-config.ts`, `businesses-list-config.ts`).
 
-- **Client-safe**: Import only `type ListConfig` from `@/features/shared/list-params`. No server or Supabase imports.
+- **Client-safe**: Import only `type ListConfig` from `@/modules/shared/list-params`. No server or Supabase imports.
 - **Source of truth**: Filter/sort options and column names must match `database.ts` (tables, enums).
 - **paramKey**: URL query param name (e.g. `status`, `tourType`). Use same key in `filters` object.
 - **options**: Each option has `value`, `label`, and optional `filter` (column, operator, value). Use `value: "all"` with no `filter` for "show all".
 - **searchColumns**: Columns to search with `ilike` when `search` is non-empty.
 
 ```typescript
-import type { ListConfig } from "@/features/shared/list-params"
+import type { ListConfig } from "@/modules/shared/list-params"
 
 export const agencyToursConfig: ListConfig = {
   filters: [
@@ -66,7 +66,7 @@ export const agencyToursConfig: ListConfig = {
 - Never create per-feature parser or URL-builder functions; use shared utilities.
 
 ```typescript
-import { toQueryParams, type ListParams } from "@/features/shared/list-params"
+import { toQueryParams, type ListParams } from "@/modules/shared/list-params"
 import { agencyToursConfig } from "./agency-tours-config"
 
 const queryParams = toQueryParams<TourRow>(agencyToursConfig, params)
@@ -93,8 +93,8 @@ const { data, total } = await tourService.listForAgencyPage({ ...listParams, pro
 - Render filter/sort controls by iterating `config.filters` and `config.sorts` — do not hardcode options.
 
 ```typescript
-import { agencyToursConfig } from "@/features/tours/agency-tours-config"
-import { buildListUrl } from "@/features/shared/list-params"
+import { agencyToursConfig } from "@/modules/tours/utils/agency-tours-config"
+import { buildListUrl } from "@/modules/shared/list-params"
 
 // Select options from config
 {agencyToursConfig.filters.map((f) => (

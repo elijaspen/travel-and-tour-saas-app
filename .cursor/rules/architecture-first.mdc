@@ -1,0 +1,23 @@
+---
+description: Always consult architecture.md before implementing new features to adhere to established patterns and practices
+alwaysApply: true
+---
+
+# Architecture-First Development
+
+Before implementing any new feature, **always read and consult**:
+
+```
+travel-and-tour-saas-app/docs/architecture.md
+```
+
+## Why
+
+This document defines the canonical patterns, conventions, and architectural decisions for the codebase. All new features must align with what is already established there — including layer boundaries, data flow, naming conventions, module structure, and integration points.
+
+## How to Apply
+
+1. Read `architecture.md` before writing any new code for a feature
+2. Identify which layers, modules, or services the feature touches
+3. Follow the patterns already defined for those areas — do not introduce new patterns unless explicitly asked
+4. If a pattern doesn't exist yet for the use case, flag it and propose an addition to `architecture.md` consistent with the existing style

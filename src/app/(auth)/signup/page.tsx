@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ROUTE_PATHS } from "@/config/routes";
-import { ProfileRole, ProfileRoles } from "@/features/profile/profile.types";
-import { SignupForm } from "./components/signup-form";
+import { ProfileRole, ProfileRoles } from "@/modules/profile/profile.types";
+import { SignupForm } from "@/app/(auth)/signup/components/signup-form";
 
 export const metadata: Metadata = {
   title: "Sign Up | WorkWanders",

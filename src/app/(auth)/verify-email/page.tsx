@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { ROUTE_PATHS } from "@/config/routes";
 import { siteConfig } from "@/config/site";
 import { createClient } from "@supabase/utils/server";
-import { DelayedRedirect } from "@/components/shared/delayed-redirect";
+import { DelayedRedirect } from "@/components/shared/layout/delayed-redirect";
 
 type SearchParams = {
   token_hash?: string;

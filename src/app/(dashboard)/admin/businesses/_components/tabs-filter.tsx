@@ -1,8 +1,8 @@
 import Link from "next/link"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { businessesListConfig } from "@/features/company/utils/businesses-list-config"
-import type { StatusCounts } from "@/features/company/company.service"
-import { buildListUrl } from "@/features/shared/list-params"
+import { businessesListConfig } from "@/modules/company/utils/businesses-list-config"
+import type { StatusCounts } from "@/modules/company/company.service"
+import { buildListUrl } from "@/modules/shared/list-params"
 import { ROUTE_PATHS } from "@/config/routes"
 
 const BASE_PATH = ROUTE_PATHS.AUTHED.ADMIN.BUSINESSES
