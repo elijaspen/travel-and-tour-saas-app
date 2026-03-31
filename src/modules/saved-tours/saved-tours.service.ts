@@ -1,5 +1,5 @@
 import { createClient as createServerClient } from "@supabase/utils/server";
-import { supabaseService, type ServiceResult, type TableRow } from "@/features/shared/supabase-service";
+import { supabaseService, type ServiceResult, type TableRow } from "@/modules/shared/supabase-service";
 import type { SavedTourWithDetails } from "./saved-tours.types";
 
 const base = supabaseService("user_saved_tours");

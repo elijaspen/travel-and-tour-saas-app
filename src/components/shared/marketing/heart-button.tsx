@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Heart } from "lucide-react";
-import { toggleSaveTourAction } from "@/features/saved-tours/saved-tours.actions";
+import { toggleSaveTourAction } from "@/modules/saved-tours/saved-tours.actions";
 
 type HeartButtonProps = {
   tourId: string;

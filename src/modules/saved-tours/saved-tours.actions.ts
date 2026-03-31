@@ -3,7 +3,7 @@
 import { createClient as createServerClient } from "@supabase/utils/server";
 import { savedToursService } from "./saved-tours.service";
 import { revalidatePath } from "next/cache";
-import type { ActionResult } from "@/features/shared/types";
+import type { ActionResult } from "@/modules/shared/types";
 
 export async function toggleSaveTourAction(
     tourId: string
