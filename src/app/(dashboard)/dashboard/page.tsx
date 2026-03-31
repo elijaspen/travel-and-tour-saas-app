@@ -93,8 +93,6 @@ export default async function DashboardPage() {
           value={savedToursCount}
           description="Tours you've bookmarked"
           icon={<Bookmark className="h-4 w-4" />}
-          className="cursor-pointer hover:bg-muted/50 transition-colors"
-          // We wrap this in a way that clicking the card goes to /saved
         />
       </div>
 

@@ -20,7 +20,6 @@ import { EmptyState } from "@/components/shared/empty-state";
 /**
  * TODO: Integration - Future Update
  * Replace this MOCK_SAVED_TOURS with real data fetching using savedToursService.
- * Example: const { data: savedTours } = await savedToursService.getSavedTours(profile.id);
  */
 const MOCK_SAVED_TOURS = [
   {
@@ -101,7 +100,7 @@ export default function SavedToursPage() {
         </Breadcrumb>
       </div>
 
-      {/* 2. Page Header */}
+      {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-6 md:px-8 lg:px-12">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Saved Tours</h1>
