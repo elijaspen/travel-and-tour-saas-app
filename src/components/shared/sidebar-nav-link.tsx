@@ -13,18 +13,21 @@ type SidebarNavLinkProps = {
   comingSoon?: boolean;
   /** When true, only highlight on exact path match (e.g. /admin not /admin/businesses) */
   exact?: boolean;
+  /** Additional paths where this item should be considered active */
+  activeOn?: string[];
 };
 
-function isLinkActive(pathname: string, href: string, exact?: boolean): boolean {
+function isLinkActive(pathname: string, href: string, exact?: boolean, activeOn?: string[]): boolean {
   const isExactMatch = pathname === href;
   const isSubRouteMatch =
     !exact && href !== "/" && pathname.startsWith(`${href}/`);
-  return isExactMatch || isSubRouteMatch;
+  const isExtraMatch = activeOn?.includes(pathname);
+  return isExactMatch || isSubRouteMatch || !!isExtraMatch;
 }
 
-export function SidebarNavLink({ href, label, icon, comingSoon, exact }: SidebarNavLinkProps) {
+export function SidebarNavLink({ href, label, icon, comingSoon, exact, activeOn }: SidebarNavLinkProps) {
   const pathname = usePathname();
-  const isActive = !comingSoon && isLinkActive(pathname, href, exact);
+  const isActive = !comingSoon && isLinkActive(pathname, href, exact, activeOn);
 
   const baseClass = cn(
     "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",

@@ -29,8 +29,8 @@ export async function toggleSaveTourAction(
             await savedToursService.create({ user_id: user.id, tour_id: tourId });
         }
 
-        revalidatePath("/explore");
-        revalidatePath("/(dashboard)/saved");
+        revalidatePath("/explore", "page");
+        revalidatePath("/saved", "page");
 
         return {
             success: true,

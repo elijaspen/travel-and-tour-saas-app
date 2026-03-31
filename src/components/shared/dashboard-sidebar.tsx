@@ -52,6 +52,7 @@ export function DashboardSidebar({ profile }: DashboardSidebarProps) {
                   icon={<item.icon className="h-4 w-4 shrink-0" />}
                   comingSoon={item.comingSoon}
                   exact={item.exact}
+                  activeOn={item.activeOn}
                 />
               )}
             </li>
@@ -68,6 +69,7 @@ export function DashboardSidebar({ profile }: DashboardSidebarProps) {
             icon={<item.icon className="h-4 w-4 shrink-0" />}
             comingSoon={item.comingSoon}
             exact={item.exact}
+            activeOn={item.activeOn}
           />
         ))}
         <form action={logoutAction} className="mt-1">

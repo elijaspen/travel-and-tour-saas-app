@@ -32,6 +32,7 @@ export default async function DashboardPage() {
   // TODO: fetch real data after schema applied to supabase
   const upcomingTripsCount = 0;
   const totalBookingsCount = 0;
+  const savedToursCount = 0; // TODO: fetch from savedToursService.getSavedTours(profile.id)
 
   return (
     <div className="flex flex-col gap-6">
@@ -74,7 +75,7 @@ export default async function DashboardPage() {
 
       <Separator />
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <StatCard
           title="Upcoming Trips"
           value={upcomingTripsCount}
@@ -86,6 +87,14 @@ export default async function DashboardPage() {
           value={totalBookingsCount}
           description="All bookings across your account"
           icon={<Calendar className="h-4 w-4" />}
+        />
+        <StatCard
+          title="Saved Tours"
+          value={savedToursCount}
+          description="Tours you've bookmarked"
+          icon={<Bookmark className="h-4 w-4" />}
+          className="cursor-pointer hover:bg-muted/50 transition-colors"
+          // We wrap this in a way that clicking the card goes to /saved
         />
       </div>
 
@@ -133,8 +142,9 @@ export default async function DashboardPage() {
         </Card>
 
         <Card className="h-full">
-          <CardHeader className="pb-2">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-base">Saved tours</CardTitle>
+            <Badge variant="secondary">{savedToursCount}</Badge>
           </CardHeader>
           <CardContent>
             <EmptyState

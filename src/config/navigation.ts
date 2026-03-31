@@ -25,6 +25,8 @@ export type NavItem = {
   comingSoon?: boolean;
   /** When true, only highlight on exact path match; prevents parent from highlighting when on child route */
   exact?: boolean;
+  /** Additional paths where this item should be considered active */
+  activeOn?: string[];
 };
 
 export type NavGroup = {
@@ -47,6 +49,7 @@ const NAV_CONFIG: Record<ProfileRole, RoleNavConfig> = {
         label: "Dashboard",
         href: ROUTE_PATHS.AUTHED.SHARED.DASHBOARD,
         icon: LayoutDashboard,
+        activeOn: [ROUTE_PATHS.AUTHED.SHARED.SAVED],
       },
       { label: "Trips", href: "#", icon: Map, comingSoon: true },
       { label: "Reviews", href: "#", icon: Star, comingSoon: true },
