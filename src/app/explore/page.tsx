@@ -1,4 +1,9 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
+
+import { CenteredPageLoading } from "@/components/shared/layout/centered-page-loading";
+
+import ExplorePageClient from "@/app/explore/page-client";
 
 export const metadata: Metadata = {
   title: "Explore",
@@ -7,13 +12,14 @@ export const metadata: Metadata = {
 
 export default function ExplorePage() {
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-4xl items-center justify-center px-4">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold text-slate-900">Explore</h1>
-        <p className="mt-2 text-slate-600">
-          Traveler landing page placeholder. Tour discovery UI can be added here.
-        </p>
-      </div>
-    </div>
+    <Suspense
+      fallback={
+        <div className="min-h-screen">
+          <CenteredPageLoading className="min-h-screen" />
+        </div>
+      }
+    >
+      <ExplorePageClient />
+    </Suspense>
   );
 }

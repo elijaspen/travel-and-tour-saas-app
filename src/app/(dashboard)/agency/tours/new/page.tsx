@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
-import { requireRole } from "@/features/profile/profile.guard";
-import { ProfileRoles } from "@/features/profile/profile.types";
+import { requireRole } from "@/modules/profile/profile.guard";
+import { ProfileRoles } from "@/modules/profile/profile.types";
 import { CreateTourWizardClient } from "@/app/(dashboard)/agency/tours/new/client";
 
 export const metadata: Metadata = {

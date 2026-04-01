@@ -8,9 +8,9 @@ import { Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { forgotPasswordSchema, type ForgotPasswordPayload } from "@/features/profile/profile.validation";
-import type { ActionResult } from "@/features/shared/types";
-import { requestPasswordResetAction } from "@/features/profile/profile.actions";
+import { forgotPasswordSchema, type ForgotPasswordPayload } from "@/modules/profile/profile.validation";
+import type { ActionResult } from "@/modules/shared/types";
+import { requestPasswordResetAction } from "@/modules/profile/profile.actions";
 
 export function ForgotPasswordForm() {
   const [serverResult, setServerResult] = useState<ActionResult>({ success: false });

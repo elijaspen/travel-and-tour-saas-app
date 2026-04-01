@@ -8,15 +8,15 @@ import { Plus } from "lucide-react";
 import { ROUTE_PATHS } from "@/config/routes";
 import { Button } from "@/components/ui/button";
 import { SearchInput } from "@/components/ui/search-input";
-import { PageSectionHeader } from "@/components/shared/page-section-header";
-import { ListPageToolbar } from "@/components/shared/list-page-toolbar";
-import { Pagination } from "@/components/shared/pagination";
-import type { TourListItem } from "@/features/tours/tour.types";
-import { agencyToursConfig } from "@/features/tours/utils/agency-tours-config";
-import { buildListUrl, type ListParams } from "@/features/shared/list-params";
+import { PageSectionHeader } from "@/components/shared/layout/page-section-header";
+import { ListPageToolbar } from "@/components/shared/layout/list-page-toolbar";
+import { Pagination } from "@/components/shared/data-display/pagination";
+import type { TourListItem } from "@/modules/tours/tour.types";
+import { agencyToursConfig } from "@/modules/tours/utils/agency-tours-config";
+import { buildListUrl, type ListParams } from "@/modules/shared/list-params";
 import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
 import { cn } from "@/lib/utils";
-import { ToursTable } from "./components/tours-table";
+import { ToursTable } from "@/components/features/tours/tours-table";
 
 const BASE_PATH = ROUTE_PATHS.AUTHED.AGENCY.TOURS;
 
