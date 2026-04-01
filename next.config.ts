@@ -2,6 +2,19 @@ import type { NextConfig } from "next"
 import { join } from "path"
 
 const isDev = process.env.NODE_ENV === "development"
+const getHostname = (value?: string) => {
+  if (!value) return null
+  try {
+    return new URL(value).hostname
+  } catch {
+    return null
+  }
+}
+
+const supabaseHosts = [
+  getHostname(process.env.NEXT_PUBLIC_SUPABASE_URL),
+  getHostname(process.env.SUPABASE_STORAGE_URL),
+].filter((host): host is string => Boolean(host))
 
 const nextConfig: NextConfig = {
   output: "standalone",
@@ -18,6 +31,7 @@ const nextConfig: NextConfig = {
         pathname: "/storage/v1/**",
       },
       { hostname: "tjgiskidryllvyjannsq.supabase.co" },
+      ...supabaseHosts.map((hostname) => ({ hostname })),
       { hostname: "images.unsplash.com" }
     ],
   },
