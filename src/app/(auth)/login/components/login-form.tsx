@@ -53,6 +53,7 @@ export function LoginForm() {
       <FormInput
         id="email"
         label="Email Address"
+        data-testid="login-email"
         type="email"
         placeholder="juan@example.com"
         error={errors.email?.message}
@@ -62,6 +63,7 @@ export function LoginForm() {
       <FormInput
         id="password"
         label="Password"
+        data-testid="login-password"
         type="password"
         placeholder="Enter your password"
         error={errors.password?.message}
@@ -85,6 +87,7 @@ export function LoginForm() {
 
       <Button
         type="submit"
+        data-testid="login-submit"
         className="w-full bg-zinc-900 text-white hover:bg-zinc-800"
         disabled={isPending}
       >

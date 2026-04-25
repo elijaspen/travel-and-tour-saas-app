@@ -9,10 +9,11 @@ export interface FormInputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string
   error?: string
   rightElement?: ReactNode
+  "data-testid"?: string
 }
 
 export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
-  ({ id, label, error, rightElement, className, ...props }, ref) => {
+  ({ id, label, error, rightElement, className, "data-testid": testId, ...props }, ref) => {
     const errorId = error ? `${id}-error` : undefined
     const ariaDescribedBy = [
       errorId,
@@ -31,6 +32,7 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
         <Input 
           id={id} 
           ref={ref} 
+          data-testid={testId}
           aria-invalid={!!error}
           aria-describedby={ariaDescribedBy}
           className={cn(error && "border-destructive focus-visible:ring-destructive", className)} 

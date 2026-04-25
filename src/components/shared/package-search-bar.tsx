@@ -40,6 +40,7 @@ export function PackageSearchBar({ className }: PackageSearchBarProps) {
             icon={<MapPin className="h-5 w-5 text-slate-400" />}
             label="WHERE TO?"
             name="destination"
+            data-testid="search-destination"
             placeholder="Search destinations"
           />
 
@@ -65,6 +66,7 @@ export function PackageSearchBar({ className }: PackageSearchBarProps) {
 
         <Button
           type="submit"
+          data-testid="search-submit"
           size="lg"
           className="h-16 min-w-[170px] rounded-xl bg-slate-950 px-8 text-base font-semibold text-white hover:bg-slate-900"
         >
@@ -81,6 +83,7 @@ type SearchFieldProps = {
   label: string;
   name: string;
   placeholder: string;
+  "data-testid"?: string;
 };
 
 function SearchField({
@@ -88,6 +91,7 @@ function SearchField({
   label,
   name,
   placeholder,
+  "data-testid": testId,
 }: SearchFieldProps) {
   return (
     <div className="flex flex-1 items-center gap-4 px-5 py-4">
@@ -104,6 +108,7 @@ function SearchField({
         <Input
           id={name}
           name={name}
+          data-testid={testId}
           placeholder={placeholder}
           className="h-auto border-0 bg-transparent p-0 text-lg font-medium text-slate-900 placeholder:text-slate-400 shadow-none focus-visible:ring-0"
         />

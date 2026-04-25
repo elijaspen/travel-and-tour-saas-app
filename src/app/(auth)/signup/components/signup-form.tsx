@@ -78,6 +78,7 @@ function BaseSignupForm({ role }: BaseSignupFormProps) {
         <Label htmlFor="fullName">Full Name</Label>
         <Input
           id="fullName"
+          data-testid="signup-name"
           placeholder="Juan dela Cruz"
           {...register("fullName")}
         />
@@ -90,6 +91,7 @@ function BaseSignupForm({ role }: BaseSignupFormProps) {
         <Label htmlFor="email">Email Address</Label>
         <Input
           id="email"
+          data-testid="signup-email"
           type="email"
           placeholder="you@example.com"
           {...register("email")}
@@ -103,6 +105,7 @@ function BaseSignupForm({ role }: BaseSignupFormProps) {
         <Label htmlFor="password">Password</Label>
         <Input
           id="password"
+          data-testid="sign-up-xpassword"
           type="password"
           placeholder="Min. 6 characters"
           {...register("password")}
@@ -116,6 +119,7 @@ function BaseSignupForm({ role }: BaseSignupFormProps) {
         <Label htmlFor="confirmPassword">Confirm Password</Label>
         <Input
           id="confirmPassword"
+          data-testid="signup-confirm-password"
           type="password"
           placeholder="Re-enter your password"
           {...register("confirmPassword")}
@@ -127,6 +131,7 @@ function BaseSignupForm({ role }: BaseSignupFormProps) {
 
       <Button
         type="submit"
+        data-testid="signup-submit"
         className="w-full bg-zinc-900 text-white hover:bg-zinc-800"
         disabled={isPending || serverResult.success}
       >
