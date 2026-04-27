@@ -34,10 +34,7 @@ export const ROUTE_PATHS = {
       ROOT: "/agency",
       TOURS: "/agency/tours",
       TOUR_CREATE: "/agency/tours/new",
-<<<<<<< HEAD
       TOUR_EDIT: (id: string) => `/agency/tours/${id}/edit`,
-=======
->>>>>>> 4d8efe1 (feat: add new tour route)
       BOOKINGS: "/agency/bookings",
       REVIEWS: "/agency/reviews",
       SETTINGS: "/agency/settings",
