@@ -50,7 +50,7 @@ const NAV_CONFIG: Record<ProfileRole, RoleNavConfig> = {
       },
       { label: "Trips", href: "#", icon: Map, comingSoon: true },
       { label: "Reviews", href: "#", icon: Star, comingSoon: true },
-      { label: "Profile", href: "#", icon: User, comingSoon: true },
+      { label: "Profile", href: ROUTE_PATHS.AUTHED.SHARED.PROFILE, icon: User },
     ],
     bottomNavItems: [],
   },
@@ -69,9 +69,7 @@ const NAV_CONFIG: Record<ProfileRole, RoleNavConfig> = {
       { label: "Customers", href: "#", icon: Users, comingSoon: true },
       { label: "Analytics", href: "#", icon: BarChart2, comingSoon: true },
     ],
-    bottomNavItems: [
-      { label: "Settings", href: "#", icon: Settings, comingSoon: true },
-    ],
+    bottomNavItems: [{ label: "Settings", href: "#", icon: Settings, comingSoon: true }],
   },
   [ProfileRoles.AGENT]: {
     home: ROUTE_PATHS.AUTHED.AGENCY.ROOT,
@@ -88,9 +86,7 @@ const NAV_CONFIG: Record<ProfileRole, RoleNavConfig> = {
       { label: "Customers", href: "#", icon: Users, comingSoon: true },
       { label: "Analytics", href: "#", icon: BarChart2, comingSoon: true },
     ],
-    bottomNavItems: [
-      { label: "Settings", href: "#", icon: Settings, comingSoon: true },
-    ],
+    bottomNavItems: [{ label: "Settings", href: "#", icon: Settings, comingSoon: true }],
   },
   [ProfileRoles.ADMIN]: {
     home: ROUTE_PATHS.AUTHED.ADMIN.ROOT,

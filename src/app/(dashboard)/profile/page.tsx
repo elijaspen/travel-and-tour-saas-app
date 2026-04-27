@@ -7,6 +7,8 @@ import { siteConfig } from "@/config/site";
 import { requireRole } from "@/modules/profile/profile.guard";
 import { ProfileRoles } from "@/modules/profile/profile.types";
 
+import { createClient } from "@supabase/utils/server";
+
 export const metadata: Metadata = {
   title: "Profile",
   description: `Manage your ${siteConfig.name} profile details.`,
@@ -14,6 +16,10 @@ export const metadata: Metadata = {
 
 export default async function ProfilePage() {
   const { profile } = await requireRole([ProfileRoles.CUSTOMER]);
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   return (
     <div className="flex flex-col gap-6">
@@ -27,10 +33,9 @@ export default async function ProfilePage() {
           <CardTitle>Personal details</CardTitle>
         </CardHeader>
         <CardContent>
-          <ProfileForm initialProfile={profile} />
+          <ProfileForm initialProfile={profile} userEmail={user?.email || profile.email || ""} />
         </CardContent>
       </Card>
     </div>
   );
 }
-
