@@ -55,3 +55,4 @@ public/_headers
 public/_redirects
 
 .dev.vars
+.wrangler/

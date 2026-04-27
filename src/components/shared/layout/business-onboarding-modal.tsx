@@ -31,10 +31,10 @@ import { createCompanyAction } from "@/modules/company/company.actions";
 import {
   companyOnboardingSchema,
   type CompanyOnboardingPayload,
-} from "@/features/company/company.validation";
-import { COMPANY_PERMIT_ALLOWED_MIME_TYPES } from "@/features/company/company.constants";
-import type { ActionResult } from "@/features/shared/types";
-import type { Company } from "@/features/company/company.types";
+} from "@/modules/company/company.validation";
+import { COMPANY_PERMIT_ALLOWED_MIME_TYPES } from "@/modules/company/company.constants";
+import type { ActionResult } from "@/modules/shared/types";
+import type { Company } from "@/modules/company/company.types";
 
 export function BusinessOnboardingModal() {
   const router = useRouter();
