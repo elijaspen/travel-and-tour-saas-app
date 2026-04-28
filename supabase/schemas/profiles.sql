@@ -20,7 +20,8 @@ CREATE TABLE public.profiles (
   emergency_contact text,
   status public.profile_status NOT NULL DEFAULT 'active',
   created_at timestamptz NOT NULL DEFAULT timezone('utc', now()),
-  updated_at timestamptz NOT NULL DEFAULT timezone('utc', now())
+  updated_at timestamptz NOT NULL DEFAULT timezone('utc', now()),
+  email text NOT NULL UNIQUE
 );
 
 CREATE TRIGGER handle_profiles_updated_at

@@ -9,12 +9,12 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ROUTE_PATHS } from "@/config/routes";
-import { loginAction } from "@/features/profile/profile.actions";
-import { profileLoginSchema, type LoginPayload } from "@/features/profile/profile.validation";
-import type { ActionResult } from "@/features/shared/types";
-import { SocialAuth } from "@/components/common/social-auth";
+import { loginAction } from "@/modules/profile/profile.actions";
+import { profileLoginSchema, type LoginPayload } from "@/modules/profile/profile.validation";
+import type { ActionResult } from "@/modules/shared/types";
+import { SocialAuth } from "@/components/shared/forms/social-auth";
 
-import { FormInput } from "@/components/common/form-input";
+import { FormInput } from "@/components/shared/forms/form-input";
 
 export function LoginForm() {
   const [serverResult, setServerResult] = useState<ActionResult>({ success: false });

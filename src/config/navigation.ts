@@ -14,9 +14,9 @@ import {
   Users,
 } from "lucide-react";
 
-import type { ProfileRole } from "@/features/profile/profile.types";
-import { ProfileRoles } from "@/features/profile/profile.types";
-import { ROUTE_PATHS } from "./routes";
+import type { ProfileRole } from "@/modules/profile/profile.types";
+import { ProfileRoles } from "@/modules/profile/profile.types";
+import { ROUTE_PATHS } from "@/config/routes";
 
 export type NavItem = {
   label: string;

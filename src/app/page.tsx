@@ -1,15 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { AppLogo } from "@/components/shared/app-logo";
+import { AppLogo } from "@/components/shared/layout/app-logo";
 import { Button } from "@/components/ui/button";
 import { ROUTE_PATHS } from "@/config/routes";
-import { TravelPackagesGrid } from "@/components/shared/travel-package-card";
-import { PackageSearchBar } from "@/components/shared/package-search-bar";
-import { DestinationCardGrid } from "@/components/shared/destination-card-grid";
-import { TrustBadgesSection } from "@/components/shared/trust-badges-grid";
-import { OfferPromoSection } from "@/components/shared/offer-banner";
-import Footer from "@/components/footer/footer";
+import { TravelPackagesGrid } from "@/components/shared/marketing/travel-package-card";
+import { PackageSearchBar } from "@/components/shared/search/package-search-bar";
+import { DestinationCardGrid } from "@/components/shared/marketing/destination-card-grid";
+import { TrustBadgesSection } from "@/components/shared/marketing/trust-badges-grid";
+import { OfferPromoSection } from "@/components/shared/marketing/offer-banner";
+import Footer from "@/components/shared/footer/footer";
 
 
 // TODO: Replace with actual data from the database.
@@ -146,7 +146,11 @@ export default function Home() {
           </div>
 
           <div className="absolute inset-x-0 bottom-0 z-20 translate-y-1/2 px-4 sm:px-6 lg:px-8">
-          <PackageSearchBar />
+            <PackageSearchBar
+              withDates={false}
+              withGuests={false}
+              className="max-w-3xl"
+            />
           </div>
         </section>
 
@@ -184,7 +188,7 @@ export default function Home() {
         <TrustBadgesSection />
 
         {/* Banner Offers */}
-        <OfferPromoSection offer={BANNER_OFFERS} />
+        <OfferPromoSection offer={BANNER_OFFERS} variant="landing" />
 
       </main>
 

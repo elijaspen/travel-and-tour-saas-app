@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { ROUTE_PATHS } from "@/config/routes";
 import { createClient } from "@supabase/utils/client";
-import type { ActionResult } from "@/features/shared/types";
+import type { ActionResult } from "@/modules/shared/types";
 import { z } from "zod";
 
 const resetPasswordSchema = z
