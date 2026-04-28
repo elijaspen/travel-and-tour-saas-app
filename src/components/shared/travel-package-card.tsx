@@ -27,9 +27,10 @@ type TravelPackageCardProps = {
 
 export function TravelPackageCard({ pkg }: TravelPackageCardProps) {
   return (
-    <Card 
-    data-testid="tour-card"
-    className="group overflow-hidden border-0 bg-card shadow-md transition-all hover:-translate-y-1 hover:shadow-xl">
+    <Card
+      data-testid="tour-card"
+      className="group overflow-hidden border-0 bg-card shadow-md transition-all hover:-translate-y-1 hover:shadow-xl"
+    >
       <div className="relative h-56 overflow-hidden">
         <Image
           src={pkg.image}
@@ -45,9 +46,12 @@ export function TravelPackageCard({ pkg }: TravelPackageCardProps) {
         </div>
       </div>
       <CardContent className="p-5">
-        <h3 
-        data-testid="tour-title"
-        className="mb-1 text-lg font-bold text-foreground group-hover:text-brand">{pkg.title}</h3>
+        <h3
+          data-testid="tour-title"
+          className="mb-1 text-lg font-bold text-foreground group-hover:text-brand"
+        >
+          {pkg.title}
+        </h3>
         <div className="mb-3 flex items-center gap-1.5">
           <span className="text-sm text-muted-foreground">{pkg.agency}</span>
           <BadgeCheck className="h-4 w-4 text-brand" />
@@ -87,7 +91,9 @@ export function TravelPackagesGrid({ packages, emptyState }: TravelPackagesGridP
   if (!packages.length) {
     return (
       emptyState ?? (
-        <p className="text-center text-sm text-muted-foreground">No travel packages available right now. Please check back soon.</p>
+        <p className="text-center text-sm text-muted-foreground">
+          No travel packages available right now. Please check back soon.
+        </p>
       )
     );
   }
@@ -100,4 +106,3 @@ export function TravelPackagesGrid({ packages, emptyState }: TravelPackagesGridP
     </div>
   );
 }
-

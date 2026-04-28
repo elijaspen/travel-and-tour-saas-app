@@ -105,7 +105,7 @@ function BaseSignupForm({ role }: BaseSignupFormProps) {
         <Label htmlFor="password">Password</Label>
         <Input
           id="password"
-          data-testid="sign-up-xpassword"
+          data-testid="sign-up-password"
           type="password"
           placeholder="Min. 6 characters"
           {...register("password")}
